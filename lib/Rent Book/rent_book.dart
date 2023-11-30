@@ -1,28 +1,28 @@
 import 'package:flutter/material.dart';
-import 'package:cafe_library_services/Report%20Damage/report_form.dart';
+import 'package:cafe_library_services/Rent%20Book/rent_form.dart';
 
 void main() {
   runApp(
     const MaterialApp(
-      home: ReportDamage(),
+      home: RentBook(),
     ),
   );
 }
 
-class ReportDamage extends StatefulWidget {
-  const ReportDamage({Key? key}) : super(key: key);
+class RentBook extends StatefulWidget {
+  const RentBook({Key? key}) : super(key: key);
 
   @override
-  State<ReportDamage> createState() => _ReportDamageState();
+  State<RentBook> createState() => _RentBookState();
 }
 
-class _ReportDamageState extends State<ReportDamage> {
+class _RentBookState extends State<RentBook> {
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Report Damage'),
+        title: const Text('Rent book'),
         automaticallyImplyLeading: false,
         actions: [ //use 'leading' to make it appear on the left
           IconButton(
@@ -52,7 +52,7 @@ class _ReportDamageState extends State<ReportDamage> {
                     child: Container(
                       width: 100,
                       height: 100,
-                      child: const Icon(Icons.emoji_people, size: 50),
+                      child: const Icon(Icons.book, size: 50),
                       //replace with image of item to be reported
                     ),
                   ),
@@ -87,7 +87,7 @@ class _ReportDamageState extends State<ReportDamage> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  Center(child: WriteForm()),
+                  Center(child: RentForm()),
                 ],
               ),
             ),
