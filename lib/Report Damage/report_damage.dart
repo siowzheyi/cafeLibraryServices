@@ -25,8 +25,21 @@ class _ReportDamageState extends State<ReportDamage> {
         title: const Text('Report Damage'),
         automaticallyImplyLeading: false,
         actions: [ //use 'leading' to make it appear on the left
-          IconButton(
-            icon: Icon(Icons.person),
+          TextButton(
+            style: ButtonStyle(
+              foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+              overlayColor: MaterialStateProperty.resolveWith<Color?>(
+                    (Set<MaterialState> states) {
+                  if (states.contains(MaterialState.hovered))
+                    return Colors.blue.withOpacity(0.04);
+                  if (states.contains(MaterialState.focused) ||
+                      states.contains(MaterialState.pressed))
+                    return Colors.blue.withOpacity(0.12);
+                  return null; // Defer to the widget's default.
+                },
+              ),
+            ),
+            child: Text('Profile'),
             onPressed: (){
               //go to profile
             },

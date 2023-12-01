@@ -22,11 +22,24 @@ class _RentBookState extends State<RentBook> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Rent book'),
+        title: const Text('Rent Book'),
         automaticallyImplyLeading: false,
         actions: [ //use 'leading' to make it appear on the left
-          IconButton(
-            icon: Icon(Icons.person),
+          TextButton(
+            style: ButtonStyle(
+              foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+              overlayColor: MaterialStateProperty.resolveWith<Color?>(
+                    (Set<MaterialState> states) {
+                  if (states.contains(MaterialState.hovered))
+                    return Colors.blue.withOpacity(0.04);
+                  if (states.contains(MaterialState.focused) ||
+                      states.contains(MaterialState.pressed))
+                    return Colors.blue.withOpacity(0.12);
+                  return null; // Defer to the widget's default.
+                },
+              ),
+            ),
+            child: Text('Profile'),
             onPressed: (){
               //go to profile
             },
@@ -72,6 +85,15 @@ class _RentBookState extends State<RentBook> {
                             ' versatile medium for the expression and transmission of'
                             ' ideas.', //replace with item's details
                       ),
+                    ),
+                  ),
+                  Align(
+                    alignment: Alignment.bottomRight,
+                    child: ElevatedButton(
+                      child: Text('Report'),
+                      onPressed: (){
+                        //go to report
+                      },
                     ),
                   )
                 ],
