@@ -30,16 +30,18 @@ class _ReportDamageState extends State<ReportDamage> {
               foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
               overlayColor: MaterialStateProperty.resolveWith<Color?>(
                     (Set<MaterialState> states) {
-                  if (states.contains(MaterialState.hovered))
+                  if (states.contains(MaterialState.hovered)) {
                     return Colors.blue.withOpacity(0.04);
+                  }
                   if (states.contains(MaterialState.focused) ||
-                      states.contains(MaterialState.pressed))
+                      states.contains(MaterialState.pressed)) {
                     return Colors.blue.withOpacity(0.12);
+                  }
                   return null; // Defer to the widget's default.
                 },
               ),
             ),
-            child: Text('Profile'),
+            child: const Text('Profile'),
             onPressed: (){
               //go to profile
             },
@@ -65,25 +67,21 @@ class _ReportDamageState extends State<ReportDamage> {
                     child: Container(
                       width: 100,
                       height: 100,
-                      child: const Icon(Icons.emoji_people, size: 50),
+                      child: const Icon(Icons.meeting_room, size: 50),
                       //replace with image of item to be reported
                     ),
                   ),
                   Flexible(
                     child: Container(
                       decoration: BoxDecoration(
-                        border: Border.all(width: 10, color: Colors.black12),
+                        border: Border.all(width: 5, color: Colors.black12),
                         borderRadius: const BorderRadius.all(Radius.circular(
                             10)),
                       ),
                       margin: const EdgeInsets.all(1),
                       padding: const EdgeInsets.all(8),
                       child: const Text(
-                        'Books have a profound impact on individuals'
-                            ' and societies, shaping thoughts, fostering creativity, and'
-                            ' preserving cultural heritage. They are a timeless and'
-                            ' versatile medium for the expression and transmission of'
-                            ' ideas.', //replace with item's details
+                        'Room 203.', //replace with item's details
                       ),
                     ),
                   )
@@ -97,7 +95,7 @@ class _ReportDamageState extends State<ReportDamage> {
                 border: Border.all(width: 10, color: Colors.black12),
                 borderRadius: const BorderRadius.all(Radius.circular(10)),
               ),
-              child: Row(
+              child: const Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   Center(child: WriteForm()),

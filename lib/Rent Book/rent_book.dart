@@ -30,16 +30,18 @@ class _RentBookState extends State<RentBook> {
               foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
               overlayColor: MaterialStateProperty.resolveWith<Color?>(
                     (Set<MaterialState> states) {
-                  if (states.contains(MaterialState.hovered))
+                  if (states.contains(MaterialState.hovered)) {
                     return Colors.blue.withOpacity(0.04);
+                  }
                   if (states.contains(MaterialState.focused) ||
-                      states.contains(MaterialState.pressed))
+                      states.contains(MaterialState.pressed)) {
                     return Colors.blue.withOpacity(0.12);
+                  }
                   return null; // Defer to the widget's default.
                 },
               ),
             ),
-            child: Text('Profile'),
+            child: const Text('Profile'),
             onPressed: (){
               //go to profile
             },
@@ -71,31 +73,32 @@ class _RentBookState extends State<RentBook> {
                   ),
                   Flexible(
                     child: Container(
+                      height: 502,
                       decoration: BoxDecoration(
-                        border: Border.all(width: 10, color: Colors.black12),
+                        border: Border.all(width: 5, color: Colors.black12),
                         borderRadius: const BorderRadius.all(Radius.circular(
                             10)),
                       ),
                       margin: const EdgeInsets.all(1),
                       padding: const EdgeInsets.all(8),
-                      child: const Text(
-                        'Books have a profound impact on individuals'
-                            ' and societies, shaping thoughts, fostering creativity, and'
-                            ' preserving cultural heritage. They are a timeless and'
-                            ' versatile medium for the expression and transmission of'
-                            ' ideas.', //replace with item's details
-                      ),
+                      child: Row(
+                        children: [
+                          const Text(
+                            'Books.', //replace with item's details
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 45, top: 125),
+                            child: ElevatedButton(
+                              child: const Text('Report'),
+                              onPressed: (){
+                                //go to report
+                              },
+                            ),
+                          ),
+                        ],
+                      )
                     ),
                   ),
-                  Align(
-                    alignment: Alignment.bottomRight,
-                    child: ElevatedButton(
-                      child: Text('Report'),
-                      onPressed: (){
-                        //go to report
-                      },
-                    ),
-                  )
                 ],
               ),
             ),
@@ -106,7 +109,7 @@ class _RentBookState extends State<RentBook> {
                 border: Border.all(width: 10, color: Colors.black12),
                 borderRadius: const BorderRadius.all(Radius.circular(10)),
               ),
-              child: Row(
+              child: const Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   Center(child: RentForm()),
