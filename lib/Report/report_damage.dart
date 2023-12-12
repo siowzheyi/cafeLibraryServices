@@ -1,28 +1,28 @@
 import 'package:flutter/material.dart';
-import 'package:cafe_library_services/Rent%20Book/rent_form.dart';
+import 'package:cafe_library_services/Report/report_form.dart';
 
 void main() {
   runApp(
     const MaterialApp(
-      home: RentBook(),
+      home: ReportDamage(),
     ),
   );
 }
 
-class RentBook extends StatefulWidget {
-  const RentBook({Key? key}) : super(key: key);
+class ReportDamage extends StatefulWidget {
+  const ReportDamage({Key? key}) : super(key: key);
 
   @override
-  State<RentBook> createState() => _RentBookState();
+  State<ReportDamage> createState() => _ReportDamageState();
 }
 
-class _RentBookState extends State<RentBook> {
+class _ReportDamageState extends State<ReportDamage> {
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Rent Book'),
+        title: const Text('Report Damage'),
         automaticallyImplyLeading: false,
         actions: [ //use 'leading' to make it appear on the left
           TextButton(
@@ -67,13 +67,12 @@ class _RentBookState extends State<RentBook> {
                     child: Container(
                       width: 100,
                       height: 100,
-                      child: const Icon(Icons.book, size: 50),
+                      child: const Icon(Icons.meeting_room, size: 50),
                       //replace with image of item to be reported
                     ),
                   ),
                   Flexible(
                     child: Container(
-                      height: 502,
                       decoration: BoxDecoration(
                         border: Border.all(width: 5, color: Colors.black12),
                         borderRadius: const BorderRadius.all(Radius.circular(
@@ -81,24 +80,11 @@ class _RentBookState extends State<RentBook> {
                       ),
                       margin: const EdgeInsets.all(1),
                       padding: const EdgeInsets.all(8),
-                      child: Row(
-                        children: [
-                          const Text(
-                            'Books.', //replace with item's details
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 45, top: 125),
-                            child: ElevatedButton(
-                              child: const Text('Report'),
-                              onPressed: (){
-                                //go to report
-                              },
-                            ),
-                          ),
-                        ],
-                      )
+                      child: const Text(
+                        'Room 203.', //replace with item's details
+                      ),
                     ),
-                  ),
+                  )
                 ],
               ),
             ),
@@ -112,7 +98,7 @@ class _RentBookState extends State<RentBook> {
               child: const Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  Center(child: RentForm()),
+                  Center(child: WriteForm()),
                 ],
               ),
             ),
