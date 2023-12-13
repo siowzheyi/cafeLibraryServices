@@ -68,7 +68,7 @@ class _EquipmentListScreenState extends State<EquipmentListScreen> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: (){
-            Navigator.pop(context, MaterialPageRoute(builder: (context) => HomePage()));
+            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage()));
           },
         ),
         actions: [

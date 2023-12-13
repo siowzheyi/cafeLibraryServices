@@ -30,7 +30,7 @@ class _ReportDamageState extends State<ReportDamage> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: (){
-            Navigator.pop(context, MaterialPageRoute(builder: (context) => HomePage()));
+            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage()));
           },
         ),
         actions: [ //use 'leading' to make it appear on the left
@@ -56,7 +56,6 @@ class _ReportDamageState extends State<ReportDamage> {
             },
           ),
         ],
-        backgroundColor: Colors.lightGreen,
       ),
       body: SingleChildScrollView(
         scrollDirection: Axis.vertical,

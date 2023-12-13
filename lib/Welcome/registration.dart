@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:cafe_library_services/Welcome/home.dart';
+import 'package:cafe_library_services/Welcome/login.dart';
 
 void main() {
   runApp(MaterialApp(
+    theme: ThemeData(
+      primarySwatch: Colors.green,
+    ),
     debugShowCheckedModeBanner: false,
     home: SignupPage(),
   ));
@@ -92,7 +96,7 @@ class _SignupPageState extends State<SignupPage> {
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 40),
                     child: Container(
-                      padding: EdgeInsets.only(top: 30, left: 3),
+                      padding: EdgeInsets.zero,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(50),
                         border: Border(
@@ -106,7 +110,7 @@ class _SignupPageState extends State<SignupPage> {
                         minWidth: double.infinity,
                         height: 60,
                         onPressed: () {},
-                        color: const Color(0xff0095FF),
+                        color: const Color(0xFF4CAF50),
                         elevation: 0,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(50),
@@ -127,13 +131,13 @@ class _SignupPageState extends State<SignupPage> {
                       ),
                     ),
                   ),
-                  Row(
+                  Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       Text("Already have an account?"),
                       ElevatedButton(
                         onPressed: (){
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => SignupPage()));
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => LoginPage()));
                         },
                         child: Text(
                           "Login",
@@ -145,16 +149,6 @@ class _SignupPageState extends State<SignupPage> {
                       )
                     ],
                   ),
-                  Container(
-                    padding: EdgeInsets.only(top: 100),
-                    height: 200,
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: AssetImage("assets/signup.png"),
-                        fit: BoxFit.fitHeight,
-                      ),
-                    ),
-                  )
                 ],
               ),
             ),

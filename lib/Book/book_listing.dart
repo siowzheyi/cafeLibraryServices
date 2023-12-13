@@ -1,5 +1,5 @@
 import 'package:cafe_library_services/Book/book_details.dart';
-import 'package:cafe_library_services/main.dart';
+import 'package:cafe_library_services/Welcome/home.dart';
 import 'package:flutter/material.dart';
 import 'package:cafe_library_services/Book/search_history.dart';
 
@@ -71,7 +71,7 @@ class _BookListScreenState extends State<BookListScreen> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: (){
-            Navigator.pop(context, MaterialPageRoute(builder: (context) => HomePage()));
+            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage()));
           },
         ),
         actions: [

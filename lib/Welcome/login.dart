@@ -1,10 +1,13 @@
-import 'package:cafe_library_services/Welcome/home.dart';
-import 'package:cafe_library_services/Welcome/registration.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:cafe_library_services/Welcome/home.dart';
+import 'package:cafe_library_services/Welcome/registration.dart';
 
 void main() {
   runApp(MaterialApp(
+    theme: ThemeData(
+      primarySwatch: Colors.green,
+    ),
     debugShowCheckedModeBanner: false,
     home: LoginPage(),
   )); //MaterialApp
@@ -75,7 +78,7 @@ class _LoginPageState extends State<LoginPage> {
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 40),
                     child: Container(
-                      padding: EdgeInsets.only(top: 30, left: 3),
+                      padding: EdgeInsets.zero,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(50),
                         border: Border(
@@ -89,7 +92,7 @@ class _LoginPageState extends State<LoginPage> {
                         minWidth: double.infinity,
                         height: 60,
                         onPressed: () {},
-                        color: const Color(0xff0095FF),
+                        color: const Color(0xFF4CAF50),
                         elevation: 0,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(50),
@@ -110,7 +113,7 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                   ),
-                  Row(
+                  Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       Text("Don't have an account?"),
@@ -128,16 +131,6 @@ class _LoginPageState extends State<LoginPage> {
                       )
                     ],
                   ),
-                  Container(
-                    padding: EdgeInsets.only(top: 100),
-                    height: 200,
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: AssetImage("assets/login.png"),
-                        fit: BoxFit.fitHeight,
-                      ),
-                    ),
-                  )
                 ],
               ),
             ),
