@@ -1,3 +1,4 @@
+import 'package:cafe_library_services/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:cafe_library_services/Welcome/home.dart';
@@ -31,7 +32,7 @@ class _LoginPageState extends State<LoginPage> {
         backgroundColor: Colors.white,
         leading: IconButton(
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => WelcomePage()));
           },
           icon: Icon(
             Icons.arrow_back_ios,
@@ -98,6 +99,9 @@ class _LoginPageState extends State<LoginPage> {
                           borderRadius: BorderRadius.circular(50),
                         ),
                         child: ElevatedButton(
+                          style: ButtonStyle(
+                            backgroundColor: MaterialStateProperty.all<Color>(Colors.green),
+                          ),
                           onPressed: (){
                             Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage()));
                           },
@@ -118,6 +122,9 @@ class _LoginPageState extends State<LoginPage> {
                     children: <Widget>[
                       Text("Don't have an account?"),
                       ElevatedButton(
+                        style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all<Color>(Colors.green),
+                        ),
                         onPressed: (){
                           Navigator.push(context, MaterialPageRoute(builder: (context) => SignupPage()));
                         },

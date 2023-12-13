@@ -1,6 +1,6 @@
+import 'package:cafe_library_services/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:cafe_library_services/Welcome/home.dart';
 import 'package:cafe_library_services/Welcome/login.dart';
 
 void main() {
@@ -31,7 +31,7 @@ class _SignupPageState extends State<SignupPage> {
         backgroundColor: Colors.white,
         leading: IconButton(
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => WelcomePage()));
           },
           icon: Icon(Icons.arrow_back_ios,
             size: 20,
@@ -116,12 +116,16 @@ class _SignupPageState extends State<SignupPage> {
                           borderRadius: BorderRadius.circular(50),
                         ),
                         child: ElevatedButton(
+                          style: ButtonStyle(
+                            backgroundColor: MaterialStateProperty.all<Color>(Colors.green),
+                          ),
                           onPressed: (){
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage()));
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => LoginPage()));
                           },
                           child: Text(
                             "Sign up",
                             style: TextStyle(
+                              backgroundColor: Colors.green,
                               fontWeight: FontWeight.w600,
                               fontSize: 18,
                               color: Colors.white,
@@ -136,12 +140,16 @@ class _SignupPageState extends State<SignupPage> {
                     children: <Widget>[
                       Text("Already have an account?"),
                       ElevatedButton(
+                        style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all<Color>(Colors.green),
+                        ),
                         onPressed: (){
                           Navigator.push(context, MaterialPageRoute(builder: (context) => LoginPage()));
                         },
                         child: Text(
                           "Login",
                           style: TextStyle(
+                            backgroundColor: Colors.green,
                             fontWeight: FontWeight.w600,
                             fontSize: 18,
                           ),
