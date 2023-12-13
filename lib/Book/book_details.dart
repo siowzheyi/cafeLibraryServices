@@ -1,3 +1,4 @@
+import 'package:cafe_library_services/Report/report.dart';
 import 'package:flutter/material.dart';
 
 class BookDetailsPage extends StatelessWidget {
@@ -21,6 +22,22 @@ class BookDetailsPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(title),
+        actions: [
+          // Add a Report button in the app bar
+          IconButton(
+            icon: Icon(Icons.report),
+            tooltip: 'Report this item',
+            onPressed: () {
+              // Navigate to the ReportPage when the button is pressed
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ReportPage(),
+                ),
+              );
+            },
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

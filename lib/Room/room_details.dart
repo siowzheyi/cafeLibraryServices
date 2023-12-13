@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:cafe_library_services/Room/reserve_room.dart';
+
+import '../Report/report.dart';
 
 class RoomDetailsPage extends StatelessWidget {
   final String name;
@@ -19,6 +22,22 @@ class RoomDetailsPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(name),
+        actions: [
+          // Add a Report button in the app bar
+          IconButton(
+            icon: Icon(Icons.report),
+            tooltip: 'Report this item',
+            onPressed: () {
+              // Navigate to the ReportPage when the button is pressed
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ReportPage(),
+                ),
+              );
+            },
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -45,6 +64,18 @@ class RoomDetailsPage extends StatelessWidget {
               ),
             ),
             // Add more details as needed
+            ElevatedButton(
+              onPressed: () {
+                // Navigate to the ReserveRoom when the button is pressed
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ReserveRoomPage(),
+                  ),
+                );
+              },
+              child: Text('Reserve'),
+            ),
           ],
         ),
       ),

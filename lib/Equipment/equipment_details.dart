@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../Report/report.dart';
+
 class EquipmentDetailsPage extends StatelessWidget {
   final String name;
   final String price;
@@ -21,6 +23,22 @@ class EquipmentDetailsPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(name),
+        actions: [
+          // Add a Report button in the app bar
+          IconButton(
+            icon: Icon(Icons.report),
+            tooltip: 'Report this item',
+            onPressed: () {
+              // Navigate to the ReportPage when the button is pressed
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ReportPage(),
+                ),
+              );
+            },
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

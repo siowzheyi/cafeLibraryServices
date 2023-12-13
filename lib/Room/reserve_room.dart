@@ -1,34 +1,29 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(RoomReservationApp());
+  runApp(
+      MaterialApp(
+        title: 'Room Reservation System',
+        theme: ThemeData(
+          primarySwatch: Colors.green,
+        ),
+        home: ReserveRoomPage(),
+      )
+  );
 }
 
-class RoomReservationApp extends StatelessWidget {
+class ReserveRoomPage extends StatefulWidget {
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Room Reservation System',
-      theme: ThemeData(
-        primarySwatch: Colors.green,
-      ),
-      home: RoomReservationPage(),
-    );
-  }
+  _ReserveRoomPageState createState() => _ReserveRoomPageState();
 }
 
-class RoomReservationPage extends StatefulWidget {
-  @override
-  _RoomReservationPageState createState() => _RoomReservationPageState();
-}
-
-class _RoomReservationPageState extends State<RoomReservationPage> {
+class _ReserveRoomPageState extends State<ReserveRoomPage> {
   final List<String> roomOptions = ['-Select Room-', 'Discussion Room', 'Meeting Room', 'Carel Room', 'Presentation Room'];
   final TextEditingController textDateController = TextEditingController();
 
   String _selectedRoom = '-Select Room-';
-  String _selectedDate = '';
-  String _selectedTime = '';
+  String _selectedDate = '-Select Date-';
+  String _selectedTime = '-Select Time-';
 
   _selectDate() async {
     final DateTime? pickedDate = await showDatePicker(
@@ -100,6 +95,12 @@ class _RoomReservationPageState extends State<RoomReservationPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Library Room Reservation'),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
       ),
       body: Padding(
         padding: EdgeInsets.all(16.0),
@@ -130,9 +131,13 @@ class _RoomReservationPageState extends State<RoomReservationPage> {
             SizedBox(height: 20),
             Text('Selection time for 1 hour only.'),
             SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _submitForm,
-              child: Text('Submit'),
+            Row(
+              children: [
+                ElevatedButton(
+                  onPressed: _submitForm,
+                  child: Text('Submit'),
+                ),
+              ],
             ),
           ],
         ),

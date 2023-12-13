@@ -1,8 +1,10 @@
+import 'package:cafe_library_services/Room/room_listing.dart';
 import 'package:flutter/material.dart';
 import 'package:cafe_library_services/Book/book_listing.dart';
 import 'package:cafe_library_services/Equipment/equipment_listing.dart';
-import 'package:cafe_library_services/Report/report_damage.dart';
 import 'package:cafe_library_services/Welcome/login.dart';
+
+import '../Announcement/announcment_listing.dart';
 
 void main() {
   runApp(CafeLibraryServicesApp());
@@ -21,12 +23,6 @@ class CafeLibraryServicesApp extends StatelessWidget {
 }
 
 class HomePage extends StatelessWidget {
-  final List<String> announcements = [
-    'Announcement 1',
-    'Announcement 2',
-    'Announcement 3',
-    // Add more announcements as needed
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -49,31 +45,41 @@ class HomePage extends StatelessWidget {
                 ),
                 ElevatedButton(
                   onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => RoomListing()));
+                  },
+                  child: Text('Browse Room'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
                     Navigator.push(context, MaterialPageRoute(builder: (context) => BookListing()));
                   },
                   child: Text('Browse Book'),
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => ReportDamage()));
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => AnnouncementListing()));
                   },
-                  child: Text('Report Damage'),
+                  child: Text('Browse Announcement'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    //Navigator.push(context, MaterialPageRoute(builder: (context) => BookingRecord()));
+                  },
+                  child: Text('Browse Booking Record'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    //Navigator.push(context, MaterialPageRoute(builder: (context) => OrderRecord()));
+                  },
+                  child: Text('Browse Order Beverage Record'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    //Navigator.push(context, MaterialPageRoute(builder: (context) => PenaltyRecord()));
+                  },
+                  child: Text('Browse Penalty Record'),
                 ),
               ],
-            ),
-          ),
-          Positioned(
-            top: 0.0,
-            left: 0.0,
-            right: 0.0,
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: List.generate(
-                  announcements.length,
-                      (index) => AnnouncementCard(announcement: announcements[index]),
-                ),
-              ),
             ),
           ),
         ],
@@ -102,43 +108,6 @@ class HomePage extends StatelessWidget {
               },
             ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class AnnouncementCard extends StatelessWidget {
-  final String announcement;
-
-  const AnnouncementCard({Key? key, required this.announcement}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.all(8.0),
-      width: 400.0, // Adjust the width of each card
-      height: 200.0,
-      child: Card(
-        elevation: 4.0,
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Announcement:',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              SizedBox(height: 8.0),
-              Text(
-                announcement,
-                style: TextStyle(fontSize: 16.0),
-              ),
-            ],
-          ),
         ),
       ),
     );
