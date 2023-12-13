@@ -1,5 +1,6 @@
 import 'package:cafe_library_services/Book/rent_book.dart';
-import 'package:cafe_library_services/Equipment/equipment.dart';
+import 'package:cafe_library_services/Equipment/equipment_details.dart';
+import 'package:cafe_library_services/Equipment/equipment_listing.dart';
 import 'package:cafe_library_services/Report/report_damage.dart';
 import 'package:flutter/material.dart';
 
@@ -47,7 +48,7 @@ class HomePage extends StatelessWidget {
               onTap: () {
                 // Handle item 1 tap
                 //Navigator.pop(context);
-                Navigator.push(context, MaterialPageRoute(builder: (context) => EquipmentApp()));
+                Navigator.push(context, MaterialPageRoute(builder: (context) => EquipmentListing()));
               },
             ),
             ListTile(

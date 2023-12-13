@@ -1,64 +1,65 @@
-import 'package:cafe_library_services/Book/book_details.dart';
+import 'package:cafe_library_services/Beverage/beverage_details.dart';
 import 'package:flutter/material.dart';
-import 'package:cafe_library_services/Book/search_history.dart';
+import 'package:cafe_library_services/Beverage/search_history.dart';
 
-void main(){
-  runApp(BookListing());
+void main() {
+  runApp(BeverageListing());
 }
 
-class BookListing extends StatelessWidget {
-  const BookListing({super.key});
+class BeverageListing extends StatelessWidget {
+  const BeverageListing({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Book Listing',
+      title: 'Beverage Listing',
       theme: ThemeData(
         primarySwatch: Colors.green,
       ),
-      home: BookListScreen(),
+      home: BeverageListScreen(),
     );
   }
 }
 
-class BookListScreen extends StatefulWidget {
+class BeverageListScreen extends StatefulWidget {
   @override
-  _BookListScreenState createState() => _BookListScreenState();
+  _BeverageListScreenState createState() => _BeverageListScreenState();
 }
 
-class _BookListScreenState extends State<BookListScreen> {
-  final List<Book> books = [
-    Book('The Great Gatsby', 'F. Scott Fitzgerald', 'assets/great_gatsby.jpg', true),
-    Book('To Kill a Mockingbird', 'Harper Lee', 'assets/to_kill_a_mockingbird.jpg', true),
-    Book('1984', 'George Orwell', 'assets/1984.jpg', false),
-    Book('Pride and Prejudice', 'Jane Austen', 'assets/pride_and_prejudice.jpg', true),
-    Book('The Catcher in the Rye', 'J.D. Salinger', 'assets/catcher_in_the_rye.jpg', false),
+class _BeverageListScreenState extends State<BeverageListScreen> {
+  final List<Beverage> beverages = [
+    Beverage('Hot Coffee Latte', 'RM8.50', 'One of the best beverage, Hot Coffee', 'assets/hot_coffee_latte.png', true),
+    Beverage('Mocha Iced Coffee', 'Rm9.20', 'One of the best beverage, Ice Coffee', 'assets/mocha_iced_coffee.jpg', true),
+    Beverage('Java Chip Frappuccino', 'RM14.30', 'One of the best beverage, Frappe', 'assets/java_chip_frappucino.jpg', false),
+    Beverage('Strawberry Smoothies', 'RM11.20', 'One of the best beverage, Smoothies', 'assets/strawberry_smoothie.jpg', true),
+    Beverage('Red Velvet Cake', '7.50', 'One of the best pastry, Cake', 'assets/red_velvet_cake.jpg', false),
+    Beverage('Croissant French Toast', '8.30', 'One of the best pastry, Bread', 'assets/croissant_french_toast.jpg', false),
   ];
 
-  List<Book> filteredBooks = [];
-  List<Book> searchHistory = [];
+  List<Beverage> filteredBeverages = [];
+  List<Beverage> searchHistory = [];
 
   @override
   void initState() {
     super.initState();
-    filteredBooks = List.from(books);
+    filteredBeverages = List.from(beverages);
     //searchHistory = List.from(searchHistory);
   }
 
-  void filterBooks(String query) {
+  void filterBeverages(String query) {
     setState(() {
-      filteredBooks = books
-          .where((book) =>
-      book.title.toLowerCase().contains(query.toLowerCase()) ||
-          book.author.toLowerCase().contains(query.toLowerCase()))
+      filteredBeverages = beverages
+          .where((beverage) =>
+      beverage.name.toLowerCase().contains(query.toLowerCase()) ||
+          beverage.description.toLowerCase().contains(query.toLowerCase()))
           .toList();
       //update search history based on the user's query
     });
   }
 
-  void addToSearchHistory(Book book) {
+  void addToSearchHistory(Beverage beverage) {
     setState(() {
-      searchHistory.add(book);
+      searchHistory.add(beverage);
     });
   }
 
@@ -66,14 +67,14 @@ class _BookListScreenState extends State<BookListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Book Listing'),
+        title: Text('Beverage Listing'),
         actions: [
           IconButton(
             icon: Icon(Icons.search),
             onPressed: () {
               showSearch(
                 context: context,
-                delegate: BookSearchDelegate(books, addToSearchHistory),
+                delegate: BeverageSearchDelegate(beverages, addToSearchHistory),
               );
             },
           ),
@@ -98,11 +99,11 @@ class _BookListScreenState extends State<BookListScreen> {
             scrollDirection: Axis.horizontal,
             child: Row(
               children: [
-                for (var book in books)
+                for (var beverage in beverages)
                   Container(
                     width: 150.0,
                     margin: EdgeInsets.symmetric(horizontal: 8.0),
-                    child: BookListItem(book: book),
+                    child: BeverageListItem(beverage: beverage),
                   ),
               ],
             ),
@@ -117,19 +118,20 @@ class _BookListScreenState extends State<BookListScreen> {
   }
 }
 
-class Book {
-  final String title;
-  final String author;
+class Beverage {
+  final String name;
+  final String price;
+  final String description;
   final String imageUrl;
   bool isAvailable;
 
-  Book(this.title, this.author, this.imageUrl, this.isAvailable);
+  Beverage(this.name, this.price, this.description, this.imageUrl, this.isAvailable);
 }
 
-class BookListItem extends StatelessWidget {
-  final Book book;
+class BeverageListItem extends StatelessWidget {
+  final Beverage beverage;
 
-  const BookListItem({Key? key, required this.book}) : super(key: key);
+  const BeverageListItem({Key? key, required this.beverage}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -138,11 +140,12 @@ class BookListItem extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => BookDetailsPage(
-              title: book.title,
-              author: book.author,
-              imageUrl: book.imageUrl,
-              isAvailable: book.isAvailable,
+            builder: (context) => BeverageDetailsPage(
+              name: beverage.name,
+              price: beverage.price,
+              description: beverage.description,
+              imageUrl: beverage.imageUrl,
+              isAvailable: beverage.isAvailable,
             ),
           ),
         );
@@ -155,7 +158,7 @@ class BookListItem extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Image.asset(
-                book.imageUrl,
+                beverage.imageUrl,
                 width: double.infinity,
                 height: 150.0,
                 fit: BoxFit.cover,
@@ -166,19 +169,19 @@ class BookListItem extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      book.title,
+                      beverage.name,
                       style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold),
                     ),
                     Text(
-                      'by ${book.author}',
+                      '${beverage.price}',
                       style: TextStyle(fontSize: 12.0, fontStyle: FontStyle.italic),
                     ),
                     SizedBox(height: 8.0),
                     Text(
-                      book.isAvailable ? 'Available' : 'Checked Out',
+                      beverage.isAvailable ? 'Available' : 'Out of stock',
                       style: TextStyle(
                         fontSize: 12.0,
-                        color: book.isAvailable ? Colors.green : Colors.red,
+                        color: beverage.isAvailable ? Colors.green : Colors.red,
                       ),
                     ),
                   ],
@@ -192,16 +195,16 @@ class BookListItem extends StatelessWidget {
   }
 }
 
-class BookDetailsScreen extends StatelessWidget {
-  final Book book;
+class BeverageDetailsScreen extends StatelessWidget {
+  final Beverage beverage;
 
-  const BookDetailsScreen({Key? key, required this.book}) : super(key: key);
+  const BeverageDetailsScreen({Key? key, required this.beverage}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Book Details'),
+        title: Text('Beverage Details'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -209,39 +212,39 @@ class BookDetailsScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Image.asset(
-              book.imageUrl,
+              beverage.imageUrl,
               width: 200.0,
               height: 300.0,
               fit: BoxFit.cover,
             ),
             SizedBox(height: 16.0),
             Text(
-              book.title,
+              beverage.name,
               style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
             ),
             Text(
-              'by ${book.author}',
+              'by ${beverage.price}',
               style: TextStyle(fontSize: 16.0, fontStyle: FontStyle.italic),
             ),
             SizedBox(height: 16.0),
             ElevatedButton(
               onPressed: () {
-                // Handle book borrowing logic
+                // Handle beverage ordering logic
                 // For example, show a confirmation dialog
                 showDialog(
                   context: context,
                   builder: (context) => AlertDialog(
-                    title: Text('Borrow Confirmation'),
-                    content: Text('Do you want to borrow ${book.title}?'),
+                    title: Text('Order Confirmation'),
+                    content: Text('Do you want to order ${beverage.name}?'),
                     actions: [
                       TextButton(
                         onPressed: () {
-                          // Perform book borrowing logic here
+                          // Perform beverage ordering logic here
                           Navigator.pop(context); // Close the dialog
                           // Optionally show a success message
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text('Book borrowed successfully!'),
+                              content: Text('Beverage ordered successfully!'),
                             ),
                           );
                         },
@@ -257,7 +260,7 @@ class BookDetailsScreen extends StatelessWidget {
                   ),
                 );
               },
-              child: Text('Borrow Book'),
+              child: Text('Order Beverage'),
             ),
           ],
         ),
@@ -266,11 +269,11 @@ class BookDetailsScreen extends StatelessWidget {
   }
 }
 
-class BookSearchDelegate extends SearchDelegate<String> {
-  final List<Book> books;
-  final Function(Book) addToSearchHistory;
+class BeverageSearchDelegate extends SearchDelegate<String> {
+  final List<Beverage> beverages;
+  final Function(Beverage) addToSearchHistory;
 
-  BookSearchDelegate(this.books, this.addToSearchHistory);
+  BeverageSearchDelegate(this.beverages, this.addToSearchHistory);
 
   @override
   List<Widget> buildActions(BuildContext context) {
@@ -305,29 +308,30 @@ class BookSearchDelegate extends SearchDelegate<String> {
   @override
   Widget buildSuggestions(BuildContext context) {
     final suggestionList = query.isEmpty
-        ? books
-        : books
-        .where((book) =>
-    book.title.toLowerCase().contains(query.toLowerCase()) ||
-        book.author.toLowerCase().contains(query.toLowerCase()))
+        ? beverages
+        : beverages
+        .where((beverage) =>
+    beverage.name.toLowerCase().contains(query.toLowerCase()) ||
+        beverage.price.toLowerCase().contains(query.toLowerCase()))
         .toList();
 
     return ListView.builder(
       itemCount: suggestionList.length,
       itemBuilder: (context, index) {
         return ListTile(
-          title: Text(suggestionList[index].title),
+          title: Text(suggestionList[index].name),
           onTap: () {
-            // Add the selected book to the search history
+            // Add the selected beverage to the search history
             addToSearchHistory(suggestionList[index]);
 
-            // You can navigate to the book details screen or handle the selection as needed
+            // You can navigate to the beverage details screen or handle the selection as needed
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => BookDetailsPage(
-                  title: suggestionList[index].title,
-                  author: suggestionList[index].author,
+                builder: (context) => BeverageDetailsPage(
+                  name: suggestionList[index].name,
+                  price: suggestionList[index].price,
+                  description: suggestionList[index].description,
                   imageUrl: suggestionList[index].imageUrl,
                   isAvailable: suggestionList[index].isAvailable,
                   // Pass more details as needed
