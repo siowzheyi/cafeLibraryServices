@@ -1,9 +1,13 @@
+import 'package:cafe_library_services/Welcome/home.dart';
 import 'package:flutter/material.dart';
 import 'package:cafe_library_services/Report/report_form.dart';
 
 void main() {
   runApp(
-    const MaterialApp(
+    MaterialApp(
+      theme: ThemeData(
+        primarySwatch: Colors.green,
+      ),
       home: ReportDamage(),
     ),
   );
@@ -23,7 +27,12 @@ class _ReportDamageState extends State<ReportDamage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Report Damage'),
-        automaticallyImplyLeading: false,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: (){
+            Navigator.pop(context, MaterialPageRoute(builder: (context) => HomePage()));
+          },
+        ),
         actions: [ //use 'leading' to make it appear on the left
           TextButton(
             style: ButtonStyle(

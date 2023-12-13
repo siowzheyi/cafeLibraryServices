@@ -1,4 +1,5 @@
 import 'package:cafe_library_services/Book/book_details.dart';
+import 'package:cafe_library_services/main.dart';
 import 'package:flutter/material.dart';
 import 'package:cafe_library_services/Book/search_history.dart';
 
@@ -67,6 +68,12 @@ class _BookListScreenState extends State<BookListScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Book Listing'),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: (){
+            Navigator.pop(context, MaterialPageRoute(builder: (context) => HomePage()));
+          },
+        ),
         actions: [
           IconButton(
             icon: Icon(Icons.search),

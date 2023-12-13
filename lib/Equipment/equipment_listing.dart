@@ -1,4 +1,5 @@
 import 'package:cafe_library_services/Equipment/equipment_details.dart';
+import 'package:cafe_library_services/Welcome/home.dart';
 import 'package:flutter/material.dart';
 import 'package:cafe_library_services/Equipment/search_history.dart';
 
@@ -64,6 +65,12 @@ class _EquipmentListScreenState extends State<EquipmentListScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Equipment Listing'),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: (){
+            Navigator.pop(context, MaterialPageRoute(builder: (context) => HomePage()));
+          },
+        ),
         actions: [
           IconButton(
             icon: Icon(Icons.search),

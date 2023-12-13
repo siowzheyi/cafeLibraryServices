@@ -1,17 +1,20 @@
+import 'package:cafe_library_services/Book/book_listing.dart';
 import 'package:cafe_library_services/Book/rent_book.dart';
-import 'package:cafe_library_services/Equipment/equipment_details.dart';
 import 'package:cafe_library_services/Equipment/equipment_listing.dart';
 import 'package:cafe_library_services/Report/report_damage.dart';
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(CafeLibraryServicesApp());
 }
 
-class MyApp extends StatelessWidget {
+class CafeLibraryServicesApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: ThemeData(
+        primarySwatch: Colors.green,
+      ),
       home: HomePage(),
     );
   }
@@ -25,7 +28,7 @@ class HomePage extends StatelessWidget {
         title: Text('Home Page'),
       ),
       body: Center(
-        child: Text('Welcome to the Library Cafe Services System!'),
+        child: Text('Welcome to the Cafe Library Services System!'),
       ),
       drawer: Drawer(
         child: ListView(
@@ -44,7 +47,7 @@ class HomePage extends StatelessWidget {
               ),
             ),
             ListTile(
-              title: Text('Rent equipment'),
+              title: Text('Browse equipment'),
               onTap: () {
                 // Handle item 1 tap
                 //Navigator.pop(context);
@@ -52,11 +55,11 @@ class HomePage extends StatelessWidget {
               },
             ),
             ListTile(
-              title: Text('Rent Book'),
+              title: Text('Browse Book'),
               onTap: () {
                 // Handle item 2 tap
                 //Navigator.pop(context);
-                Navigator.push(context, MaterialPageRoute(builder: (context) => RentBook()));
+                Navigator.push(context, MaterialPageRoute(builder: (context) => BookListing()));
               },
             ),
             ListTile(
