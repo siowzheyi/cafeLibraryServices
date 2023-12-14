@@ -64,18 +64,19 @@ class RoomDetailsPage extends StatelessWidget {
               ),
             ),
             // Add more details as needed
-            ElevatedButton(
-              onPressed: () {
-                // Navigate to the ReserveRoom when the button is pressed
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ReserveRoomPage(),
-                  ),
-                );
-              },
-              child: Text('Reserve'),
-            ),
+            if (isAvailable)
+              ElevatedButton(
+                onPressed: () {
+                  // Navigate to the ReserveRoom when the button is pressed
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ReserveRoomPage(selectedRoom: name,),
+                    ),
+                  );
+                },
+                child: Text('Reserve'),
+              ),
           ],
         ),
       ),

@@ -1,3 +1,4 @@
+import 'package:cafe_library_services/Equipment/rent_equipment.dart';
 import 'package:flutter/material.dart';
 
 import '../Report/report.dart';
@@ -57,7 +58,7 @@ class EquipmentDetailsPage extends StatelessWidget {
               style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
             ),
             Text(
-              'Author: $price',
+              'Fee: $price',
               style: TextStyle(fontSize: 16.0),
             ),
             Text(
@@ -68,6 +69,19 @@ class EquipmentDetailsPage extends StatelessWidget {
               ),
             ),
             // Add more details as needed
+            if (isAvailable)
+              ElevatedButton(
+                onPressed: () {
+                  // Navigate to the ReserveRoom when the button is pressed
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ReserveEquipmentPage(selectedEquipment: name,),
+                    ),
+                  );
+                },
+                child: Text('Rent'),
+              ),
           ],
         ),
       ),

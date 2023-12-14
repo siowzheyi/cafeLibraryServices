@@ -174,7 +174,7 @@ class EquipmentListItem extends StatelessWidget {
                       style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold),
                     ),
                     Text(
-                      'by ${equipment.price}',
+                      '${equipment.price}',
                       style: TextStyle(fontSize: 12.0, fontStyle: FontStyle.italic),
                     ),
                     SizedBox(height: 8.0),

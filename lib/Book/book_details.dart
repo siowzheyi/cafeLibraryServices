@@ -1,3 +1,4 @@
+import 'package:cafe_library_services/Book/borrow_book.dart';
 import 'package:cafe_library_services/Report/report.dart';
 import 'package:flutter/material.dart';
 
@@ -67,6 +68,19 @@ class BookDetailsPage extends StatelessWidget {
               ),
             ),
             // Add more details as needed
+            if (isAvailable)
+              ElevatedButton(
+                onPressed: () {
+                  // Navigate to the ReserveRoom when the button is pressed
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ReserveBookPage(selectedBook: title,),
+                    ),
+                  );
+                },
+                child: Text('Borrow'),
+              ),
           ],
         ),
       ),

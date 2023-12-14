@@ -2,30 +2,30 @@ import 'package:flutter/material.dart';
 
 void main() {
   runApp(
-      MaterialApp(
-        title: 'Room Reservation',
-        theme: ThemeData(
-          primarySwatch: Colors.green,
-        ),
-        home: ReserveRoomPage(selectedRoom: '',),
-      )
+    MaterialApp(
+      title: 'Equipment Reservation System',
+      theme: ThemeData(
+        primarySwatch: Colors.green,
+      ),
+      home: ReserveEquipmentPage(selectedEquipment: ''),
+    ),
   );
 }
 
-class ReserveRoomPage extends StatefulWidget {
-  final String selectedRoom;
+class ReserveEquipmentPage extends StatefulWidget {
+  final String selectedEquipment;
 
-  ReserveRoomPage({required this.selectedRoom});
+  ReserveEquipmentPage({required this.selectedEquipment});
 
   @override
-  _ReserveRoomPageState createState() => _ReserveRoomPageState();
+  _ReserveEquipmentPageState createState() => _ReserveEquipmentPageState();
 }
 
-class _ReserveRoomPageState extends State<ReserveRoomPage> {
+class _ReserveEquipmentPageState extends State<ReserveEquipmentPage> {
   final TextEditingController startTimeDateController = TextEditingController();
   final TextEditingController endTimeDateController = TextEditingController();
 
-  String _selectedRoom = '-Select Room-';
+  String _selectedEquipment = '-Select Equipment-';
   String _startDate = '';
   String _startTime = '';
   String _endDate = '';
@@ -34,7 +34,7 @@ class _ReserveRoomPageState extends State<ReserveRoomPage> {
   @override
   void initState() {
     super.initState();
-    _selectedRoom = widget.selectedRoom;
+    _selectedEquipment = widget.selectedEquipment;
   }
 
   _selectStartTimeDate() async {
@@ -86,7 +86,7 @@ class _ReserveRoomPageState extends State<ReserveRoomPage> {
   }
 
   void _submitForm() {
-    if (_selectedRoom == '-Select Room-' ||
+    if (_selectedEquipment == '-Select Equipment-' ||
         _startDate.isEmpty ||
         _startTime.isEmpty ||
         _endDate.isEmpty ||
@@ -95,10 +95,12 @@ class _ReserveRoomPageState extends State<ReserveRoomPage> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('Error',
-            style: TextStyle(
-              color: Colors.red,
-            ),),
+            title: Text(
+              'Error',
+              style: TextStyle(
+                color: Colors.red,
+              ),
+            ),
             content: Text('Please fill in all the fields.'),
             actions: [
               TextButton(
@@ -133,15 +135,17 @@ class _ReserveRoomPageState extends State<ReserveRoomPage> {
 
       // check if the duration is exactly for 1 hour
       if (difference.inHours == 1 && difference.inMinutes == 60) {
-        print('Room: $_selectedRoom, From: $_startDate, $_startTime, To: $_endDate, $_endTime');
+        print('Equipment: $_selectedEquipment, From: $_startDate, $_startTime, To: $_endDate, $_endTime');
         showDialog(
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text('Success',
-              style: TextStyle(
-                color: Colors.green,
-              ),),
+              title: Text(
+                'Success',
+                style: TextStyle(
+                  color: Colors.green,
+                ),
+              ),
               content: Text('Your reservation has been submitted.'),
               actions: [
                 TextButton(
@@ -159,10 +163,12 @@ class _ReserveRoomPageState extends State<ReserveRoomPage> {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text('Error',
-              style: TextStyle(
-                color: Colors.red,
-              ),),
+              title: Text(
+                'Error',
+                style: TextStyle(
+                  color: Colors.red,
+                ),
+              ),
               content: Text('Please select exactly a 1-hour time slot.'),
               actions: [
                 TextButton(
@@ -183,7 +189,7 @@ class _ReserveRoomPageState extends State<ReserveRoomPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Library Room Reservation'),
+        title: Text('Equipment Reservation'),
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
@@ -197,11 +203,13 @@ class _ReserveRoomPageState extends State<ReserveRoomPage> {
           children: <Widget>[
             Padding(
               padding: const EdgeInsets.all(16.0),
-              child: Text('${_selectedRoom}',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 20.0,
-              ),),
+              child: Text(
+                '${_selectedEquipment}',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20.0,
+                ),
+              ),
             ),
             Padding(
               padding: const EdgeInsets.all(16.0),
@@ -224,11 +232,13 @@ class _ReserveRoomPageState extends State<ReserveRoomPage> {
               ),
             ),
             SizedBox(height: 20),
-            Text('Selection time for 1 hour only.',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 16.0,
-            ),),
+            Text(
+              'Selection time for 1 hour only.',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16.0,
+              ),
+            ),
             SizedBox(height: 20),
             Row(
               children: [
