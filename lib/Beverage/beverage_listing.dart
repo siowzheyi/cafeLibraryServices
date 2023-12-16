@@ -1,3 +1,4 @@
+import 'package:cafe_library_services/Beverage/add_to_cart.dart';
 import 'package:cafe_library_services/Beverage/beverage_details.dart';
 import 'package:cafe_library_services/Beverage/choose_table.dart';
 import 'package:cafe_library_services/Welcome/home.dart';
@@ -93,7 +94,7 @@ class _BeverageListScreenState extends State<BeverageListScreen> {
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Text(
-              'Our recommendations!',
+              'What would you like to order for today?',
               style: TextStyle(
                 fontSize: 32.0,
                 fontWeight: FontWeight.bold,
@@ -122,8 +123,13 @@ class _BeverageListScreenState extends State<BeverageListScreen> {
                 ElevatedButton(
                   child: Text('Start ordering!'),
                   onPressed: () {
-                    // choose table -> choose beverage
-
+                    // go to order beverage page
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => BeverageOrderPage(),
+                      ),
+                    );
                   },
                 ),
                 SizedBox(width: 16.0,),
@@ -143,11 +149,11 @@ class _BeverageListScreenState extends State<BeverageListScreen> {
                 ElevatedButton(
                   child: Text('Add to cart'),
                   onPressed: () {
-                    // go to choose table
+                    // go to order beverage page
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => TableSelectionPage(),
+                        builder: (context) => BeverageOrderPage(),
                       ),
                     );
                   },

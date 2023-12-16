@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'checkout.dart';
 import 'beverage_listing.dart';
+import 'order_summary.dart';
 
 void main() {
   runApp(
@@ -19,12 +19,14 @@ class Beverage {
   final double price;
   final String imageUrl;
   bool isAvailable;
+  int quantity;
 
   Beverage({
     required this.name,
     required this.price,
     required this.imageUrl,
     this.isAvailable = true,
+    this.quantity = 1, // Default quantity is 1
   });
 }
 
@@ -131,46 +133,4 @@ class _BeverageOrderPageState extends State<BeverageOrderPage> {
   }
 }
 
-class OrderSummaryPage extends StatelessWidget {
-  final List<Beverage> selectedBeverages;
 
-  OrderSummaryPage({required this.selectedBeverages});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Order Summary'),
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              itemCount: selectedBeverages.length,
-              itemBuilder: (context, index) {
-                Beverage beverage = selectedBeverages[index];
-                return ListTile(
-                  title: Text(beverage.name),
-                  subtitle: Text('RM${beverage.price.toStringAsFixed(2)}'),
-                  leading: Image.asset(
-                    beverage.imageUrl,
-                    height: 40.0,
-                    width: 40.0,
-                    fit: BoxFit.cover,
-                  ),
-                );
-              },
-            ),
-          ),
-          SizedBox(height: 16.0),
-          ElevatedButton(
-            child: Text('Proceed to checkout'),
-            onPressed: () {
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => CheckoutPage(selectedBeverages: selectedBeverages)));
-            },
-          )
-        ],
-      ),
-    );
-  }
-}

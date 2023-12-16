@@ -35,7 +35,7 @@ class _LoginPageState extends State<LoginPage> {
             Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => WelcomePage()));
           },
           icon: Icon(
-            Icons.arrow_back_ios,
+            Icons.arrow_back,
             size: 20,
             color: Colors.black,
           ),
