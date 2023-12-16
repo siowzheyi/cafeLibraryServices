@@ -191,42 +191,6 @@ class RoomListItem extends StatelessWidget {
   }
 }
 
-class RoomDetailsScreen extends StatelessWidget {
-  final Room room;
-
-  const RoomDetailsScreen({Key? key, required this.room}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Room Details'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Replace this with your room image
-            Image.asset(
-              room.imageUrl,
-              width: 200.0,
-              height: 300.0,
-              fit: BoxFit.cover,
-            ),
-            SizedBox(height: 16.0),
-            Text(
-              room.name,
-              style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 16.0),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
 class RoomSearchDelegate extends SearchDelegate<String> {
   final List<Room> rooms;
   final Function(Room) addToSearchHistory;

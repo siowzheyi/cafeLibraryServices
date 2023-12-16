@@ -6,7 +6,6 @@ class BeverageDetailsPage extends StatelessWidget {
   final String description;
   final String imageUrl;
   bool isAvailable;
-
   // Add more properties as needed for beverage details
 
   BeverageDetailsPage({
@@ -52,6 +51,14 @@ class BeverageDetailsPage extends StatelessWidget {
               ),
             ),
             // Add more details as needed
+            if (isAvailable)
+              ElevatedButton(
+                onPressed: () {
+                  // Navigate to the order when the button is pressed
+
+                },
+                child: Text('Order'),
+              ),
           ],
         ),
       ),

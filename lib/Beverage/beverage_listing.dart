@@ -1,4 +1,6 @@
 import 'package:cafe_library_services/Beverage/beverage_details.dart';
+import 'package:cafe_library_services/Beverage/choose_table.dart';
+import 'package:cafe_library_services/Welcome/home.dart';
 import 'package:flutter/material.dart';
 import 'package:cafe_library_services/Beverage/search_history.dart';
 
@@ -29,11 +31,11 @@ class BeverageListScreen extends StatefulWidget {
 class _BeverageListScreenState extends State<BeverageListScreen> {
   final List<Beverage> beverages = [
     Beverage('Hot Coffee Latte', 'RM8.50', 'One of the best beverage, Hot Coffee', 'assets/hot_coffee_latte.png', true),
-    Beverage('Mocha Iced Coffee', 'Rm9.20', 'One of the best beverage, Ice Coffee', 'assets/mocha_iced_coffee.jpg', true),
+    Beverage('Mocha Iced Coffee', 'RM9.20', 'One of the best beverage, Ice Coffee', 'assets/mocha_iced_coffee.jpg', true),
     Beverage('Java Chip Frappuccino', 'RM14.30', 'One of the best beverage, Frappe', 'assets/java_chip_frappucino.jpg', false),
     Beverage('Strawberry Smoothies', 'RM11.20', 'One of the best beverage, Smoothies', 'assets/strawberry_smoothie.jpg', true),
-    Beverage('Red Velvet Cake', '7.50', 'One of the best pastry, Cake', 'assets/red_velvet_cake.jpg', false),
-    Beverage('Croissant French Toast', '8.30', 'One of the best pastry, Bread', 'assets/croissant_french_toast.jpg', false),
+    Beverage('Red Velvet Cake', 'RM7.50', 'One of the best pastry, Cake', 'assets/red_velvet_cake.jpg', false),
+    Beverage('Croissant French Toast', 'RM8.30', 'One of the best pastry, Bread', 'assets/croissant_french_toast.jpg', false),
   ];
 
   List<Beverage> filteredBeverages = [];
@@ -50,8 +52,7 @@ class _BeverageListScreenState extends State<BeverageListScreen> {
     setState(() {
       filteredBeverages = beverages
           .where((beverage) =>
-      beverage.name.toLowerCase().contains(query.toLowerCase()) ||
-          beverage.description.toLowerCase().contains(query.toLowerCase()))
+      beverage.name.toLowerCase().contains(query.toLowerCase()))
           .toList();
       //update search history based on the user's query
     });
@@ -68,6 +69,12 @@ class _BeverageListScreenState extends State<BeverageListScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Beverage Listing'),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: (){
+            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage()));
+          },
+        ),
         actions: [
           IconButton(
             icon: Icon(Icons.search),
@@ -105,6 +112,46 @@ class _BeverageListScreenState extends State<BeverageListScreen> {
                     margin: EdgeInsets.symmetric(horizontal: 8.0),
                     child: BeverageListItem(beverage: beverage),
                   ),
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Row(
+              children: [
+                ElevatedButton(
+                  child: Text('Start ordering!'),
+                  onPressed: () {
+                    // choose table -> choose beverage
+
+                  },
+                ),
+                SizedBox(width: 16.0,),
+                ElevatedButton(
+                  child: Text('View table'),
+                  onPressed: () {
+                    // go to choose table
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => TableSelectionPage(),
+                      ),
+                    );
+                  },
+                ),
+                SizedBox(width: 16.0,),
+                ElevatedButton(
+                  child: Text('Add to cart'),
+                  onPressed: () {
+                    // go to choose table
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => TableSelectionPage(),
+                      ),
+                    );
+                  },
+                ),
               ],
             ),
           ),
@@ -189,80 +236,6 @@ class BeverageListItem extends StatelessWidget {
               ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-}
-
-class BeverageDetailsScreen extends StatelessWidget {
-  final Beverage beverage;
-
-  const BeverageDetailsScreen({Key? key, required this.beverage}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Beverage Details'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Image.asset(
-              beverage.imageUrl,
-              width: 200.0,
-              height: 300.0,
-              fit: BoxFit.cover,
-            ),
-            SizedBox(height: 16.0),
-            Text(
-              beverage.name,
-              style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
-            ),
-            Text(
-              'by ${beverage.price}',
-              style: TextStyle(fontSize: 16.0, fontStyle: FontStyle.italic),
-            ),
-            SizedBox(height: 16.0),
-            ElevatedButton(
-              onPressed: () {
-                // Handle beverage ordering logic
-                // For example, show a confirmation dialog
-                showDialog(
-                  context: context,
-                  builder: (context) => AlertDialog(
-                    title: Text('Order Confirmation'),
-                    content: Text('Do you want to order ${beverage.name}?'),
-                    actions: [
-                      TextButton(
-                        onPressed: () {
-                          // Perform beverage ordering logic here
-                          Navigator.pop(context); // Close the dialog
-                          // Optionally show a success message
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('Beverage ordered successfully!'),
-                            ),
-                          );
-                        },
-                        child: Text('Yes'),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.pop(context); // Close the dialog
-                        },
-                        child: Text('No'),
-                      ),
-                    ],
-                  ),
-                );
-              },
-              child: Text('Order Beverage'),
-            ),
-          ],
         ),
       ),
     );

@@ -84,7 +84,7 @@ class _ReserveBookPageState extends State<ReserveBookPage> {
   }
 
   void _submitForm() {
-    if (_selectedBook == '-Select Book-' || _quantity <= 0) {
+    if (_selectedBook == '-Select Book-' || _quantity <= 0 || _startDate.isEmpty || _endDate.isEmpty) {
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -95,7 +95,7 @@ class _ReserveBookPageState extends State<ReserveBookPage> {
                 color: Colors.red,
               ),
             ),
-            content: Text('Please fill in the quantity.'),
+            content: Text('Please fill in the start and end date.'),
             actions: [
               TextButton(
                 onPressed: () {
