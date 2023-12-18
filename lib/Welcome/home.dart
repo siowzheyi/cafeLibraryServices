@@ -1,4 +1,5 @@
 import 'package:cafe_library_services/Beverage/beverage_listing.dart';
+import 'package:cafe_library_services/Record/booking_record.dart';
 import 'package:cafe_library_services/Room/room_listing.dart';
 import 'package:flutter/material.dart';
 import 'package:cafe_library_services/Book/book_listing.dart';
@@ -77,7 +78,7 @@ class HomePage extends StatelessWidget {
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    //Navigator.push(context, MaterialPageRoute(builder: (context) => BookingRecord()));
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => BookingRecordPage()));
                   },
                   child: Text('Browse Booking Record'),
                 ),
@@ -89,7 +90,7 @@ class HomePage extends StatelessWidget {
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    //Navigator.push(context, MaterialPageRoute(builder: (context) => PenaltyRecord()));
+                    //Navigator.push(context, MaterialPageRoute(builder: (context) => PenaltyPage(itemsWithPenalties: itemsWithPenalties)));
                   },
                   child: Text('Browse Penalty Record'),
                 ),
