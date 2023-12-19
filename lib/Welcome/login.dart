@@ -1,7 +1,7 @@
+import 'package:cafe_library_services/Welcome/library_home.dart';
 import 'package:cafe_library_services/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:cafe_library_services/Welcome/home.dart';
 import 'package:cafe_library_services/Welcome/registration.dart';
 
 void main() {
@@ -103,7 +103,7 @@ class _LoginPageState extends State<LoginPage> {
                             backgroundColor: MaterialStateProperty.all<Color>(Colors.green),
                           ),
                           onPressed: (){
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage()));
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => LibrarySelectionPage()));
                           },
                           child: Text(
                             "Login",

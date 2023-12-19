@@ -1,10 +1,12 @@
 import 'package:cafe_library_services/Beverage/beverage_listing.dart';
 import 'package:cafe_library_services/Record/booking_record.dart';
+import 'package:cafe_library_services/Record/order_record.dart';
 import 'package:cafe_library_services/Room/room_listing.dart';
 import 'package:flutter/material.dart';
 import 'package:cafe_library_services/Book/book_listing.dart';
 import 'package:cafe_library_services/Equipment/equipment_listing.dart';
 import 'package:cafe_library_services/Welcome/login.dart';
+import '../Record/penalty_record.dart';
 
 void main() {
   runApp(CafeLibraryServicesApp());
@@ -84,13 +86,13 @@ class HomePage extends StatelessWidget {
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    //Navigator.push(context, MaterialPageRoute(builder: (context) => OrderRecord()));
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => OrderRecordPage()));
                   },
                   child: Text('Browse Order Beverage Record'),
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    //Navigator.push(context, MaterialPageRoute(builder: (context) => PenaltyPage(itemsWithPenalties: itemsWithPenalties)));
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => PenaltyPage()));
                   },
                   child: Text('Browse Penalty Record'),
                 ),

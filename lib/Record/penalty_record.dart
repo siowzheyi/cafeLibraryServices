@@ -4,7 +4,8 @@ import 'booking_record.dart';
 class PenaltyPage extends StatelessWidget {
   final List<BookingRecord> itemsWithPenalties;
 
-  PenaltyPage({required this.itemsWithPenalties});
+  // Make itemsWithPenalties optional by providing a default empty list
+  PenaltyPage({List<BookingRecord>? itemsWithPenalties}) : itemsWithPenalties = itemsWithPenalties ?? [];
 
   @override
   Widget build(BuildContext context) {
@@ -111,7 +112,7 @@ class PenaltyPage extends StatelessWidget {
                     // Show an error message if the payment is not sufficient
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text('Please enter exactly amount of penalty.'),
+                        content: Text('Please enter exactly the amount of the penalty.'),
                       ),
                     );
                   }

@@ -1,4 +1,5 @@
 import 'package:cafe_library_services/Record/penalty_record.dart';
+import 'package:cafe_library_services/Welcome/home.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -66,6 +67,14 @@ class _BookingPageState extends State<BookingPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Booking Records'),
+        leading: IconButton(
+          onPressed: () {
+            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage()));
+          },
+          icon: Icon(
+            Icons.arrow_back,
+          ),
+        ),
       ),
       body: Column(
         children: [
