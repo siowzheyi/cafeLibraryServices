@@ -12,6 +12,7 @@ use App\Http\Controllers\API\BeverageController;
 use App\Http\Controllers\API\BookController;
 use App\Http\Controllers\API\EquipmentController;
 use App\Http\Controllers\API\RoomController;
+use App\Http\Controllers\API\OrderController;
 
 /*
 |--------------------------------------------------------------------------
@@ -37,6 +38,7 @@ Route::middleware('auth:api')->group(function () {
     Route::get('equipment_listing', [EquipmentController::class, 'equipmentListing'])->name('equipment_listing');
     Route::get('room_listing', [RoomController::class, 'roomListing'])->name('room_listing');
 
+    Route::resource('order', OrderController::class, array("as" => "api"));
 
     Route::middleware(['staffauthentication'])->group(function () {
 
