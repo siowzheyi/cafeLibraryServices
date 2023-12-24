@@ -37,21 +37,27 @@ Route::middleware('auth:api')->group(function () {
     Route::get('equipment_listing', [EquipmentController::class, 'equipmentListing'])->name('equipment_listing');
     Route::get('room_listing', [RoomController::class, 'roomListing'])->name('room_listing');
 
-     Route::middleware(['staffauthentication'])->group(function () {
-        Route::prefix('staff')->group(function () {
-            
-            Route::resource('library', LibraryController::class, array("as" => "api"));
-            Route::resource('cafe', CafeController::class, array("as" => "api"))->except('index');
-            Route::resource('announcement', AnnouncementController::class, array("as" => "api"));
-            Route::resource('item', ItemController::class, array("as" => "api"));
-            Route::resource('table', TableController::class, array("as" => "api"));
-            Route::resource('beverage', BeverageController::class, array("as" => "api"));
-            Route::resource('book', BookController::class, array("as" => "api"));
-            Route::resource('equipment', EquipmentController::class, array("as" => "api"));
-            Route::resource('room', RoomController::class, array("as" => "api"));
+
+    Route::middleware(['staffauthentication'])->group(function () {
+
+            Route::prefix('staff')->group(function () {
+                
+                Route::resource('library', LibraryController::class, array("as" => "api"));
+                Route::resource('cafe', CafeController::class, array("as" => "api"));
+
+                Route::middleware(['ensurestaffhaslibrarycafeid'])->group(function () {
+
+                    Route::resource('announcement', AnnouncementController::class, array("as" => "api"));
+                    Route::resource('item', ItemController::class, array("as" => "api"));
+                    Route::resource('table', TableController::class, array("as" => "api"));
+                    Route::resource('beverage', BeverageController::class, array("as" => "api"));
+                    Route::resource('book', BookController::class, array("as" => "api"));
+                    Route::resource('equipment', EquipmentController::class, array("as" => "api"));
+                    Route::resource('room', RoomController::class, array("as" => "api"));
 
 
-        });
+                });
+            });
     });
 
 });

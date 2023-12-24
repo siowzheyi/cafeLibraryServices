@@ -12,6 +12,8 @@ use App\Models\Room;
 use App\Models\Library;
 use App\Models\ItemCategory;
 
+use App\Models\Media;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
@@ -28,11 +30,23 @@ class RoomService
         
         $order_arr = $request->input('order');
         $columnSortOrder = isset($order_arr) ? $order_arr : 'desc';
+        $library_id = $request->input('library_id');
 
         $user = auth()->user();
-        $library = Library::find($user->library_id);
+        if($user->hasRole('staff'))
+        {
+            $library = Library::find($user->library_id);
+        }
+        else
+        {
+            if(!isset($library_id) || $library_id == null)
+                return [];
+            else
+                $library = Library::find($library_id);
+        }
         $records = $library->room()->join('libraries','libraries.id','=','rooms.library_id');
         // dd($request);
+        $service = new Service();
 
         $totalRecords = $records->count();
 
@@ -66,6 +80,8 @@ class RoomService
                "remark" => $record->remark,
                "availability" => $record->availability,
                "status" => $record->status,
+               "picture"    => $record->picture ? $service->getImage('room',$record->id) : null,      
+
             //    "library_name" => $record->library_name,
             //    "library_address" => $record->library_address,
 
@@ -82,6 +98,7 @@ class RoomService
     public function show($room)
     {
         $library = $room->library()->first();
+        $service = new Service();
         $data = [
             "id" => $room->id,
                "room_no" => $room->room_no,
@@ -89,6 +106,7 @@ class RoomService
                "remark" => $room->remark,
                "availability" => $room->availability,
                "status" => $room->status,
+               "picture"    => $room->picture ? $service->getImage('room',$room->id) : null,      
 
         ];
 
@@ -97,6 +115,7 @@ class RoomService
 
     public function store($request)
     {
+        $raw_request = $request;
         $request = $request->validated();
 
         $category_id = ItemCategory::where('name','room')->first();
@@ -111,8 +130,21 @@ class RoomService
 
 
         $user = auth()->user();
-        $room->library_id = $user->library_id;
+        if($user->hasRole('staff'))
+        {
+            $room->library_id = $user->library_id;
+        }
+        else
+        {
+            $room->library_id = $request['library_id'];
+
+        }
         $room->save();
+
+        if ($raw_request->hasfile('picture')) {
+            $service = new Service();
+            $service->storeImage('room',$raw_request->file('picture'),$room->id);
+        }
 
 
         return $room;
@@ -120,6 +152,8 @@ class RoomService
 
     public function update($request, $room)
     {
+        $raw_request = $request;
+
         $request = $request->validated();
 
         if (isset($request['type'])) {
@@ -140,6 +174,51 @@ class RoomService
         $room->remark = null;
         $room->save();
 
+        //update image of rooms
+        if($raw_request->hasfile('picture')) {
+            $file = $raw_request->file('picture');
+            $media = Media::where('model_type', 'App\Models\Room')->where('name', Config::get('main.room_image_path'))->where('model_id', $room->id)->first();
+            if($media == null) {
+                $service = new Service();
+                $service->storeImage('room', $file, $room->id);
+                $room->save();
+                return;
+            }
+            $previous_file = Storage::disk('public')->get($media->name . $media->file_name);
+            // $previous_file = $service->getImage('main',$media->id);
+
+
+            // Create a temporary file in the server's tmp directory
+            $tmpFilePath = tempnam(sys_get_temp_dir(), 'uploaded_file');
+            $tmpFile = new UploadedFile($tmpFilePath, $media->file_name, null, null, true);
+
+            // Write the file contents to the temporary file
+            file_put_contents($tmpFilePath, $previous_file);
+
+            $previous_file_name = preg_replace('/^[0-9]+_/', '', $tmpFile->getClientOriginalName());
+
+            $uploaded_file_name = $file->getClientOriginalName();
+            $uploaded_file_size = $file->getSize();
+            // dd($tmpFile->getSize(),$previous_file_size, $file,$previous_file_size , $uploaded_file_size);
+            //compare
+            if($previous_file_name != $uploaded_file_name || $tmpFile->getSize() != $uploaded_file_size) {
+                // $service->storeImage('main',$file, $request['display_name']);
+                $mime_type = $file->getClientOriginalExtension();
+                $storage_path = $media->name;
+
+                $path = Storage::disk('public')->putFileAs($storage_path, $file, $uploaded_file_name, ['visibility' => 'public']);
+                // dd($storage_path, $file, $uploaded_file_name,$path);
+
+                $media->file_name = $uploaded_file_name;
+                $media->mime_type = $mime_type;
+                // $media->display_name = $request['display_name'];
+                $room->picture = $uploaded_file_name;
+                $media->save();
+                $room->save();
+            }
+
+        }
+
         return;
     }
 
@@ -153,7 +232,7 @@ class RoomService
                             ->where('status',1)
                             ->where('availability',1);
         $totalRecords = $records->count();
-
+        $service = new Service();
         if($searchValue != null)
         {
             $records = $records->where(function ($query) use ($searchValue) {
@@ -185,6 +264,8 @@ class RoomService
                     "id" => $room->id,
                     "room_no" => $room->room_no,
                    "remark" => $room->remark,
+                   "picture"    => $room->picture ? $service->getImage('room',$room->id) : null,      
+
                 ];
             }
 

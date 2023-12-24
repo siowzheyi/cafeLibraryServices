@@ -38,6 +38,12 @@ class RoomRequest extends FormRequest
                 'room_no' => ['required'],
                 'room_type' => ['required'],
                 'remark' => ['nullable'],
+                'picture' => ['required'],
+
+                "library_id"   =>  array('nullable','exists:libraries,id',
+                Rule::requiredIf(function () use ($request) {
+                    return $request->user()->hasAnyRole(['superadmin', 'admin']);
+                }))
             ];
            
         } elseif ($request_method === "PATCH") {
@@ -50,6 +56,7 @@ class RoomRequest extends FormRequest
                 'room_type' => ['required'],
                 'remark' => ['nullable'],
                 'status'   =>  array('required','in:1,0'),
+                'picture' => ['required'],
 
             ];
         }
