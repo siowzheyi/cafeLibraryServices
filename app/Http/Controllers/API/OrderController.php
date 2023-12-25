@@ -59,21 +59,21 @@ class OrderController extends BaseController
     }
 
     // This api is for admin user to view list of Order listing
-    public function OrderListing(Request $request)
+    public function orderListing(Request $request)
     {
-        // $input = $request->all();
+        $input = $request->all();
 
-        // App::setLocale($request->header('language'));
+        App::setLocale($request->header('language'));
 
-        // $validator = Validator::make($input, [
-        //     'cafe_id' => array('required','exists:cafes,id'),
-        // ]);
+        $validator = Validator::make($input, [
+            'cafe_id' => array('nullable','exists:cafes,id'),
+        ]);
 
-        // if ($validator->fails()) {
-        //     return $this->sendCustomValidationError($validator->errors());
-        // }
+        if ($validator->fails()) {
+            return $this->sendCustomValidationError($validator->errors());
+        }
 
-        $result = $this->services->OrderListing($request);
+        $result = $this->services->orderListing($input);
 
         return $this->sendResponse($result, "Data has been successfully retrieved. ");
     }

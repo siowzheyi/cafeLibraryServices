@@ -72,6 +72,16 @@ class User extends Authenticatable
         return $this->belongsTo('App\Models\Cafe','cafe_id','id');
     }
     
+    public function order()
+    {
+        return $this->hasMany('App\Models\Order','user_id');
+    }
+    
+    public function booking()
+    {
+        return $this->hasMany('App\Models\Booking','user_id');
+    }
+
     public function authorizeRoles($roles)
     {
         if ($this->hasAnyRole($roles)) {

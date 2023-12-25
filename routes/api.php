@@ -13,6 +13,7 @@ use App\Http\Controllers\API\BookController;
 use App\Http\Controllers\API\EquipmentController;
 use App\Http\Controllers\API\RoomController;
 use App\Http\Controllers\API\OrderController;
+use App\Http\Controllers\API\BookingController;
 
 /*
 |--------------------------------------------------------------------------
@@ -37,8 +38,11 @@ Route::middleware('auth:api')->group(function () {
     Route::get('book_listing', [BookController::class, 'bookListing'])->name('book_listing');
     Route::get('equipment_listing', [EquipmentController::class, 'equipmentListing'])->name('equipment_listing');
     Route::get('room_listing', [RoomController::class, 'roomListing'])->name('room_listing');
+    Route::get('order_listing', [OrderController::class, 'orderListing'])->name('order_listing');
+    Route::get('booking_listing', [BookingController::class, 'bookingListing'])->name('booking_listing');
 
     Route::resource('order', OrderController::class, array("as" => "api"));
+    Route::resource('booking', BookingController::class, array("as" => "api"));
 
     Route::middleware(['staffauthentication'])->group(function () {
 

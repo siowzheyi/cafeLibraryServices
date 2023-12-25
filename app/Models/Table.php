@@ -40,4 +40,8 @@ class Table extends Eloquent
     }
    
 
+    public function order()
+    {
+        return $this->hasMany('App\Models\Order','table_id');
+    }
 }

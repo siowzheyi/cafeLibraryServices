@@ -35,16 +35,10 @@ class Order extends Eloquent
 
     protected $table = 'orders';
 
- 
-    public function cafe()
-    {
-        return $this->belongsTo('App\Models\Cafe','cafe_id','id');
-    }
-
     
     public function beverage()
     {
-        return $this->hasMany('App\Models\Beverage','beverage_id');
+        return $this->belongsTo('App\Models\Beverage','beverage_id','id');    
     }
 
     public function user()
@@ -62,7 +56,9 @@ class Order extends Eloquent
         $today = date('Y-m-d', strtotime(now()));
 
         $cafe = Cafe::find($cafe_id);
-        $no = $cafe->order()->where('orders.created_at','>',$today)->get()->count(); 
+        $no = $cafe->through('beverage')->has('order')->get()->count();
+        // dd($no);
+        // ->where('orders.created_at','>',$today)->get() 
         
         $digit = 4;
         

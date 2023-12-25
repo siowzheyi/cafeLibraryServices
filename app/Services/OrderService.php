@@ -35,11 +35,19 @@ class OrderService
         // $library_id = $request->input('library_id');
         
         $user = auth()->user();
+        // dd($user);
         $cafe = Cafe::find($user->cafe_id);
         $service = new Service();
-        $records = $cafe->order()->join('tables','tables.id','=','orders.table_id')
-                        ->join('beverages','beverages.id','=','orders.beverage_id');
-
+        // $records = Order::join('beverages','beverages.id','=','orders.beverage_id')
+        //                 ->join('cafes','cafes.id','=','beverages.cafe_id')
+        //                 ->where('cafes.id',$cafe->id);
+        // $records = $cafe->through('beverage')->has('order')->join('tables','tables.id','=','orders.table_id');
+        // $orders = $cafe->beverage()->with('order')->get()->pluck('order')->collapse();
+        // $records = $cafe->through('beverage')->has('order');
+        $records = $cafe->order()->join('tables','tables.id','=','orders.table_id');
+        // dd($records->get(), $record2->get());
+        // dd($records->get(), $orders);
+        
         $totalRecords = $records->count();
 
         // $records = $records->where(function ($query) use ($searchValue) {
@@ -93,14 +101,21 @@ class OrderService
     {
         $service = new Service();
         $user = $order->user()->first();
+        $beverage = Beverage::find($order->beverage_id);
+
+        if($order->status == 0)
+            $status = "pending";
+        else
+            $status = "completed";
         $data = [
             "id" => $order->id,
                "order_no" => $order->order_no,
                "payment_status" => $order->payment_status,
-               "status" => $order->status,
+               "status" => $status,
                "quantity" => $order->quantity,
                "beverage_id" => $order->beverage_id,
                "beverage_name" => $order->beverage_name,
+               "beverage_picture"   =>  $beverage->picture ? $service->getImage('beverage',$beverage->id) : null,
                "unit_price" => $order->unit_price,
                "total_price" => $order->total_price,
                "table_no" => $order->table_no,
@@ -126,7 +141,6 @@ class OrderService
         $order->beverage_id = $request['beverage_id'];
         $beverage = Beverage::find($request['beverage_id']);
         $order->beverage_name = $beverage->name;
-        $order->order_no = Order::generateOrderNo($beverage->cafe_id);
         $user = auth()->user();
         $order->user_id = $user->id;
         $order->table_id = $request['table_id'];
@@ -136,10 +150,12 @@ class OrderService
         $order->quantity = $request['quantity'];
         $order->unit_price = $beverage->price;
         $order->total_price = $beverage->price * $request['quantity'];
-        $order->payment_status = "pending"; // haven't payment success
+        $order->payment_status = "success"; // haven't payment success
         $order->status = 0; // haven't settle order
         $order->save();
 
+        $order->order_no = $order->generateOrderNo($beverage->cafe_id);
+        $order->save();
 
         return $order;
     }
@@ -156,72 +172,20 @@ class OrderService
             $order->save();
             return;
         }
-        $announcement->title = $request['title'];
-        $announcement->content = $request['content'];
-        $announcement->status = $request['status'];
-
-        if(isset($request['expired_at']))
-        $announcement->expired_at = $request['expired_at'];
-        else
-        $announcement->expired_at = null;
-        $announcement->save();
-
-         //update image of announcements
-         if($raw_request->hasfile('picture')) {
-            $file = $raw_request->file('picture');
-            $media = Media::where('model_type', 'App\Models\Announcement')->where('name', Config::get('main.announcement_image_path'))->where('model_id', $announcement->id)->first();
-            if($media == null) {
-                $service = new Service();
-                $service->storeImage('announcement', $file, $announcement->id);
-                $announcement->save();
-                return;
-            }
-            $previous_file = Storage::disk('public')->get($media->name . $media->file_name);
-            // $previous_file = $service->getImage('main',$media->id);
-
-
-            // Create a temporary file in the server's tmp directory
-            $tmpFilePath = tempnam(sys_get_temp_dir(), 'uploaded_file');
-            $tmpFile = new UploadedFile($tmpFilePath, $media->file_name, null, null, true);
-
-            // Write the file contents to the temporary file
-            file_put_contents($tmpFilePath, $previous_file);
-
-            $previous_file_name = preg_replace('/^[0-9]+_/', '', $tmpFile->getClientOriginalName());
-
-            $uploaded_file_name = $file->getClientOriginalName();
-            $uploaded_file_size = $file->getSize();
-            // dd($tmpFile->getSize(),$previous_file_size, $file,$previous_file_size , $uploaded_file_size);
-            //compare
-            if($previous_file_name != $uploaded_file_name || $tmpFile->getSize() != $uploaded_file_size) {
-                // $service->storeImage('main',$file, $request['display_name']);
-                $mime_type = $file->getClientOriginalExtension();
-                $storage_path = $media->name;
-
-                $path = Storage::disk('public')->putFileAs($storage_path, $file, $uploaded_file_name, ['visibility' => 'public']);
-                // dd($storage_path, $file, $uploaded_file_name,$path);
-
-                $media->file_name = $uploaded_file_name;
-                $media->mime_type = $mime_type;
-                // $media->display_name = $request['display_name'];
-                $announcement->picture = $uploaded_file_name;
-                $media->save();
-                $announcement->save();
-            }
-
-        }
-
+        
         return;
     }
 
     public function orderListing($request)
     {
-        $search_arr = $request['search'] ?? null;
-        $searchValue = isset($search_arr) ? $search_arr : '';
+        $cafe_id = $request['cafe_id'] ?? null;
         
-        $user = $request->user();
+        $user = auth()->user();
         $records = $user->order()->where('payment_status','success')->join('beverages','beverages.id','=','orders.beverage_id')
                         ->join('cafes','cafes.id','=','beverages.cafe_id');
+    
+        if($cafe_id != null)
+        $records = $records->where('cafes.id',$cafe_id);
         // dd($request);
         $service = new Service();
 
@@ -238,9 +202,13 @@ class OrderService
 
         $data_arr = array();
         foreach ($records as $key => $record) {
+            if($record->status == 0)
+            $status = "pending";
+            else
+            $status = "completed";
             $data_arr[] = array(
                "id" => $record->id,
-               "status" => $record->status,
+               "status" => $status,
                 "order_no" => $record->order_no,
                 "table_no" => $record->table_no,
                 "cafe_name" => $record->cafe_name,

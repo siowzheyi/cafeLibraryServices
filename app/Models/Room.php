@@ -39,5 +39,9 @@ class Room extends Eloquent
         return $this->belongsTo('App\Models\Library','library_id','id');
     }
    
+    public function booking()
+    {
+        return $this->hasMany('App\Models\Booking','room_id');
+    }
 
 }

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 class Cafe extends Eloquent
 {
@@ -53,6 +54,18 @@ class Cafe extends Eloquent
     {
         return $this->hasMany('App\Models\Beverage','cafe_id');
     }
-    
+
+    public function order(): HasManyThrough
+    {
+        return $this->hasManyThrough(
+            Order::class,
+            Beverage::class,
+            'cafe_id', // Foreign key on the environments table...
+            'beverage_id', // Foreign key on the order table...
+            'id', // Local key on the projects table...
+            'id' // Local key on the environments table...
+        );
+    }
+      
 
 }
