@@ -294,7 +294,6 @@ class BookingService
                 $booking->end_at = $now;
             }
 
-            $booking->end_at = "2024-01-05";
             $booking->save();
 
             if($booking->end_at > $booking->end_booked_at)
