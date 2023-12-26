@@ -1,7 +1,6 @@
 import 'package:cafe_library_services/Book/book_details.dart';
 import 'package:cafe_library_services/Welcome/home.dart';
 import 'package:flutter/material.dart';
-import 'package:cafe_library_services/Book/search_history.dart';
 
 void main(){
   runApp(BookListing());
@@ -29,11 +28,18 @@ class BookListScreen extends StatefulWidget {
 
 class _BookListScreenState extends State<BookListScreen> {
   final List<Book> books = [
-    Book('The Great Gatsby', 'F. Scott Fitzgerald', 'assets/great_gatsby.jpg', true),
-    Book('To Kill a Mockingbird', 'Harper Lee', 'assets/to_kill_a_mockingbird.jpg', true),
-    Book('1984', 'George Orwell', 'assets/1984.jpg', false),
-    Book('Pride and Prejudice', 'Jane Austen', 'assets/pride_and_prejudice.jpg', true),
-    Book('The Catcher in the Rye', 'J.D. Salinger', 'assets/catcher_in_the_rye.jpg', false),
+    Book('The Great Gatsby', 'F. Scott Fitzgerald', 'assets/great_gatsby.jpg', true, 'Classic'),
+    Book('To Kill a Mockingbird', 'Harper Lee', 'assets/to_kill_a_mockingbird.jpg', true, 'Classic'),
+    Book('1984', 'George Orwell', 'assets/1984.jpg', false, 'Dystopian'),
+    Book('Pride and Prejudice', 'Jane Austen', 'assets/pride_and_prejudice.jpg', true, 'Classic'),
+    Book('The Catcher in the Rye', 'J.D. Salinger', 'assets/catcher_in_the_rye.jpg', false, 'Fiction'),
+    Book('Makanan Warisan Malaysia', 'Kalsom Taib', 'assets/makanan_warisan_malaysia.jpg', true, 'Cooking'),
+    Book('Palestin - Kemenangan Yang Dekat', 'Karya Bestari', 'assets/palestin.jpg', false, 'History'),
+    Book('Brain Teasers', 'Lonely Planet K', 'assets/brain_teasers.jpg', true, 'Puzzle'),
+    Book('My ABC', 'Brown Watson', 'assets/abc.jpg', false, 'Children'),
+    Book('The Detective Dog', 'Macmillan UK', 'assets/dog.jpg', true, 'Children'),
+    Book('Sparring Partners', 'John Grisham', 'assets/sparring_partners.jpg', false, 'Fiction'),
+    Book('Hades', 'Aishah Zainal', 'assets/hades.jpg', true, 'Thriller'),
   ];
 
   List<Book> filteredBooks = [];
@@ -44,6 +50,14 @@ class _BookListScreenState extends State<BookListScreen> {
     super.initState();
     filteredBooks = List.from(books);
     //searchHistory = List.from(searchHistory);
+  }
+
+  List<String> getGenres() {
+    Set<String> genres = Set();
+    for (var book in books) {
+      genres.add(book.genre);
+    }
+    return genres.toList();
   }
 
   void filterBooks(String query) {
@@ -60,6 +74,23 @@ class _BookListScreenState extends State<BookListScreen> {
   void addToSearchHistory(Book book) {
     setState(() {
       searchHistory.add(book);
+    });
+  }
+
+  void filterBooksByGenre(String genre) {
+    setState(() {
+      filteredBooks = books.where((book) => book.genre == genre).toList();
+      if (genre.isNotEmpty) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => GenreBooksScreen(
+              genre: genre,
+              books: filteredBooks,
+            ),
+          ),
+        );
+      }
     });
   }
 
@@ -86,38 +117,93 @@ class _BookListScreenState extends State<BookListScreen> {
           ),
         ],
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Text(
-              'Our recommendations!',
-              style: TextStyle(
-                fontSize: 32.0,
-                fontWeight: FontWeight.bold,
-                fontFamily: 'Roboto',
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(height: 16.0),
+            SingleChildScrollView(
+              scrollDirection: Axis.vertical,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    padding: EdgeInsets.symmetric(vertical: 16.0),
+                    child: GenreSelectionWidget(filterBooksByGenre),
+                  ),
+                  Container(
+                    padding: EdgeInsets.symmetric(vertical: 16.0),
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      itemCount: filteredBooks.length,
+                      itemBuilder: (context, index) {
+                        return BookListItem(book: filteredBooks[index]);
+                      },
+                    ),
+                  ),
+                ],
               ),
             ),
-          ),
-          SizedBox(height: 16.0),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: [
-                for (var book in books)
-                  Container(
-                    width: 150.0,
-                    margin: EdgeInsets.symmetric(horizontal: 8.0),
-                    child: BookListItem(book: book),
-                  ),
-              ],
+            SizedBox(height: 16.0,),
+          ],
+        ),
+      )
+    );
+  }
+}
+
+class GenreBooksScreen extends StatelessWidget {
+  final String genre;
+  final List<Book> books;
+
+  const GenreBooksScreen({Key? key, required this.genre, required this.books}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(genre),
+      ),
+      body: GridView.builder(
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 4,
+          crossAxisSpacing: 8.0,
+          mainAxisSpacing: 8.0,
+        ),
+        itemCount: books.length,
+        itemBuilder: (context, index) {
+          return BookListItem(book: books[index]);
+        },
+      ),
+    );
+  }
+}
+
+class GenreSelectionWidget extends StatelessWidget {
+  final Function(String) onGenreSelected;
+
+  const GenreSelectionWidget(this.onGenreSelected);
+
+  @override
+  Widget build(BuildContext context) {
+    // Use the context to obtain the current state instance
+    final _BookListScreenState? state = context.findAncestorStateOfType<_BookListScreenState>();
+
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        children: [
+          for (var genre in state!.getGenres())
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 8.0),
+              child: ElevatedButton(
+                onPressed: () {
+                  onGenreSelected(genre);
+                },
+                child: Text(genre),
+              ),
             ),
-          ),
-          SizedBox(height: 16.0,),
-          SearchHistory(
-            searchHistory: searchHistory,
-          ),
         ],
       ),
     );
@@ -129,8 +215,9 @@ class Book {
   final String author;
   final String imageUrl;
   bool isAvailable;
+  final String genre;
 
-  Book(this.title, this.author, this.imageUrl, this.isAvailable);
+  Book(this.title, this.author, this.imageUrl, this.isAvailable, this.genre);
 }
 
 class BookListItem extends StatelessWidget {
@@ -157,14 +244,14 @@ class BookListItem extends StatelessWidget {
       child: Card(
         margin: EdgeInsets.symmetric(horizontal: 8.0),
         child: Container(
-          width: 150.0, // Adjust the width based on your preference
+          width: 150.0,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Image.asset(
                 book.imageUrl,
                 width: double.infinity,
-                height: 150.0,
+                height: 200.0,
                 fit: BoxFit.cover,
               ),
               Padding(

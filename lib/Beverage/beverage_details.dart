@@ -1,3 +1,4 @@
+import 'package:cafe_library_services/Beverage/add_to_cart.dart';
 import 'package:flutter/material.dart';
 
 class BeverageDetailsPage extends StatelessWidget {
@@ -31,7 +32,7 @@ class BeverageDetailsPage extends StatelessWidget {
             Image.asset(
               imageUrl,
               width: double.infinity,
-              height: 500.0,
+              height: 900.0,
               fit: BoxFit.cover,
             ),
             SizedBox(height: 16.0),
@@ -55,7 +56,12 @@ class BeverageDetailsPage extends StatelessWidget {
               ElevatedButton(
                 onPressed: () {
                   // Navigate to the order when the button is pressed
-
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => BeverageOrderPage(),
+                    ),
+                  );
                 },
                 child: Text('Order'),
               ),

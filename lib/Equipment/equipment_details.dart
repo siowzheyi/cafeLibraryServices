@@ -49,7 +49,7 @@ class EquipmentDetailsPage extends StatelessWidget {
             Image.asset(
               imageUrl,
               width: double.infinity,
-              height: 500.0,
+              height: 900.0,
               fit: BoxFit.cover,
             ),
             SizedBox(height: 16.0),

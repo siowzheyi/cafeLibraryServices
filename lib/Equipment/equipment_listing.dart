@@ -1,7 +1,6 @@
 import 'package:cafe_library_services/Equipment/equipment_details.dart';
 import 'package:cafe_library_services/Welcome/home.dart';
 import 'package:flutter/material.dart';
-import 'package:cafe_library_services/Equipment/search_history.dart';
 
 void main(){
   runApp(EquipmentListing());
@@ -32,6 +31,11 @@ class _EquipmentListScreenState extends State<EquipmentListScreen> {
     Equipment('Controller', 'RM 5 per hour', 'assets/controller.jpg', true),
     Equipment('Projector', 'RM 2 per hour', 'assets/projector.jpg', false),
     Equipment('PS4', 'RM 5 per hour', 'assets/ps4.jpg', false),
+    Equipment('PS5', 'RM 6 per hour', 'assets/ps5.jpg', true),
+    Equipment('Chess', 'RM 2 per hour', 'assets/chess.jpg', true),
+    Equipment('Board games', 'RM 2 per hour', 'assets/board_games.jpg', false),
+    Equipment('Carom', 'RM 3 per hour', 'assets/carom.jpg', false),
+    Equipment('Saidina', 'RM 3 per hour', 'assets/saidina.jpg', true),
   ];
 
   List<Equipment> filteredEquipment = [];
@@ -86,35 +90,31 @@ class _EquipmentListScreenState extends State<EquipmentListScreen> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Text(
-              'Our recommendations!',
-              style: TextStyle(
-                fontSize: 32.0,
-                fontWeight: FontWeight.bold,
-                fontFamily: 'Roboto',
-              ),
-            ),
-          ),
           SizedBox(height: 16.0),
           SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
+            scrollDirection: Axis.vertical,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                for (var equipmentItem in equipment)
-                  Container(
-                    width: 150.0,
-                    margin: EdgeInsets.symmetric(horizontal: 8.0),
-                    child: EquipmentListItem(equipment: equipmentItem),
+                for (var i = 0; i < 5; i++)
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      for (var j = 0; j < 4; j++)
+                        if (i * 4 + j < equipment.length)
+                          Container(
+                            width: 150.0,
+                            margin: EdgeInsets.symmetric(horizontal: 8.0),
+                            child: EquipmentListItem(equipment: equipment[i * 4 + j]),
+                          )
+                        else
+                          Container(), // Placeholder for empty cells
+                    ],
                   ),
               ],
             ),
           ),
           SizedBox(height: 16.0,),
-          SearchHistory(
-            searchHistory: searchHistory,
-          ),
         ],
       ),
     );

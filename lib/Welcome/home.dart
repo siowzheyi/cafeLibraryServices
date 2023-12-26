@@ -41,64 +41,103 @@ class HomePage extends StatelessWidget {
       ),
       body: Stack(
         children: [
-          Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: [
-                      for (var announcement in announcements)
-                        AnnouncementCard(announcement: announcement),
-                    ],
+          SingleChildScrollView(
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Text('Welcome username',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 32.0
+                    ),),
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [
+                        for (var announcement in announcements)
+                          AnnouncementCard(announcement: announcement),
+                      ],
+                    ),
                   ),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => EquipmentListing()));
-                  },
-                  child: Text('Browse equipment'),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => RoomListing()));
-                  },
-                  child: Text('Browse Room'),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => BookListing()));
-                  },
-                  child: Text('Browse Book'),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => BeverageListing()));
-                  },
-                  child: Text('Browse Cafe Menu'),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => BookingRecordPage()));
-                  },
-                  child: Text('Browse Booking Record'),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => OrderRecordPage()));
-                  },
-                  child: Text('Browse Order Beverage Record'),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => PenaltyPage()));
-                  },
-                  child: Text('Browse Penalty Record'),
-                ),
-              ],
+                  Container(
+                    height: MediaQuery.of(context).size.height,
+                    child: GridView.count(
+                      crossAxisCount: 3,
+                      padding: EdgeInsets.all(16.0),
+                      mainAxisSpacing: 16.0,
+                      crossAxisSpacing: 16.0,
+                      children: [
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => EquipmentListing()));
+                          },
+                          child: Text('Browse equipment',
+                          style: TextStyle(
+                            fontSize: 32.0
+                          ),),
+                        ),
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => RoomListing()));
+                          },
+                          child: Text('Browse Room',
+                            style: TextStyle(
+                                fontSize: 32.0
+                            ),),
+                        ),
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => BookListing()));
+                          },
+                          child: Text('Browse Book',
+                            style: TextStyle(
+                                fontSize: 32.0
+                            ),),
+                        ),
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => BeverageListing()));
+                          },
+                          child: Text('Browse Cafe Menu',
+                            style: TextStyle(
+                                fontSize: 32.0
+                            ),),
+                        ),
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => BookingRecordPage()));
+                          },
+                          child: Text('Browse Booking Record',
+                            style: TextStyle(
+                                fontSize: 32.0
+                            ),),
+                        ),
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => OrderRecordPage()));
+                          },
+                          child: Text('Browse Order Beverage Record',
+                            style: TextStyle(
+                                fontSize: 32.0
+                            ),),
+                        ),
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => PenaltyPage()));
+                          },
+                          child: Text('Browse Penalty Record',
+                            style: TextStyle(
+                                fontSize: 32.0
+                            ),),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
+          )
         ],
       ),
       drawer: Drawer(

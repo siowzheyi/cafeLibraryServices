@@ -39,10 +39,16 @@ class _BeverageOrderPageState extends State<BeverageOrderPage> {
   List<Beverage> availableBeverages = [
     Beverage(name: 'Hot Coffee Latte', price: 8.50, imageUrl: 'assets/hot_coffee_latte.png'),
     Beverage(name: 'Mocha Iced Coffee', price: 9.20, imageUrl: 'assets/mocha_iced_coffee.jpg'),
-    Beverage(name: 'Java Chip Frappuccino', price: 14.30, imageUrl: 'assets/java_chip_frappucino.jpg'),
+    Beverage(name: 'Java Chip Frappuccino', price: 14.30, imageUrl: 'assets/java_chip_frappucino.jpg', isAvailable: false),
     Beverage(name: 'Strawberry Smoothies', price: 11.20, imageUrl: 'assets/strawberry_smoothie.jpg'),
     Beverage(name: 'Red Velvet Cake', price: 7.50, imageUrl: 'assets/red_velvet_cake.jpg', isAvailable: false),
-    Beverage(name: 'Croissant French Toast', price: 8.30, imageUrl: 'assets/croissant_french_toast.jpg'),
+    Beverage(name: 'Croissant French Toast', price: 8.30, imageUrl: 'assets/croissant_french_toast.jpg', isAvailable: false),
+    Beverage(name: 'Apple Pie', price: 6.50, imageUrl: 'assets/apple_pie.jpg'),
+    Beverage(name: 'Cendol', price: 5.00, imageUrl: 'assets/cendol.jpg'),
+    Beverage(name: 'Ais Kacang', price: 14.30, imageUrl: 'assets/ais_kacang.jpg', isAvailable: false),
+    Beverage(name: 'Kuih Lapis', price: 3.40, imageUrl: 'assets/kuih_lapis.jpg'),
+    Beverage(name: 'Pineapple Tart', price: 1.00, imageUrl: 'assets/pineapple_tart.jpg', isAvailable: false),
+    Beverage(name: 'Bubur Cha Cha', price: 6.50, imageUrl: 'assets/chacha.jpg', isAvailable: false),
   ];
 
   List<Beverage> selectedBeverages = [];

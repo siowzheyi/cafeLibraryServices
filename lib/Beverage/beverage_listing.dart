@@ -3,7 +3,6 @@ import 'package:cafe_library_services/Beverage/beverage_details.dart';
 import 'package:cafe_library_services/Beverage/choose_table.dart';
 import 'package:cafe_library_services/Welcome/home.dart';
 import 'package:flutter/material.dart';
-import 'package:cafe_library_services/Beverage/search_history.dart';
 
 void main() {
   runApp(BeverageListing());
@@ -37,6 +36,12 @@ class _BeverageListScreenState extends State<BeverageListScreen> {
     Beverage('Strawberry Smoothies', 'RM11.20', 'One of the best beverage, Smoothies', 'assets/strawberry_smoothie.jpg', true),
     Beverage('Red Velvet Cake', 'RM7.50', 'One of the best pastry, Cake', 'assets/red_velvet_cake.jpg', false),
     Beverage('Croissant French Toast', 'RM8.30', 'One of the best pastry, Bread', 'assets/croissant_french_toast.jpg', false),
+    Beverage('Apple Pie', 'RM6.50', 'One of the best pastry, Apple Pie', 'assets/apple_pie.jpg', true),
+    Beverage('Cendol', 'RM5.00', 'Malaysian favourite, cendol', 'assets/cendol.jpg', true),
+    Beverage('Ais Kacang', 'RM14.30', 'Get one in this heat!', 'assets/ais_kacang.jpg', false),
+    Beverage('Kuih Lapis', 'RM3.40', 'Colorful sweetness', 'assets/kuih_lapis.jpg', true),
+    Beverage('Pineapple Tart', 'RM1.00', 'Hari Raya mood, anyone?', 'assets/pineapple_tart.jpg', false),
+    Beverage('Bubur Cha Cha', 'RM6.50', 'Cha cha cha!', 'assets/chacha.jpg', false),
   ];
 
   List<Beverage> filteredBeverages = [];
@@ -104,18 +109,29 @@ class _BeverageListScreenState extends State<BeverageListScreen> {
           ),
           SizedBox(height: 16.0),
           SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
+            scrollDirection: Axis.vertical,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                for (var beverage in beverages)
-                  Container(
-                    width: 150.0,
-                    margin: EdgeInsets.symmetric(horizontal: 8.0),
-                    child: BeverageListItem(beverage: beverage),
+                for (var i = 0; i < 5; i++)
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      for (var j = 0; j < 4; j++)
+                        if (i * 4 + j < beverages.length)
+                          Container(
+                            width: 150.0,
+                            margin: EdgeInsets.symmetric(horizontal: 8.0),
+                            child: BeverageListItem(beverage: beverages[i * 4 + j]),
+                          )
+                        else
+                          Container(), // Placeholder for empty cells
+                    ],
                   ),
               ],
             ),
           ),
+          SizedBox(height: 16.0,),
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Row(
@@ -162,9 +178,6 @@ class _BeverageListScreenState extends State<BeverageListScreen> {
             ),
           ),
           SizedBox(height: 16.0,),
-          SearchHistory(
-            searchHistory: searchHistory,
-          ),
         ],
       ),
     );

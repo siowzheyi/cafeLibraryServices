@@ -1,7 +1,6 @@
 import 'package:cafe_library_services/Room/room_details.dart';
 import 'package:cafe_library_services/Welcome/home.dart';
 import 'package:flutter/material.dart';
-import 'package:cafe_library_services/Room/search_history.dart';
 
 void main() {
   runApp(RoomListing());
@@ -29,9 +28,13 @@ class RoomListScreen extends StatefulWidget {
 
 class _RoomListScreenState extends State<RoomListScreen> {
   final List<Room> rooms = [
-    Room('Discussion Room', 'assets/discussion_room.jpg', true),
+    Room('Discussion Room 1', 'assets/discussion_room.jpg', false),
+    Room('Discussion Room 2', 'assets/discussion_room.jpg', true),
     Room('Meeting Room', 'assets/meeting_room.jpg', true),
-    Room('Carrel Room', 'assets/carrel_room.jpg', false),
+    Room('Carrel Room 1', 'assets/carrel_room.jpg', true),
+    Room('Carrel Room 2', 'assets/carrel_room.jpg', true),
+    Room('Carrel Room 3', 'assets/carrel_room.jpg', true),
+    Room('Carrel Room 4', 'assets/carrel_room.jpg', false),
     Room('Presentation Room', 'assets/presentation_room.jpg', false),
   ];
 
@@ -86,35 +89,31 @@ class _RoomListScreenState extends State<RoomListScreen> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Text(
-              'Our recommendations!',
-              style: TextStyle(
-                fontSize: 32.0,
-                fontWeight: FontWeight.bold,
-                fontFamily: 'Roboto',
-              ),
-            ),
-          ),
           SizedBox(height: 16.0),
           SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
+            scrollDirection: Axis.vertical,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                for (var room in rooms)
-                  Container(
-                    width: 150.0,
-                    margin: EdgeInsets.symmetric(horizontal: 8.0),
-                    child: RoomListItem(room: room),
+                for (var i = 0; i < 5; i++)
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      for (var j = 0; j < 4; j++)
+                        if (i * 4 + j < rooms.length)
+                          Container(
+                            width: 150.0,
+                            margin: EdgeInsets.symmetric(horizontal: 8.0),
+                            child: RoomListItem(room: rooms[i * 4 + j]),
+                          )
+                        else
+                          Container(), // Placeholder for empty cells
+                    ],
                   ),
               ],
             ),
           ),
-          SizedBox(height: 16.0),
-          SearchHistory(
-            searchHistory: searchHistory,
-          ),
+          SizedBox(height: 16.0,),
         ],
       ),
     );
