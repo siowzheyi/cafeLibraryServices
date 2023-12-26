@@ -81,6 +81,11 @@ class User extends Authenticatable
     {
         return $this->hasMany('App\Models\Booking','user_id');
     }
+     
+    public function report()
+    {
+        return $this->hasMany('App\Models\Report','user_id');
+    }
 
     public function authorizeRoles($roles)
     {

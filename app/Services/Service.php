@@ -12,6 +12,8 @@ use App\Models\Announcement;
 use App\Models\Equipment;
 use App\Models\Room;
 use App\Models\Book;
+use App\Models\Report;
+
 use Log;
 use App\Models\Beverage;
 
@@ -50,6 +52,11 @@ class Service
             $model_type = 'App\Models\Room';
             $collection_name = 'room';
            
+        }  elseif($type == 'report') {
+            $storage_path = Config::get('main.report_image_path');
+            $model_type = 'App\Models\Report';
+            $collection_name = 'report';
+           
         }  elseif($type == 'logo') {
             // store logo of system server
             $storage_path = "images/logo/";
@@ -83,7 +90,11 @@ class Service
             $equipment = Equipment::find($id);
             $equipment->picture = $fileName;
             $equipment->save();
-        } elseif($type == 'main' || $type == 'logo') {
+        }  elseif($type == 'report') {
+            $report = Report::find($id);
+            $report->picture = $fileName;
+            $report->save();
+        }elseif($type == 'main' || $type == 'logo') {
 
             $media = new Media();
             $media->model_type = $model_type;
@@ -146,6 +157,15 @@ class Service
             $model = Room::find($id);
             
             $media = Media::where('model_type', 'App\Models\Room')->where('name', Config::get('main.room_image_path'))->where('model_id', $id)->first();
+            
+            if($media == null) {
+                return null;
+            }
+            return Storage::disk('public')->url($media->name . $model->picture);
+        } elseif($type == 'report') {
+            $model = Report::find($id);
+            
+            $media = Media::where('model_type', 'App\Models\Report')->where('name', Config::get('main.report_image_path'))->where('model_id', $id)->first();
             
             if($media == null) {
                 return null;
