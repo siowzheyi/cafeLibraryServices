@@ -39,6 +39,9 @@ class BookController extends BaseController
         $result = $this->services->show($book);
 
         return $this->sendResponse($result, "Data successfully retrieved. "); 
+        // dd($result);
+        
+        // return view("",[])
     }
 
     // This api is for admin user to view list of Book
