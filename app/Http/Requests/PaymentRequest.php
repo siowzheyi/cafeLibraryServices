@@ -4,11 +4,13 @@ namespace App\Http\Requests;
 
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Http\FormRequest;
+use App\Models\Payment;
 use App\Models\Booking;
+use App\Models\Order;
 
 use Illuminate\Validation\Rule;
 
-class BookingRequest extends FormRequest
+class PaymentRequest extends FormRequest
 {
     /**
      * Determine if the user authorized to make this request.
@@ -35,27 +37,23 @@ class BookingRequest extends FormRequest
         if ($request_method == "POST") {
     
             return [
-                'type'  =>  ['required','in:room,equipment,book',function ($attribute, $value, $fail){
-                    $user = auth()->user();
-                    // check if this user has any penalty
-                    $penalty_records = $user->booking()->where('penalty_status',1)->where('penalty_paid_status',0)->first();
-                    if($penalty_records != null)
-                        $fail("Please pay penalty before borrow or rent process.");
-                }],
-                'room_id' => ['required_if:type,room','exists:rooms,id'],
-                'equipment_id' => ['required_if:type,equipment','exists:equipments,id'],
-                'book_id' => ['required_if:type,book','exists:books,id'],
-
-                'quantity' => ['required'],
-                'start_booked_at' => ['required'],
-                'end_booked_at' => ['required'],
-
+                'type' => ['required','in:penalty,order'],
+                'booking_id' => ['nullable','required_if:type,penalty','exists:bookings,id',function ($attribute, $value, $fail){
+                    $booking = Booking::find($value);
+                    if($booking->penalty_status != 1 || $booking->penalty_paid_status != 0)
+                        $fail("This booking has no penalty");
+                }], 
+                'order_id' => ['nullable','required_if:type,order','exists:orders,id',function ($attribute, $value, $fail){
+                    $order = Order::find($value);
+                    if($order->payment_status == "success")
+                        $fail("This order has been paid");
+                }], 
+                
             ];
            
         } elseif ($request_method === "PATCH") {
             return [
-                'type' => array('required','in:status,return'),
-                'action'    =>  array('required_if:type,status','in:approved,rejected')
+                // 'type' => array('required','in:status'),
             ];
         } elseif ($request_method == "PUT") {
             return [

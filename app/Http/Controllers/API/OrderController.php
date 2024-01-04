@@ -78,5 +78,21 @@ class OrderController extends BaseController
         return $this->sendResponse($result, "Data has been successfully retrieved. ");
     }
 
+    // This api is for admin user to view transaction report
+    public function detailSalesReport(Request $request)
+    {
+        $result = $this->services->detailSalesReport($request);
+
+        return $this->sendResponse($result, "Data successfully retrieved. "); 
+    }
+
+    // This api is for admin user to view daily transaction report
+    public function dailySalesReport(Request $request)
+    {
+        $result = $this->services->dailySalesReport($request);
+
+        return $this->sendResponse($result, "Data successfully retrieved. "); 
+    }
+
 
 }

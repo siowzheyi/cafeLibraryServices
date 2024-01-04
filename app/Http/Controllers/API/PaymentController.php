@@ -4,44 +4,45 @@ namespace App\Http\Controllers\API;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller as Controller;
 use App\Http\Controllers\API\BaseController as BaseController;
-use App\Services\BookingService;
+use App\Services\PaymentService;
 
-use App\Http\Requests\BookingRequest;
+use App\Http\Requests\PaymentRequest;
 use App\Models\User;
-use App\Models\Booking;
+use App\Models\Payment;
 
 use Auth;
 use App;
 use Validator;
 
-class BookingController extends BaseController
+class PaymentController extends BaseController
 {
-    public function __construct(BookingService $booking_service)
+    public function __construct(PaymentService $payment_service)
     {
-        $this->services = $booking_service;
+        $this->services = $payment_service;
     }
 
-    // This api is for admin user to create Booking
-    public function store(BookingRequest $request)
+    // This api is for user to create Payment
+    public function store(PaymentRequest $request)
     {
         $result = $this->services->store($request);
         
         if($result != null)
-            return $this->sendResponse("", "Booking has been successfully created. ");
+            return $this->sendResponse("", "Payment has been successfully created. ");
         else
             return $this->sendCustomValidationError(['Error'=>'Failed to create data. ']);
 
     }
 
-    // This api is for admin user to view certain Booking
-    public function show(Booking $booking)
+
+    // This api is for user to view certain Payment
+    public function show(Payment $payment)
     {
-        $result = $this->services->show($booking);
+        $result = $this->services->show($payment);
 
         return $this->sendResponse($result, "Data successfully retrieved. "); 
     }
 
-    // This api is for admin user to view list of Booking
+    // This api is for user to view list of Payment
     public function index(Request $request)
     {
         $result = $this->services->index($request);
@@ -49,16 +50,16 @@ class BookingController extends BaseController
         return $this->sendResponse($result, "Data successfully retrieved. "); 
     }
 
-    // This api is for admin user to update certain Booking
-    public function update(BookingRequest $request, Booking $booking)
+    // This api is for user to update certain Payment -> callback for payment gateway
+    public function update(PaymentRequest $request, Payment $payment)
     {
-        $result = $this->services->update($request, $booking);
+        $result = $this->services->update($request, $payment);
 
-        return $this->sendResponse($result['data'], $result['message']);     
+        return $this->sendResponse("", "Payment has been successfully updated. ");      
     }
 
-    // This api is for admin user to view list of Booking listing
-    public function bookingListing(Request $request)
+    // This api is for user to view list of Payment listing
+    public function paymentListing(Request $request)
     {
         $input = $request->all();
 
@@ -72,7 +73,7 @@ class BookingController extends BaseController
             return $this->sendCustomValidationError($validator->errors());
         }
 
-        $result = $this->services->bookingListing($input);
+        $result = $this->services->paymentListing($input);
 
         return $this->sendResponse($result, "Data has been successfully retrieved. ");
     }

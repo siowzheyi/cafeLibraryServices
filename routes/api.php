@@ -15,6 +15,7 @@ use App\Http\Controllers\API\RoomController;
 use App\Http\Controllers\API\OrderController;
 use App\Http\Controllers\API\BookingController;
 use App\Http\Controllers\API\ReportController;
+use App\Http\Controllers\API\PaymentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -42,10 +43,13 @@ Route::middleware('auth:api')->group(function () {
     Route::get('order_listing', [OrderController::class, 'orderListing'])->name('order_listing');
     Route::get('booking_listing', [BookingController::class, 'bookingListing'])->name('booking_listing');
     Route::get('report_listing', [ReportController::class, 'reportListing'])->name('report_listing');
+    Route::get('penalty_report', [UserController::class, 'penaltyReport'])->name('penalty_report');
+    Route::get('penalty_report_item/{booking_id}', [UserController::class, 'penaltyReportItem'])->name('penalty_report_item');
 
     Route::resource('order', OrderController::class, array("as" => "api"));
     Route::resource('booking', BookingController::class, array("as" => "api"));
     Route::resource('report', ReportController::class, array("as" => "api"));
+    Route::resource('payment', PaymentController::class, array("as" => "api"));
 
     Route::middleware(['staffauthentication'])->group(function () {
 
@@ -63,6 +67,12 @@ Route::middleware('auth:api')->group(function () {
                     Route::resource('book', BookController::class, array("as" => "api"));
                     Route::resource('equipment', EquipmentController::class, array("as" => "api"));
                     Route::resource('room', RoomController::class, array("as" => "api"));
+
+                    Route::prefix('report')->group(function () {
+                        Route::get('detail_sales_report', [OrderController::class, 'detailSalesReport'])->name('detail_sales_report');
+                        Route::get('daily_sales_report', [OrderController::class, 'dailySalesReport'])->name('daily_sales_report');
+
+                    });
 
 
                 });

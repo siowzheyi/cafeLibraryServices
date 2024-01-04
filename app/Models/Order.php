@@ -46,6 +46,12 @@ class Order extends Eloquent
         return $this->belongsTo('App\Models\User','user_id','id');
     }
 
+    public function payment()
+    {
+        return $this->hasOne('App\Models\Payment','order_id');
+    }  
+
+
     public function table()
     {
         return $this->belongsTo('App\Models\Table','table_id','id');

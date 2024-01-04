@@ -41,35 +41,26 @@ class BookingService
         // dd($user);
         $library = Library::find($user->library_id);
         $service = new Service();
-        // $records = Order::join('beverages','beverages.id','=','orders.beverage_id')
-        //                 ->join('cafes','cafes.id','=','beverages.cafe_id')
-        //                 ->where('cafes.id',$cafe->id);
-        // $records = $library->through('beverage')->has('order')->join('tables','tables.id','=','orders.table_id');
-        // $orders = $cafe->beverage()->with('order')->get()->pluck('order')->collapse();
         if(isset($type) && $type != null)
         {
             if($type == "room")
             {
                 $records = $library->roomBooking()->join('users','users.id','=','bookings.user_id')
-                ->join('rooms','rooms.id','=','bookings.room_id')
                 ->where('bookings.status',0);
             }
             elseif($type == "equipment")
             {
                 $records = $library->equipmentBooking()->join('users','users.id','=','bookings.user_id')
-                ->join('equipments','equipments.id','=','bookings.equipment_id')
                 ->where('bookings.status',0);                
             }
             elseif($type == "book")
             {
                 $records = $library->bookBooking()->join('users','users.id','=','bookings.user_id')
-                ->join('books','books.id','=','bookings.book_id')
                 ->where('bookings.status',0);
             }
         }
         else
         {
-            // dd($user, $library);
             $records = Booking::join('users','users.id','=','bookings.user_id')
                         ->leftjoin('books', function ($join) use ($library) {
                             $join->on('books.id', '=', 'bookings.book_id')
@@ -83,7 +74,6 @@ class BookingService
                             $join->on('rooms.id', '=', 'bookings.room_id')
                             ->where('rooms.library_id', $library->id);
                         });
-                        // ->where('bookings.is_handled','pending');
 
         }
         $records = $records->where(function ($query) {
@@ -97,16 +87,8 @@ class BookingService
         });
         
         
-
-        // dd($records->get(), $orders);
-        
         $totalRecords = $records->count();
 
-        // $records = $records->where(function ($query) use ($searchValue) {
-        //     $query->orWhere('orders.title', 'like', '%' . $searchValue . '%')
-        //     ->orWhere('orders.content', 'like', '%' . $searchValue . '%');
-
-        // });
 
         if ($request->input('startDate') != null && $request->input('endDate') != null) {
             $startDate = date('Y-m-d H:i:s', strtotime($request->input('startDate')));
@@ -116,20 +98,64 @@ class BookingService
         }
         $totalRecordswithFilter = $records->count();
 
-        $records = $records->select(
-            'bookings.*',
-            'books.name as book_name',
-            'equipments.name as equipment_name',
-            'rooms.room_no',
-            'books.availability as book_availability',
-            'books.remainder_count',
-            'rooms.availability as room_availability',
-            'equipments.availability as equipment_availability',
-            'users.name as user_name'
+        if(isset($type) && $type != null)
+        {
+            if($type == "room")
+            {
+                $records = $records->select(
+                    'bookings.*',
+                    'rooms.room_no',
+                    'rooms.availability as room_availability',
+                    'users.name as user_name'
+        
+                )
+                    ->orderBy('bookings.created_at', $columnSortOrder)
+                    ->get();
+            }
+            if($type == "book")
+            {
+                $records = $records->select(
+                    'bookings.*',
+                    'books.name as book_name',
+                    'books.availability as book_availability',
+                    'books.remainder_count',
+                    'users.name as user_name'
+        
+                )
+                    ->orderBy('bookings.created_at', $columnSortOrder)
+                    ->get();
+            }
+            if($type == "equipment")
+            {
+                $records = $records->select(
+                    'bookings.*',
+                    'equipments.name as equipment_name',
+                    'equipments.availability as equipment_availability',
+                    'users.name as user_name'
+        
+                )
+                    ->orderBy('bookings.created_at', $columnSortOrder)
+                    ->get();
+            }
+        }
+        else
+        {
+            $records = $records->select(
+                'bookings.*',
+                'books.name as book_name',
+                'equipments.name as equipment_name',
+                'rooms.room_no',
+                'books.availability as book_availability',
+                'books.remainder_count',
+                'rooms.availability as room_availability',
+                'equipments.availability as equipment_availability',
+                'users.name as user_name'
+    
+            )
+                ->orderBy('bookings.created_at', $columnSortOrder)
+                ->get();
 
-        )
-            ->orderBy('bookings.created_at', $columnSortOrder)
-            ->get();
+        }
 
         $data_arr = array();
         foreach ($records as $key => $record) {
@@ -212,6 +238,8 @@ class BookingService
                "end_at" => $booking->end_at,
                "penalty_status" =>  $booking->penalty_status,
                "penalty_amount" =>  $booking->penalty_amount,
+               "penalty_paid_status" =>  $booking->penalty_paid_status,
+
                "is_handled" => $booking->is_handled,
                "created_at" => $booking->created_at != null ? date('Y-m-d H:i:s',strtotime($booking->created_at)) : null,
 
@@ -228,9 +256,15 @@ class BookingService
 
         $booking = new Booking();
         if(isset($request['book_id']))
-        $booking->book_id = $request['book_id'];
+        {
+            $booking->book_id = $request['book_id'];
+            $book = Book::find($request['book_id']);
+            $booking->unit_price = $book->price;
+        }
         if(isset($request['equipment_id']))
-        $booking->equipment_id = $request['equipment_id'];
+        {
+            $booking->equipment_id = $request['equipment_id'];
+        }
         if(isset($request['room_id']))
         $booking->room_id = $request['room_id'];
 
@@ -240,22 +274,9 @@ class BookingService
         $booking->start_booked_at = $request['start_booked_at'];
         $booking->end_booked_at = $request['end_booked_at'];
 
-        if($request['type'] == 'book')
-        {
-            $now = date('Y-m-d H:i:s',strtotime(now()));
-            if($booking->start_booked_at <= $now)
-                $booking->start_at = $now;
-            else
-                $booking->start_at = $booking->start_booked_at;
-
-            $booking->is_handled = "approved";
-            $booking->quantity = $request['quantity'];
-        }
-        else
-        {
-            $booking->quantity = 1;
-            $booking->is_handled = "pending";
-        }
+        $booking->quantity = $request['quantity'];
+        $booking->is_handled = "pending";
+        // $booking->unit_price = 
 
         $booking->save();
 

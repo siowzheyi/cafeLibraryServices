@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Database\Eloquent\SoftDeletes;
-
+use Illuminate\Database\Eloquent\Relations\HasManyThrough as HasManyThrough;
 class Library extends Eloquent
 {
     use SoftDeletes;
@@ -85,7 +85,7 @@ class Library extends Eloquent
             'id' // Local key on the environments table...
         );
     }
-    public function roomBooking(): HasManyThrough
+    public function roomBooking(): HasManyThrough //\Illuminate\Database\Eloquent\Relations\HasManyThrough//
     {
         return $this->hasManyThrough(
             Booking::class,
@@ -96,6 +96,7 @@ class Library extends Eloquent
             'id' // Local key on the environments table...
         );
     }
+
     public function equipmentBooking(): HasManyThrough
     {
         return $this->hasManyThrough(

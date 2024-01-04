@@ -114,9 +114,35 @@ class UserController extends BaseController
     {
         $result = $this->services->update($request, $user);
 
-        return $this->sendResponse("", "User has been successfully updated. ");
-       
-}
+        return $this->sendResponse("", "User has been successfully updated. ");   
+    }
+
+    public function penaltyReport(Request $request)
+    {
+        $input = $request->all();
+
+        App::setLocale($request->header('language'));
+
+        $validator = Validator::make($input, [
+            'library_id' => array('nullable','exists:libraries,id'),
+        ]);
+
+        if ($validator->fails()) {
+            return $this->sendCustomValidationError($validator->errors());
+        }
+
+        $result = $this->services->penaltyReport($input);
+
+        return $this->sendResponse($result, "Successfully retrieve data. ");   
+    }
+
+    
+    public function penaltyReportItem(Request $request, $booking_id)
+    {
+        $result = $this->services->penaltyReportItem($request, $booking_id);
+
+        return $this->sendResponse($result, "Successfully retrieve data. ");   
+    }
 
 
 }
