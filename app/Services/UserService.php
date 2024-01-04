@@ -260,6 +260,8 @@ class UserService
             'users.name as user_name'
         )
             ->orderBy('bookings.penalty_paid_status', 'asc')
+            ->orderBy('bookings.created_at', 'desc')
+
             ->get();
 
         $data_arr = array();
@@ -346,6 +348,7 @@ class UserService
             $join->on('rooms.id', '=', 'bookings.room_id');
         })
         ->where('bookings.penalty_status',1)
+        ->leftjoin('payments','payments.booking_id','=','bookings.id')
         ->where('bookings.id',$booking_id);        
 
         $service = new Service();
@@ -357,7 +360,15 @@ class UserService
         $records = $records->select(
             'bookings.*',
             'users.name as user_name',
-            'users.phone_no as user_phone_no'
+            'users.phone_no as user_phone_no',
+            'payments.subtotal',
+            'payments.unit_price',
+            'payments.quantity',
+            'payments.total_price',
+            'payments.sst_amount',
+            'payments.service_charge_amount',
+            'payments.item_name'
+            
         )
             ->orderBy('bookings.penalty_paid_status', 'asc')
             ->get();

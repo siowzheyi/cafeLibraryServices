@@ -227,20 +227,20 @@ class RoomService
         
         $search_arr = $request['search'] ?? null;
         $searchValue = isset($search_arr) ? $search_arr : '';
-
+        // dd($searchValue);
         $records = Room::where('library_id',$request['library_id'])
                             ->where('status',1)
                             ->where('availability',1);
         $totalRecords = $records->count();
         $service = new Service();
+
         if($searchValue != null)
         {
             $records = $records->where(function ($query) use ($searchValue) {
-                $query->orWhere('rooms.room_no', 'like', '%' . $searchValue . '%');
+                $query->orWhere('room_no', 'like', '%' . $searchValue . '%');
 
             });
         }
-
         $totalRecordswithFilter = $records->count();
 
         $records = $records->select(
@@ -254,9 +254,19 @@ class RoomService
 
         $data_arr = array();
         foreach ($records as $key => $record) {
-            
-            $room_related = Room::where('type',$record->type)
-                            ->get();
+
+            $room_related = Room::where('type',$record->type)->where('status',1)
+            ->where('availability',1);
+                            // ->get();
+            if($searchValue != null)
+            {
+                $room_related = $room_related->where(function ($query) use ($searchValue) {
+                    $query->orWhere('rooms.room_no', 'like', '%' . $searchValue . '%');
+    
+                });
+            }
+
+            $room_related = $room_related->get();
             $room_arr = array();
 
             foreach ($room_related as $key => $room) {

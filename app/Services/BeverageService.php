@@ -53,8 +53,15 @@ class BeverageService
         
        foreach ($records as $key => $record) {
             
-            $drink_related = Beverage::where('category',$record->category)
-                            ->get();
+            $drink_related = Beverage::where('category',$record->category)->where('status',1);
+
+            if($searchValue != null)
+            {
+                $drink_related = $drink_related->where(function ($query) use ($searchValue) {
+                    $query->orWhere('name', 'like', '%' . $searchValue . '%');
+                });
+            }
+            $drink_related = $drink_related->get();
             $drink_arr = array();
 
             foreach ($drink_related as $key => $drink) {

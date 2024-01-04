@@ -45,18 +45,18 @@ class BookingService
         {
             if($type == "room")
             {
-                $records = $library->roomBooking()->join('users','users.id','=','bookings.user_id')
-                ->where('bookings.status',0);
+                $records = $library->roomBooking()->join('users','users.id','=','bookings.user_id');
+                // ->where('bookings.is_handled',0);
             }
             elseif($type == "equipment")
             {
-                $records = $library->equipmentBooking()->join('users','users.id','=','bookings.user_id')
-                ->where('bookings.status',0);                
+                $records = $library->equipmentBooking()->join('users','users.id','=','bookings.user_id');
+                // ->where('bookings.is_handled',0);                
             }
             elseif($type == "book")
             {
-                $records = $library->bookBooking()->join('users','users.id','=','bookings.user_id')
-                ->where('bookings.status',0);
+                $records = $library->bookBooking()->join('users','users.id','=','bookings.user_id');
+                // ->where('bookings.is_handled',0);
             }
         }
         else
@@ -264,9 +264,13 @@ class BookingService
         if(isset($request['equipment_id']))
         {
             $booking->equipment_id = $request['equipment_id'];
+            $equipment = Equipment::find($request['equipment_id']);
         }
         if(isset($request['room_id']))
-        $booking->room_id = $request['room_id'];
+        {
+            $booking->room_id = $request['room_id'];
+            $room = Room::find($request['room_id']);
+        }
 
         $user = auth()->user();
         $booking->user_id = $user->id;
@@ -276,9 +280,29 @@ class BookingService
 
         $booking->quantity = $request['quantity'];
         $booking->is_handled = "pending";
-        // $booking->unit_price = 
 
         $booking->save();
+
+        // update the item's remainder stock count
+        if(isset($book))
+        {
+            $book->remainder_count = $book->remainder_count - $request['quantity'];
+            if($book->remainder_count == 0)
+            {
+                $book->availability = 0;
+            }
+            $book->save();
+        }
+        elseif(isset($room))
+        {
+            $room->availability = 0;
+            $room->save();
+        }
+        elseif(isset($equipment))
+        {
+            $equipment->availability = 0;
+            $equipment->save();
+        }
 
         return $booking;
     }
@@ -407,7 +431,8 @@ class BookingService
             'bookings.*',
             // 'libraries.name as library_name'
         )
-            ->orderBy('bookings.is_handled', 'asc')
+            // ->orderBy('bookings.is_handled', 'asc')
+            ->orderBy('bookings.created_at','desc')
             ->get();
 
         $data_arr = array();

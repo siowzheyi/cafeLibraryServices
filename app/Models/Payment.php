@@ -64,20 +64,19 @@ class Payment extends Eloquent
             $book_booking = $library->bookBooking()->get()->count();
             $equipment_booking = $library->equipmentBooking()->get()->count();
             $no = $room_booking + $book_booking + $equipment_booking;
+            $no++;
 
         }
         else
         {
             $cafe = Cafe::find($id);
             $no = $cafe->through('beverage')->has('order')->get()->count();
-
+            // dd($no)
         }
-        // dd($no);
         // ->where('orders.created_at','>',$today)->get() 
         
         $digit = 4;
         
-        $no++;
         
         $padded_number = str_pad((string)$no,$digit,'0',STR_PAD_LEFT);
         $receipt_no = "RECEIPT".$padded_number;

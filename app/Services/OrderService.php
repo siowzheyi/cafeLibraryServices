@@ -40,14 +40,26 @@ class OrderService
         $service = new Service();
         // $records = Order::join('beverages','beverages.id','=','orders.beverage_id')
         //                 ->join('cafes','cafes.id','=','beverages.cafe_id')
-        //                 ->where('cafes.id',$cafe->id);
+        //                 ->where('cafes.id',$cafe->id)
+        //                 ->join('tables','tables.id','=','orders.table_id')
+        //             ->join('payments','payments.order_id','=','orders.id');
         // $records = $cafe->through('beverage')->has('order')->join('tables','tables.id','=','orders.table_id');
         // $orders = $cafe->beverage()->with('order')->get()->pluck('order')->collapse();
         // $records = $cafe->through('beverage')->has('order');
         $records = $cafe->order()->join('tables','tables.id','=','orders.table_id')
                     ->join('payments','payments.order_id','=','orders.id');
         // dd($records->get(), $record2->get());
-        // dd($records->get(), $orders);
+        // dd($records->get());
+
+        $records = $records->where(function ($query) {
+            $query->where(function ($query) {
+                $query->where('orders.status', 1)
+                    ->whereDate('orders.created_at', now()->format('Y-m-d'));
+            })
+            ->orWhere(function ($query) {
+                $query->where('orders.status', 0);
+            });
+        });
         
         $totalRecords = $records->count();
 
@@ -284,11 +296,12 @@ class OrderService
         
         $totalRecords = $records->count();
 
-        // $records = $records->where(function ($query) use ($searchValue) {
-        //     $query->orWhere('orders.title', 'like', '%' . $searchValue . '%')
-        //     ->orWhere('orders.content', 'like', '%' . $searchValue . '%');
+        $records = $records->where(function ($query) use ($searchValue) {
+            $query->orWhere('users.name', 'like', '%' . $searchValue . '%')
+            ->orWhere('orders.order_no', 'like', '%' . $searchValue . '%')
+            ->orWhere('payments.receipt_no', 'like', '%' . $searchValue . '%');
 
-        // });
+        });
 
         if ($request->input('startDate') != null && $request->input('endDate') != null) {
             $startDate = date('Y-m-d H:i:s', strtotime($request->input('startDate')));
@@ -382,7 +395,7 @@ class OrderService
 
         $records = $records->selectRaw(
             'DATE(orders.created_at) AS date,
-            SUM(orders.id) AS total_transaction, 
+            COUNT(orders.id) AS total_transaction, 
             SUM(payments.subtotal) AS subtotal, 
             SUM(payments.sst_amount) AS sst, 
             SUM(payments.service_charge_amount) AS service,

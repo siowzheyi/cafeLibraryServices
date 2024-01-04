@@ -5,7 +5,8 @@ namespace App\Http\Requests;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Http\FormRequest;
 use App\Models\Booking;
-
+use App\Models\Book;
+use Carbon\Carbon;
 use Illuminate\Validation\Rule;
 
 class BookingRequest extends FormRequest
@@ -42,13 +43,39 @@ class BookingRequest extends FormRequest
                     if($penalty_records != null)
                         $fail("Please pay penalty before borrow or rent process.");
                 }],
-                'room_id' => ['required_if:type,room','exists:rooms,id'],
-                'equipment_id' => ['required_if:type,equipment','exists:equipments,id'],
-                'book_id' => ['required_if:type,book','exists:books,id'],
+                'room_id' => ['nullable','required_if:type,room','exists:rooms,id'],
+                'equipment_id' => ['nullable','required_if:type,equipment','exists:equipments,id'],
+                'book_id' => ['nullable','required_if:type,book','exists:books,id'],
 
-                'quantity' => ['required'],
-                'start_booked_at' => ['required'],
-                'end_booked_at' => ['required'],
+                'quantity' => ['required',function ($attribute, $value, $fail) use($request){
+                    if($request['type'] == "book")
+                    {
+                        $book = Book::find($request['book_id']);
+                        if($book->remainder_count < $value || $book->availability == 0)
+                            $fail("Stock is not enough. ");
+                    }
+                   
+                }],
+                'start_booked_at' => ['required',function ($attribute, $value, $fail) use($request){
+                    $now = date('Y-m-d H:i:s',strtotime(now()));
+                    $start_book = date('Y-m-d H:i:s',strtotime($value));
+
+                    if($start_book < $now)
+                    {
+                        $fail("Start booking time must later than current time.");
+                    }
+                   
+                }],
+                'end_booked_at' => ['required',function ($attribute, $value, $fail) use($request){
+                    $now = date('Y-m-d H:i:s',strtotime(now()));
+                    $start_book = date('Y-m-d H:i:s',strtotime($request['start_booked_at']));
+                    $end_book = date('Y-m-d H:i:s',strtotime($value));
+
+                    if($end_book <= $start_book)
+                    {
+                        $fail("End booking time must be later than start booking time.");
+                    }
+                }],
 
             ];
            

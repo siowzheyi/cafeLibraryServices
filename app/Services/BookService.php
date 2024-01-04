@@ -287,8 +287,21 @@ class BookService
         $data_arr = array();
         foreach ($records as $key => $record) {
             
-            $book_related = Book::where('genre',$record->genre)
-                            ->get();
+            $book_related = Book::where('genre',$record->genre)->where('status',1)
+            ->where('remainder_count','>=',1)
+            ->where('availability',1);
+                            // ->get();
+            if($searchValue != null)
+            {
+                $book_related = $book_related->where(function ($query) use ($searchValue) {
+                    $query->orWhere('books.name', 'like', '%' . $searchValue . '%')
+                    ->orWhere('books.genre', 'like', '%' . $searchValue . '%')
+                    ->orWhere('books.author_name', 'like', '%' . $searchValue . '%')
+                    ->orWhere('books.publisher_name', 'like', '%' . $searchValue . '%');
+    
+                });
+            }
+            $book_related = $book_related->get();
             $book_arr = array();
 
             foreach ($book_related as $key => $book) {

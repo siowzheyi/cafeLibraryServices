@@ -27,7 +27,7 @@ class OrderController extends BaseController
         $result = $this->services->store($request);
         
         if($result != null)
-            return $this->sendResponse("", "Order has been successfully created. ");
+            return $this->sendResponse($result, "Order has been successfully created. ");
         else
             return $this->sendCustomValidationError(['Error'=>'Failed to create data. ']);
 

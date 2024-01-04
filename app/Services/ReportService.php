@@ -156,7 +156,7 @@ class ReportService
                "name" => $record->name,
                "description" => $record->description,
                "status" => $record->status,
-            //    "picture"    =>  $record->picture ? 
+               "picture"    =>  $record->picture ? $service->getImage('report',$record->id) : null,
 
                "created_at" => $record->created_at != null ? date('Y-m-d H:i:s',strtotime($record->created_at)) : null,
 
