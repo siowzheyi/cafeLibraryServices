@@ -11,7 +11,8 @@ use App\Models\Roles;
 use App\Models\Book;
 use App\Models\Library;
 use App\Models\ItemCategory;
-
+use App\Imports\BooksImport;
+use Maatwebsite\Excel\Facades\Excel;
 use App\Models\Media;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Http\Request;
@@ -331,6 +332,55 @@ class BookService
         $result['iTotalRecords']  = $totalRecords;
         $result["iTotalDisplayRecords"] = intval($totalRecordswithFilter);
         $result['aaData'] =  $data_arr;
+
+        return $result;
+    }
+
+    public function importBook($request)
+    {
+        $result['status'] = "success";
+
+        $path = Config::get('main.excel_file_path');
+        // dd($path);
+        $file = $request->file('excel');
+        $filename = $file->getClientOriginalName();
+        $path = $file->storeAs($path, $filename);
+        
+        $user = auth()->user();
+
+        try {
+            $check = Excel::import(new BooksImport($user->library_id), $path);
+        } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
+             $failures = $e->failures();
+             
+             
+             $error = array();
+             foreach ($failures as $failure) {
+                 $failure->row(); // row that went wrong
+                 $failure->attribute(); // either heading key (if using heading row concern) or column index
+                 $failure->errors(); // Actual error messages from Laravel validator
+                 $failure->values(); // The values of the row that has failed.
+                 
+                if(count($failures) > 1)
+                {
+                    $error[] = [
+                        $failure->attribute() => $failure->errors()
+                    ];
+                    
+                }
+                else
+                {
+                    $error = [
+                        $failure->attribute() => $failure->errors()
+                    ];
+                }
+             }
+             if(count($error) > 1)
+             $error = array_merge(...$error);
+
+             $result['status'] = "fail";
+             $result['details'] = $error;
+        }
 
         return $result;
     }

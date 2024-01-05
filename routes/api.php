@@ -67,6 +67,7 @@ Route::middleware('auth:api')->group(function () {
                     Route::resource('book', BookController::class, array("as" => "api"));
                     Route::resource('equipment', EquipmentController::class, array("as" => "api"));
                     Route::resource('room', RoomController::class, array("as" => "api"));
+                    Route::post('import_book', [BookController::class, 'importBook'])->name('import_book');
 
                     Route::prefix('report')->group(function () {
                         Route::get('detail_sales_report', [OrderController::class, 'detailSalesReport'])->name('detail_sales_report');

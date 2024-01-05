@@ -16,6 +16,7 @@ return [
     'announcement_image_path' => env('ANNOUNCEMENT_IMAGE_PATH'),
     'room_image_path' => env('ROOM_IMAGE_PATH'),
     'report_image_path' => env('REPORT_IMAGE_PATH'),
+    'excel_file_path' => env('EXCEL_FILE_PATH'),
 
     'frontend_admin_url' => env('FRONTEND_ADMIN_URL'),
 

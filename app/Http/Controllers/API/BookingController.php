@@ -65,9 +65,6 @@ class BookingController extends BaseController
                     if($booking->is_handled == "pending")
                     $fail("Cannot return book before staff approved to borrow");
                 }
-                
-                
-               
             }),
         ]);
 
