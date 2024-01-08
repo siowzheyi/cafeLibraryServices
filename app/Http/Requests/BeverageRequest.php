@@ -41,6 +41,10 @@ class BeverageRequest extends FormRequest
                 'remark' => ['nullable'],
                 'category' => ['required'],
                 'picture' => ['required'],
+                "cafe_id"   =>  array('nullable','exists:cafes,id',
+                Rule::requiredIf(function () use ($request) {
+                    return $request->user()->hasAnyRole(['superadmin', 'admin']);
+                }))
 
             ];
            
@@ -54,6 +58,7 @@ class BeverageRequest extends FormRequest
                 'status'   =>  array('required','in:1,0'),
                 'price' => ['required'],
                 'category' => ['required'],
+                'picture' => ['required'],
 
                 'remark' => ['nullable'],
 

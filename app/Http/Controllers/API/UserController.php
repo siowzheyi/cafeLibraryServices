@@ -19,6 +19,13 @@ class UserController extends BaseController
         $this->services = $user_service;
     }
 
+    public function indexLogin()
+    {
+        return view('login',["data" =>  "123"]);
+        // return redirect6
+        // return $this->sendResponse("", "User has been successfully registered. ");
+    }
+
     // This api is for for library normal user to register normal user account
     public function register(Request $request)
     {
@@ -50,7 +57,9 @@ class UserController extends BaseController
     // This api is for every user to login using email and password
     public function login(Request $request)
     {
+        // dd($request);
         $input = $request->all();
+        // dd($input);
 
         App::setLocale($request->header('language'));
 
@@ -58,12 +67,12 @@ class UserController extends BaseController
             'email' => array('required'),
             'password' => array('required'),
         ]);
-
         if ($validator->fails()) {
             return $this->sendCustomValidationError($validator->errors());
         }
 
         $result = $this->services->login($input);
+        // dd($result);
 
         if($result['status'] == "success")
             return $this->sendResponse($result['data'], $result['message']);
@@ -89,6 +98,7 @@ class UserController extends BaseController
         $result = $this->services->show($user);
 
         return $this->sendResponse($result, "Data successfully retrieved. "); 
+        // return view('user.user',["userData" =>  $result]);
     }
 
     // This api is for admin user to view list of user
@@ -104,9 +114,35 @@ class UserController extends BaseController
     {
         $result = $this->services->update($request, $user);
 
-        return $this->sendResponse("", "User has been successfully updated. ");
-       
-}
+        return $this->sendResponse("", "User has been successfully updated. ");   
+    }
+
+    public function penaltyReport(Request $request)
+    {
+        $input = $request->all();
+
+        App::setLocale($request->header('language'));
+
+        $validator = Validator::make($input, [
+            'library_id' => array('nullable','exists:libraries,id'),
+        ]);
+
+        if ($validator->fails()) {
+            return $this->sendCustomValidationError($validator->errors());
+        }
+
+        $result = $this->services->penaltyReport($input);
+
+        return $this->sendResponse($result, "Successfully retrieve data. ");   
+    }
+
+    
+    public function penaltyReportItem(Request $request, $booking_id)
+    {
+        $result = $this->services->penaltyReportItem($request, $booking_id);
+
+        return $this->sendResponse($result, "Successfully retrieve data. ");   
+    }
 
 
 }

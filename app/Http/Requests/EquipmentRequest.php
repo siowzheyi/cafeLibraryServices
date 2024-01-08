@@ -37,6 +37,12 @@ class EquipmentRequest extends FormRequest
             return [
                 'name' => ['required'],
                 'remark' => ['nullable'],
+                'picture' => ['required'],
+
+                "library_id"   =>  array('nullable','exists:libraries,id',
+                Rule::requiredIf(function () use ($request) {
+                    return $request->user()->hasAnyRole(['superadmin', 'admin']);
+                }))
 
             ];
            
@@ -49,6 +55,7 @@ class EquipmentRequest extends FormRequest
                 'name' => ['required'],
                 'remark' => ['nullable'],
                 'status'   =>  array('required','in:1,0'),
+                'picture' => ['required'],
 
             ];
         }

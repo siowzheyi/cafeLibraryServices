@@ -41,7 +41,13 @@ class BookRequest extends FormRequest
                 'publisher_name' => ['required'],
                 'remark' => ['nullable'],
                 'price' => ['required'],
+                'picture' => ['required'],
+
                 'stock_count' => ['required','numeric','min:1'],
+                "library_id"   =>  array('nullable','exists:libraries,id',
+                Rule::requiredIf(function () use ($request) {
+                    return $request->user()->hasAnyRole(['superadmin', 'admin']);
+                }))
 
             ];
            
@@ -59,6 +65,7 @@ class BookRequest extends FormRequest
                 'price' => ['required'],
                 'stock_count' => ['required','numeric'],
                 'status'   =>  array('required','in:1,0'),
+                'picture' => ['required'],
 
             ];
         }

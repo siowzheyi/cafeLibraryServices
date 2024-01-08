@@ -65,6 +65,7 @@ class Kernel extends HttpKernel
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'staffauthentication' => \App\Http\Middleware\StaffAuthentication::class,
+        'ensurestaffhaslibrarycafeid' => \App\Http\Middleware\EnsureStaffHasLibraryCafeId::class,
 
     ];
 }

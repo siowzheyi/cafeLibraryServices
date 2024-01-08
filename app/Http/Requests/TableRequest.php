@@ -37,6 +37,11 @@ class TableRequest extends FormRequest
             return [
                 'table_no' => ['required'],
 
+                "library_id"   =>  array('nullable','exists:libraries,id',
+                Rule::requiredIf(function () use ($request) {
+                    return $request->user()->hasAnyRole(['superadmin', 'admin']);
+                }))
+
             ];
            
         } elseif ($request_method === "PATCH") {

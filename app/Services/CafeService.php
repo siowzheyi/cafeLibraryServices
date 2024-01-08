@@ -11,6 +11,8 @@ use App\Models\Roles;
 use App\Models\Cafe;
 use App\Models\Library;
 
+use App\Models\Media;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
