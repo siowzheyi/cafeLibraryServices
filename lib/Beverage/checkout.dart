@@ -22,14 +22,15 @@ class _CheckoutPageState extends State<CheckoutPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Checkout'),
+        title: const Text('Checkout'),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                builder: (context) => OrderSummaryPage(selectedBeverages: widget.selectedBeverages),
+                builder: (context) => OrderSummaryPage(selectedBeverages:
+                widget.selectedBeverages),
               ),
             );
           },
@@ -39,15 +40,15 @@ class _CheckoutPageState extends State<CheckoutPage> {
         children: [
           Container(
             color: Colors.grey.shade200,
-            padding: EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                const Text(
                   'Receipt',
                   style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
                 ),
-                SizedBox(height: 8.0),
+                const SizedBox(height: 8.0),
                 ListView.builder(
                   shrinkWrap: true,
                   itemCount: widget.selectedBeverages.length,
@@ -63,19 +64,19 @@ class _CheckoutPageState extends State<CheckoutPage> {
               ],
             ),
           ),
-          SizedBox(height: 16.0),
+          const SizedBox(height: 16.0),
           Card(
             color: Colors.green,
             elevation: 4.0,
             child: Padding(
-              padding: EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(16.0),
               child: Text(
                 'Total Price: RM${totalPrice.toStringAsFixed(2)}',
-                style: TextStyle(fontSize: 18.0, color: Colors.white),
+                style: const TextStyle(fontSize: 18.0, color: Colors.white),
               ),
             ),
           ),
-          SizedBox(height: 16.0),
+          const SizedBox(height: 16.0),
           ElevatedButton(
             onPressed: () {
               // Show an AlertDialog with the message
@@ -83,8 +84,9 @@ class _CheckoutPageState extends State<CheckoutPage> {
                 context: context,
                 builder: (BuildContext context) {
                   return AlertDialog(
-                    title: Text('Order Accepted'),
-                    content: Text('Your order is accepted and will be processed!'),
+                    title: const Text('Order Accepted'),
+                    content: const Text('Your order is accepted and will be '
+                        'processed!'),
                     actions: <Widget>[
                       TextButton(
                         onPressed: () {
@@ -99,7 +101,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                             ),
                           );
                         },
-                        child: Text('OK'),
+                        child: const Text('OK'),
                       ),
                     ],
 
@@ -107,7 +109,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                 },
               );
             },
-            child: Text('Proceed to Checkout'),
+            child: const Text('Proceed to Checkout'),
           ),
         ],
       ),

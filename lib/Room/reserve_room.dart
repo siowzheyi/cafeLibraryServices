@@ -53,7 +53,8 @@ class _ReserveRoomPageState extends State<ReserveRoomPage> {
 
       if (pickedTime != null) {
         setState(() {
-          _startDate = "${pickedDate.year}-${pickedDate.month}-${pickedDate.day}";
+          _startDate = "${pickedDate.year}-${pickedDate.month}-${pickedDate
+              .day}";
           _startTime = "${pickedTime.hour}:${pickedTime.minute}";
           startTimeDateController.text = "$_startDate $_startTime";
         });
@@ -95,17 +96,17 @@ class _ReserveRoomPageState extends State<ReserveRoomPage> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('Error',
+            title: const Text('Error',
             style: TextStyle(
               color: Colors.red,
             ),),
-            content: Text('Please fill in all the fields.'),
+            content: const Text('Please fill in all the fields.'),
             actions: [
               TextButton(
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
-                child: Text('OK'),
+                child: const Text('OK'),
               ),
             ],
           );
@@ -133,22 +134,23 @@ class _ReserveRoomPageState extends State<ReserveRoomPage> {
 
       // check if the duration is exactly for 1 hour
       if (difference.inHours == 1 && difference.inMinutes == 60) {
-        print('Room: $_selectedRoom, From: $_startDate, $_startTime, To: $_endDate, $_endTime');
+        print('Room: $_selectedRoom, From: $_startDate, $_startTime, To: '
+            '$_endDate, $_endTime');
         showDialog(
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text('Success',
+              title: const Text('Success',
               style: TextStyle(
                 color: Colors.green,
               ),),
-              content: Text('Your reservation has been submitted.'),
+              content: const Text('Your reservation has been submitted.'),
               actions: [
                 TextButton(
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                  child: Text('OK'),
+                  child: const Text('OK'),
                 ),
               ],
             );
@@ -159,17 +161,17 @@ class _ReserveRoomPageState extends State<ReserveRoomPage> {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text('Error',
+              title: const Text('Error',
               style: TextStyle(
                 color: Colors.red,
               ),),
-              content: Text('Please select exactly a 1-hour time slot.'),
+              content: const Text('Please select exactly a 1-hour time slot.'),
               actions: [
                 TextButton(
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                  child: Text('OK'),
+                  child: const Text('OK'),
                 ),
               ],
             );
@@ -183,22 +185,22 @@ class _ReserveRoomPageState extends State<ReserveRoomPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Library Room Reservation'),
+        title: const Text('Library Room Reservation'),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.pop(context);
           },
         ),
       ),
       body: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           children: <Widget>[
             Padding(
               padding: const EdgeInsets.all(16.0),
-              child: Text('${_selectedRoom}',
-              style: TextStyle(
+              child: Text(_selectedRoom,
+              style: const TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 20.0,
               ),),
@@ -223,18 +225,18 @@ class _ReserveRoomPageState extends State<ReserveRoomPage> {
                 decoration: const InputDecoration(labelText: '-To-'),
               ),
             ),
-            SizedBox(height: 20),
-            Text('Selection time for 1 hour only.',
+            const SizedBox(height: 20),
+            const Text('Selection time for 1 hour only.',
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 16.0,
             ),),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Row(
               children: [
                 ElevatedButton(
                   onPressed: _submitForm,
-                  child: Text('Submit'),
+                  child: const Text('Submit'),
                 ),
               ],
             ),

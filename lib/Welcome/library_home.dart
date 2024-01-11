@@ -1,5 +1,6 @@
-import 'package:cafe_library_services/Welcome/home.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:cafe_library_services/Welcome/home.dart';
 
 void main() {
   runApp(MyApp());
@@ -34,44 +35,47 @@ class _LibrarySelectionPageState extends State<LibrarySelectionPage> {
         title: Text(''),
       ),
       body: Container(
-          decoration: BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('assets/library.jpg'),
-                fit: BoxFit.cover,
-              )
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/library.jpg'),
+            fit: BoxFit.cover,
           ),
+        ),
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-            Card(
-            elevation: 3, // Adjust the elevation (shadow) if needed
-              color: Colors.white,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10.0), // Adjust the border radius if needed
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TextField(
-                controller: libraryIdController,
-                decoration: InputDecoration(
-                  labelText: 'Library ID',
-                  errorText: libraryIdError,
-                  labelStyle: TextStyle(color: Colors.black),
-                  errorStyle: TextStyle(color: Colors.red),
-                  hintStyle: TextStyle(color: Colors.black12),
+              Card(
+                elevation: 3,
+                color: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextField(
+                    controller: libraryIdController,
+                    decoration: InputDecoration(
+                      labelText: 'Library ID',
+                      errorText: libraryIdError,
+                      labelStyle: TextStyle(color: Colors.black),
+                      errorStyle: TextStyle(color: Colors.red),
+                      hintStyle: TextStyle(color: Colors.black12),
+                    ),
+                  ),
                 ),
               ),
-            ),
-          ),
-            SizedBox(height: 16.0),
+              SizedBox(height: 16.0),
               ElevatedButton(
                 onPressed: () {
                   // Validate and search for the library
                   if (validateLibraryId()) {
+                    // Save library ID to shared preferences
+                    saveLibraryId(libraryIdController.text.trim());
+
                     // Perform the database search logic here
-                    // For simplicity, assume library is found
+                    // For simplicity, assume the library is found
                     navigateToLibraryHome();
                   }
                 },
@@ -80,7 +84,7 @@ class _LibrarySelectionPageState extends State<LibrarySelectionPage> {
             ],
           ),
         ),
-      )
+      ),
     );
   }
 
@@ -99,13 +103,15 @@ class _LibrarySelectionPageState extends State<LibrarySelectionPage> {
     }
   }
 
+  void saveLibraryId(String libraryId) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('libraryId', libraryId);
+  }
+
   void navigateToLibraryHome() {
-    // For simplicity, navigate to a hardcoded library home page
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(
-        builder: (context) => HomePage()
-      ),
+      MaterialPageRoute(builder: (context) => HomePage()),
     );
   }
 }

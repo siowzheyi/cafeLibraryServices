@@ -66,12 +66,13 @@ class _BookingPageState extends State<BookingPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Booking Records'),
+        title: const Text('Booking Records'),
         leading: IconButton(
           onPressed: () {
-            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage()));
+            Navigator.pushReplacement(context, MaterialPageRoute(builder:
+                (context) => HomePage()));
           },
-          icon: Icon(
+          icon: const Icon(
             Icons.arrow_back,
           ),
         ),
@@ -79,11 +80,6 @@ class _BookingPageState extends State<BookingPage> {
       body: Column(
         children: [
           ToggleButtons(
-            children: [
-              Text('Book'),
-              Text('Equipment'),
-              Text('Room'),
-            ],
             isSelected: [
               selectedCategory == Category.Book,
               selectedCategory == Category.Equipment,
@@ -94,6 +90,11 @@ class _BookingPageState extends State<BookingPage> {
                 selectedCategory = Category.values[buttonIndex];
               });
             },
+            children: const [
+              Text('Book'),
+              Text('Equipment'),
+              Text('Room'),
+            ],
           ),
           Expanded(
             child: ListView.builder(
@@ -101,11 +102,14 @@ class _BookingPageState extends State<BookingPage> {
               itemBuilder: (context, index) {
                 BookingRecord record = bookingRecords[index];
                 if (record.category != selectedCategory) {
-                  return Container(); // Skip items that don't match the selected category
+                  return Container(); // Skip items that don't match the
+                  // selected category
                 }
 
-                // Get the borrowing state for the current record in the selected category
-                bool isBorrowed = categoryStates[selectedCategory]![record.itemName] ?? true;
+                // Get the borrowing state for the current record in the
+                // selected category
+                bool isBorrowed = categoryStates[selectedCategory]![record
+                    .itemName] ?? true;
 
                 return ListTile(
                   title: Row(
@@ -115,15 +119,18 @@ class _BookingPageState extends State<BookingPage> {
                       ToggleButtonWidget(
                         isBorrowed: isBorrowed,
                         onToggle: (bool isBorrowing, bool hasPenalty) {
-                          // Update the borrowing state for the current record in the selected category
-                          categoryStates[selectedCategory]![record.itemName] = isBorrowing;
+                          // Update the borrowing state for the current
+                          // record in the selected category
+                          categoryStates[selectedCategory]![record.itemName]
+                          = isBorrowing;
 
                           // Update the list of items with penalties
                           if (!isBorrowing && hasPenalty) {
                             itemsWithPenalties.add(record);
                           }
                         },
-                        borrowedDate: record.borrowedDate, // Pass borrowed date to ToggleButtonWidget
+                        borrowedDate: record.borrowedDate, // Pass borrowed
+                        // date to ToggleButtonWidget
                       ),
                     ],
                   ),
@@ -139,11 +146,12 @@ class _BookingPageState extends State<BookingPage> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => PenaltyPage(itemsWithPenalties: itemsWithPenalties),
+              builder: (context) => PenaltyPage(itemsWithPenalties:
+              itemsWithPenalties),
             ),
           );
         },
-        child: Icon(Icons.payment),
+        child: const Icon(Icons.payment),
       ),
     );
   }
@@ -177,14 +185,14 @@ class _ToggleButtonWidgetState extends State<ToggleButtonWidget> {
   Widget build(BuildContext context) {
     return TextButton(
       onPressed: _isBorrowing ? () => _toggleBorrowing(context) : null,
-      child: Text(_isBorrowing ? 'Borrowing' : 'Returned'),
       style: ButtonStyle(
         side: MaterialStateProperty.all<BorderSide>(
-          BorderSide(
+          const BorderSide(
             color: Colors.black12,
           ),
         ),
       ),
+      child: Text(_isBorrowing ? 'Borrowing' : 'Returned'),
     );
   }
 
@@ -201,21 +209,22 @@ class _ToggleButtonWidgetState extends State<ToggleButtonWidget> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('Penalty Alert'),
-            content: Text('You have a penalty for late return. Do you want to proceed with the return and pay the penalty?'),
+            title: const Text('Penalty Alert'),
+            content: const Text('You have a penalty for late return. '
+                'Do you want to proceed with the return and pay the penalty?'),
             actions: [
               TextButton(
                 onPressed: () {
                   Navigator.of(context).pop(); // Close the dialog
                 },
-                child: Text('Cancel'),
+                child: const Text('Cancel'),
               ),
               TextButton(
                 onPressed: () {
                   _markItemReturned(true);
                   Navigator.of(context).pop(); // Close the dialog
                 },
-                child: Text('Return'),
+                child: const Text('Return'),
               ),
             ],
           );
@@ -227,21 +236,21 @@ class _ToggleButtonWidgetState extends State<ToggleButtonWidget> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('Return Confirmation'),
-            content: Text('Are you sure you want to return the item?'),
+            title: const Text('Return Confirmation'),
+            content: const Text('Are you sure you want to return the item?'),
             actions: [
               TextButton(
                 onPressed: () {
                   Navigator.of(context).pop(); // Close the dialog
                 },
-                child: Text('Cancel'),
+                child: const Text('Cancel'),
               ),
               TextButton(
                 onPressed: () {
                   _markItemReturned(false);
                   Navigator.of(context).pop(); // Close the dialog
                 },
-                child: Text('Return'),
+                child: const Text('Return'),
               ),
             ],
           );

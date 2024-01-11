@@ -39,15 +39,17 @@ class _ReserveBookPageState extends State<ReserveBookPage> {
 
   void _increaseQuantity() {
     setState(() {
-      if (_quantity < 5)
+      if (_quantity < 5) {
         _quantity++;
+      }
     });
   }
 
   void _decreaseQuantity() {
     setState(() {
-      if (_quantity > 1)
+      if (_quantity > 1) {
         _quantity--;
+      }
     });
   }
 
@@ -84,24 +86,25 @@ class _ReserveBookPageState extends State<ReserveBookPage> {
   }
 
   void _submitForm() {
-    if (_selectedBook == '-Select Book-' || _quantity <= 0 || _startDate.isEmpty || _endDate.isEmpty) {
+    if (_selectedBook == '-Select Book-' || _quantity <= 0 ||
+        _startDate.isEmpty || _endDate.isEmpty) {
       showDialog(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text(
+            title: const Text(
               'Error',
               style: TextStyle(
                 color: Colors.red,
               ),
             ),
-            content: Text('Please fill in the start and end date.'),
+            content: const Text('Please fill in the start and end date.'),
             actions: [
               TextButton(
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
-                child: Text('OK'),
+                child: const Text('OK'),
               ),
             ],
           );
@@ -125,24 +128,25 @@ class _ReserveBookPageState extends State<ReserveBookPage> {
 
       // check if the duration is exactly for 1 hour
       if (difference.inDays <= 14 && difference.inDays >= 1) {
-        print('Book: $_selectedBook, Quantity: $_quantity, From: $_startDate, To: $_endDate,');
+        print('Book: $_selectedBook, Quantity: $_quantity, From: '
+            '$_startDate, To: $_endDate,');
         showDialog(
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text(
+              title: const Text(
                 'Success',
                 style: TextStyle(
                   color: Colors.green,
                 ),
               ),
-              content: Text('You can borrow this book straight away.'),
+              content: const Text('You can borrow this book straight away.'),
               actions: [
                 TextButton(
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                  child: Text('OK'),
+                  child: const Text('OK'),
                 ),
               ],
             );
@@ -153,19 +157,20 @@ class _ReserveBookPageState extends State<ReserveBookPage> {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text(
+              title: const Text(
                 'Error',
                 style: TextStyle(
                   color: Colors.red,
                 ),
               ),
-              content: Text('You can borrow this book up to 2 weeks only. Please borrow at least for 1 day.'),
+              content: const Text('You can borrow this book up to 2 weeks only'
+                  '. Please borrow at least for 1 day.'),
               actions: [
                 TextButton(
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                  child: Text('OK'),
+                  child: const Text('OK'),
                 ),
               ],
             );
@@ -179,29 +184,29 @@ class _ReserveBookPageState extends State<ReserveBookPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Book Reservation'),
+        title: const Text('Book Reservation'),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.pop(context);
           },
         ),
       ),
       body: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           children: <Widget>[
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Text(
-                '${_selectedBook}',
-                style: TextStyle(
+                _selectedBook,
+                style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 20.0,
                 ),
               ),
             ),
-            Align(
+            const Align(
               alignment: Alignment.centerLeft,
               child: Text(
                 'Quantity:',
@@ -213,7 +218,7 @@ class _ReserveBookPageState extends State<ReserveBookPage> {
               child: Row(
                 children: [
                   IconButton(
-                    icon: Icon(Icons.remove),
+                    icon: const Icon(Icons.remove),
                     onPressed: _decreaseQuantity,
                   ),
                   Container(
@@ -226,12 +231,12 @@ class _ReserveBookPageState extends State<ReserveBookPage> {
                     child: Center(
                       child: Text(
                         _quantity.toString(),
-                        style: TextStyle(fontSize: 18),
+                        style: const TextStyle(fontSize: 18),
                       ),
                     ),
                   ),
                   IconButton(
-                    icon: Icon(Icons.add),
+                    icon: const Icon(Icons.add),
                     onPressed: _increaseQuantity,
                   ),
                 ],
@@ -257,15 +262,15 @@ class _ReserveBookPageState extends State<ReserveBookPage> {
                 decoration: const InputDecoration(labelText: '-To-'),
               ),
             ),
-            SizedBox(height: 20),
-            Text(
+            const SizedBox(height: 20),
+            const Text(
               'You are given 2 weeks to borrow this book.',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 16.0,
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Row(
               children: [
                 ElevatedButton(

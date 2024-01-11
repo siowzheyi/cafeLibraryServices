@@ -35,17 +35,18 @@ class BeverageDetailsPage extends StatelessWidget {
               height: 900.0,
               fit: BoxFit.cover,
             ),
-            SizedBox(height: 16.0),
+            const SizedBox(height: 16.0),
             Text(
               'Title: $name',
-              style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 18.0, fontWeight:
+              FontWeight.bold),
             ),
             Text(
               'Description: $description',
-              style: TextStyle(fontSize: 16.0),
+              style: const TextStyle(fontSize: 16.0),
             ),
             Text(
-              '${isAvailable ? 'Available' : 'Out of stock'}',
+              isAvailable ? 'Available' : 'Out of stock',
               style: TextStyle(
                 fontSize: 16.0,
                 color: isAvailable ? Colors.green : Colors.red,
@@ -63,7 +64,7 @@ class BeverageDetailsPage extends StatelessWidget {
                     ),
                   );
                 },
-                child: Text('Order'),
+                child: const Text('Order'),
               ),
           ],
         ),

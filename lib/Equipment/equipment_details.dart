@@ -1,6 +1,5 @@
 import 'package:cafe_library_services/Equipment/rent_equipment.dart';
 import 'package:flutter/material.dart';
-
 import '../Report/report.dart';
 
 class EquipmentDetailsPage extends StatelessWidget {
@@ -27,7 +26,7 @@ class EquipmentDetailsPage extends StatelessWidget {
         actions: [
           // Add a Report button in the app bar
           IconButton(
-            icon: Icon(Icons.report),
+            icon: const Icon(Icons.report),
             tooltip: 'Report this item',
             onPressed: () {
               // Navigate to the ReportPage when the button is pressed
@@ -52,17 +51,18 @@ class EquipmentDetailsPage extends StatelessWidget {
               height: 900.0,
               fit: BoxFit.cover,
             ),
-            SizedBox(height: 16.0),
+            const SizedBox(height: 16.0),
             Text(
               'Title: $name',
-              style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 18.0, fontWeight: FontWeight
+                  .bold),
             ),
             Text(
               'Fee: $price',
-              style: TextStyle(fontSize: 16.0),
+              style: const TextStyle(fontSize: 16.0),
             ),
             Text(
-              '${isAvailable ? 'Available' : 'Checked out'}',
+              isAvailable ? 'Available' : 'Checked out',
               style: TextStyle(
                 fontSize: 16.0,
                 color: isAvailable ? Colors.green : Colors.red,
@@ -76,11 +76,12 @@ class EquipmentDetailsPage extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => ReserveEquipmentPage(selectedEquipment: name,),
+                      builder: (context) => ReserveEquipmentPage(
+                        selectedEquipment: name,),
                     ),
                   );
                 },
-                child: Text('Rent'),
+                child: const Text('Rent'),
               ),
           ],
         ),

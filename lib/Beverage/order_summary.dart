@@ -16,7 +16,7 @@ class _OrderSummaryPageState extends State<OrderSummaryPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Order Summary'),
+        title: const Text('Order Summary'),
       ),
       body: Column(
         children: [
@@ -38,7 +38,7 @@ class _OrderSummaryPageState extends State<OrderSummaryPage> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       IconButton(
-                        icon: Icon(Icons.remove),
+                        icon: const Icon(Icons.remove),
                         onPressed: () {
                           setState(() {
                             if (beverage.quantity > 1) {
@@ -49,7 +49,7 @@ class _OrderSummaryPageState extends State<OrderSummaryPage> {
                       ),
                       Text('${beverage.quantity}'),
                       IconButton(
-                        icon: Icon(Icons.add),
+                        icon: const Icon(Icons.add),
                         onPressed: () {
                           setState(() {
                             beverage.quantity++;
@@ -62,14 +62,15 @@ class _OrderSummaryPageState extends State<OrderSummaryPage> {
               },
             ),
           ),
-          SizedBox(height: 16.0),
+          const SizedBox(height: 16.0),
           ElevatedButton(
-            child: Text('Proceed to checkout'),
+            child: const Text('Proceed to checkout'),
             onPressed: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => CheckoutPage(selectedBeverages: widget.selectedBeverages),
+                  builder: (context) => CheckoutPage(selectedBeverages: widget
+                      .selectedBeverages),
                 ),
               );
             },

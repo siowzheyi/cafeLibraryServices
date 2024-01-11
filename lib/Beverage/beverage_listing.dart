@@ -74,16 +74,17 @@ class _BeverageListScreenState extends State<BeverageListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Beverage Listing'),
+        title: const Text('Beverage Listing'),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: (){
-            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage()));
+            Navigator.pushReplacement(context, MaterialPageRoute(builder:
+                (context) => HomePage()));
           },
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.search),
+            icon: const Icon(Icons.search),
             onPressed: () {
               showSearch(
                 context: context,
@@ -96,8 +97,8 @@ class _BeverageListScreenState extends State<BeverageListScreen> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
+          const Padding(
+            padding: EdgeInsets.all(16.0),
             child: Text(
               'What would you like to order for today?',
               style: TextStyle(
@@ -107,7 +108,7 @@ class _BeverageListScreenState extends State<BeverageListScreen> {
               ),
             ),
           ),
-          SizedBox(height: 16.0),
+          const SizedBox(height: 16.0),
           SingleChildScrollView(
             scrollDirection: Axis.vertical,
             child: Column(
@@ -121,8 +122,9 @@ class _BeverageListScreenState extends State<BeverageListScreen> {
                         if (i * 4 + j < beverages.length)
                           Container(
                             width: 150.0,
-                            margin: EdgeInsets.symmetric(horizontal: 8.0),
-                            child: BeverageListItem(beverage: beverages[i * 4 + j]),
+                            margin: const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: BeverageListItem(beverage:
+                            beverages[i * 4 + j]),
                           )
                         else
                           Container(), // Placeholder for empty cells
@@ -131,13 +133,13 @@ class _BeverageListScreenState extends State<BeverageListScreen> {
               ],
             ),
           ),
-          SizedBox(height: 16.0,),
+          const SizedBox(height: 16.0,),
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Row(
               children: [
                 ElevatedButton(
-                  child: Text('Start ordering!'),
+                  child: const Text('Start ordering!'),
                   onPressed: () {
                     // go to order beverage page
                     Navigator.push(
@@ -148,9 +150,9 @@ class _BeverageListScreenState extends State<BeverageListScreen> {
                     );
                   },
                 ),
-                SizedBox(width: 16.0,),
+                const SizedBox(width: 16.0,),
                 ElevatedButton(
-                  child: Text('View table'),
+                  child: const Text('View table'),
                   onPressed: () {
                     // go to choose table
                     Navigator.push(
@@ -161,9 +163,9 @@ class _BeverageListScreenState extends State<BeverageListScreen> {
                     );
                   },
                 ),
-                SizedBox(width: 16.0,),
+                const SizedBox(width: 16.0,),
                 ElevatedButton(
-                  child: Text('Add to cart'),
+                  child: const Text('Add to cart'),
                   onPressed: () {
                     // go to order beverage page
                     Navigator.push(
@@ -177,7 +179,7 @@ class _BeverageListScreenState extends State<BeverageListScreen> {
               ],
             ),
           ),
-          SizedBox(height: 16.0,),
+          const SizedBox(height: 16.0,),
         ],
       ),
     );
@@ -191,7 +193,8 @@ class Beverage {
   final String imageUrl;
   bool isAvailable;
 
-  Beverage(this.name, this.price, this.description, this.imageUrl, this.isAvailable);
+  Beverage(this.name, this.price, this.description, this.imageUrl, this
+      .isAvailable);
 }
 
 class BeverageListItem extends StatelessWidget {
@@ -217,8 +220,8 @@ class BeverageListItem extends StatelessWidget {
         );
       },
       child: Card(
-        margin: EdgeInsets.symmetric(horizontal: 8.0),
-        child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 8.0),
+        child: SizedBox(
           width: 150.0, // Adjust the width based on your preference
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -236,13 +239,15 @@ class BeverageListItem extends StatelessWidget {
                   children: [
                     Text(
                       beverage.name,
-                      style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold),
+                      style: const TextStyle(fontSize: 14.0, fontWeight:
+                      FontWeight.bold),
                     ),
                     Text(
-                      '${beverage.price}',
-                      style: TextStyle(fontSize: 12.0, fontStyle: FontStyle.italic),
+                      beverage.price,
+                      style: const TextStyle(fontSize: 12.0, fontStyle:
+                      FontStyle.italic),
                     ),
-                    SizedBox(height: 8.0),
+                    const SizedBox(height: 8.0),
                     Text(
                       beverage.isAvailable ? 'Available' : 'Out of stock',
                       style: TextStyle(
@@ -271,7 +276,7 @@ class BeverageSearchDelegate extends SearchDelegate<String> {
   List<Widget> buildActions(BuildContext context) {
     return [
       IconButton(
-        icon: Icon(Icons.clear),
+        icon: const Icon(Icons.clear),
         onPressed: () {
           query = '';
         },
@@ -316,7 +321,8 @@ class BeverageSearchDelegate extends SearchDelegate<String> {
             // Add the selected beverage to the search history
             addToSearchHistory(suggestionList[index]);
 
-            // You can navigate to the beverage details screen or handle the selection as needed
+            // You can navigate to the beverage details screen or handle the
+            // selection as needed
             Navigator.push(
               context,
               MaterialPageRoute(

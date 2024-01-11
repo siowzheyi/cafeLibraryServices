@@ -1,6 +1,5 @@
 import 'package:cafe_library_services/Beverage/choose_beverage.dart';
 import 'package:flutter/material.dart';
-
 import 'beverage_listing.dart';
 
 void main() {
@@ -37,7 +36,8 @@ class _TableSelectionPageState extends State<TableSelectionPage> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: (){
-            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => BeverageListing()));
+            Navigator.pushReplacement(context, MaterialPageRoute(builder:
+                (context) => BeverageListing()));
           },
         ),
       ),
@@ -45,11 +45,11 @@ class _TableSelectionPageState extends State<TableSelectionPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text(
+            const Text(
               'Available Tables',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             // Display available tables as buttons
             Wrap(
               spacing: 10,
@@ -60,7 +60,8 @@ class _TableSelectionPageState extends State<TableSelectionPage> {
                   onPressed: unavailableTables.contains(tableNumber)
                       ? null // Disable button for unavailable tables
                       : () {
-                    // Navigate to the beverage order page with the selected table
+                    // Navigate to the beverage order page with the selected
+                    // table
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -70,13 +71,14 @@ class _TableSelectionPageState extends State<TableSelectionPage> {
                       ),
                     );
                   },
-                  child: Text('$tableNumber'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: unavailableTables.contains(tableNumber)
-                        ? Colors.red // Set red background for unavailable tables
+                        ? Colors.red // Set red background for unavailable
+                    // tables
                         : Colors.green,
-                    padding: EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(16),
                   ),
+                  child: Text('$tableNumber'),
                 ),
               )
                   .toList(),

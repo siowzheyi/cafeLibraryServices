@@ -19,7 +19,8 @@ class Beverage {
   final String imageUrl;
   bool isAvailable;
 
-  Beverage(this.name, this.price, this.description, this.imageUrl, this.isAvailable);
+  Beverage(this.name, this.price, this.description, this.imageUrl, this
+      .isAvailable);
 }
 
 class BeverageOrderPage extends StatelessWidget {
@@ -40,9 +41,9 @@ class BeverageOrderPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Order Beverages'),
+        title: const Text('Order Beverages'),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -55,12 +56,12 @@ class BeverageOrderPage extends StatelessWidget {
             padding: const EdgeInsets.all(16.0),
             child: Text(
               'Selected Table: $selectedTable',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
           ),
           Expanded(
             child: GridView.builder(
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2, // Number of columns in the grid
                 crossAxisSpacing: 8.0,
                 mainAxisSpacing: 8.0,
@@ -69,12 +70,10 @@ class BeverageOrderPage extends StatelessWidget {
               itemBuilder: (context, index) {
                 return GestureDetector(
                   onTap: () {
-                    // Add logic to handle beverage selection
-                    // You can navigate to another page or perform any other action
-                    // For simplicity, show a snackbar with the selected beverage name
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text('Selected Beverage: ${beverages[index].name}'),
+                        content: Text('Selected Beverage: ${beverages[index]
+                            .name}'),
                       ),
                     );
                   },
@@ -89,15 +88,16 @@ class BeverageOrderPage extends StatelessWidget {
                           width: 100.0,
                           fit: BoxFit.cover,
                         ),
-                        SizedBox(height: 8.0),
+                        const SizedBox(height: 8.0),
                         Text(
                           beverages[index].name,
-                          style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+                          style: const TextStyle(fontSize: 16.0, fontWeight:
+                          FontWeight.bold),
                         ),
                         Text('RM${beverages[index].price}'),
-                        SizedBox(height: 2.0),
+                        const SizedBox(height: 2.0),
                         ElevatedButton(
-                          child: Text('Order'),
+                          child: const Text('Order'),
                           onPressed: () {
 
                           },

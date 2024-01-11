@@ -29,7 +29,8 @@ class BookingRecord {
   final String orderDate;
   bool isBorrowed;
 
-  BookingRecord({required this.category, required this.itemName, required this.orderDate, this.isBorrowed = true});
+  BookingRecord({required this.category, required this.itemName, required this
+      .orderDate, this.isBorrowed = true});
 }
 
 class BookingPage extends StatefulWidget {
@@ -50,19 +51,21 @@ class _OrderHistoryState extends State<BookingPage> {
   Category selectedCategory = Category.Beverage; // Set a default category
 
   List<BookingRecord> getFilteredRecords() {
-    return bookingRecords.where((record) => record.category == selectedCategory).toList();
+    return bookingRecords.where((record) => record.category ==
+        selectedCategory).toList();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Booking Records'),
+        title: const Text('Booking Records'),
         leading: IconButton(
           onPressed: () {
-            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage()));
+            Navigator.pushReplacement(context, MaterialPageRoute(builder:
+                (context) => HomePage()));
           },
-          icon: Icon(
+          icon: const Icon(
             Icons.arrow_back,
           ),
         ),
@@ -70,10 +73,6 @@ class _OrderHistoryState extends State<BookingPage> {
       body: Column(
         children: [
           ToggleButtons(
-            children: [
-              Text('Beverage'),
-              Text('Food'),
-            ],
             isSelected: [
               selectedCategory == Category.Beverage,
               selectedCategory == Category.Food,
@@ -83,6 +82,10 @@ class _OrderHistoryState extends State<BookingPage> {
                 selectedCategory = Category.values[buttonIndex];
               });
             },
+            children: const [
+              Text('Beverage'),
+              Text('Food'),
+            ],
           ),
           Expanded(
             child: ListView.builder(
@@ -91,7 +94,7 @@ class _OrderHistoryState extends State<BookingPage> {
                 BookingRecord record = getFilteredRecords()[index];
 
                 return Card(
-                  margin: EdgeInsets.all(8.0),
+                  margin: const EdgeInsets.all(8.0),
                   child: ListTile(
                     title: Text(record.itemName),
                     subtitle: Text('Ordered on ${record.orderDate}'),

@@ -67,16 +67,17 @@ class _RoomListScreenState extends State<RoomListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Room Listing'),
+        title: const Text('Room Listing'),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage()));
+            Navigator.pushReplacement(context, MaterialPageRoute(builder:
+                (context) => HomePage()));
           },
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.search),
+            icon: const Icon(Icons.search),
             onPressed: () {
               showSearch(
                 context: context,
@@ -89,7 +90,7 @@ class _RoomListScreenState extends State<RoomListScreen> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(height: 16.0),
+          const SizedBox(height: 16.0),
           SingleChildScrollView(
             scrollDirection: Axis.vertical,
             child: Column(
@@ -103,7 +104,7 @@ class _RoomListScreenState extends State<RoomListScreen> {
                         if (i * 4 + j < rooms.length)
                           Container(
                             width: 150.0,
-                            margin: EdgeInsets.symmetric(horizontal: 8.0),
+                            margin: const EdgeInsets.symmetric(horizontal: 8.0),
                             child: RoomListItem(room: rooms[i * 4 + j]),
                           )
                         else
@@ -113,7 +114,7 @@ class _RoomListScreenState extends State<RoomListScreen> {
               ],
             ),
           ),
-          SizedBox(height: 16.0,),
+          const SizedBox(height: 16.0,),
         ],
       ),
     );
@@ -149,8 +150,8 @@ class RoomListItem extends StatelessWidget {
         );
       },
       child: Card(
-        margin: EdgeInsets.symmetric(horizontal: 8.0),
-        child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 8.0),
+        child: SizedBox(
           width: 150.0, // Adjust the width based on your preference
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -169,9 +170,10 @@ class RoomListItem extends StatelessWidget {
                   children: [
                     Text(
                       room.name,
-                      style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold),
+                      style: const TextStyle(fontSize: 14.0, fontWeight:
+                      FontWeight.bold),
                     ),
-                    SizedBox(height: 8.0),
+                    const SizedBox(height: 8.0),
                     Text(
                       room.isAvailable ? 'Available' : 'In used',
                       style: TextStyle(
@@ -200,7 +202,7 @@ class RoomSearchDelegate extends SearchDelegate<String> {
   List<Widget> buildActions(BuildContext context) {
     return [
       IconButton(
-        icon: Icon(Icons.clear),
+        icon: const Icon(Icons.clear),
         onPressed: () {
           query = '';
         },
@@ -244,7 +246,6 @@ class RoomSearchDelegate extends SearchDelegate<String> {
             // Add the selected room to the search history
             addToSearchHistory(suggestionList[index]);
 
-            // You can navigate to the room details screen or handle the selection as needed
             Navigator.push(
               context,
               MaterialPageRoute(

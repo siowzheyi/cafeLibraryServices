@@ -5,24 +5,25 @@ class PenaltyPage extends StatelessWidget {
   final List<BookingRecord> itemsWithPenalties;
 
   // Make itemsWithPenalties optional by providing a default empty list
-  PenaltyPage({List<BookingRecord>? itemsWithPenalties}) : itemsWithPenalties = itemsWithPenalties ?? [];
+  PenaltyPage({List<BookingRecord>? itemsWithPenalties}) : itemsWithPenalties
+  = itemsWithPenalties ?? [];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Penalty Page'),
+        title: const Text('Penalty Page'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               'Items with Penalties:',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Expanded(
               child: ListView.builder(
                 itemCount: itemsWithPenalties.length,
@@ -33,15 +34,19 @@ class PenaltyPage extends StatelessWidget {
                       elevation: 3,
                       child: ListTile(
                         title: Text(itemsWithPenalties[index].itemName),
-                        subtitle: Text('Category: ${itemsWithPenalties[index].category.toString().split('.').last}'),
+                        subtitle: Text('Category: ${itemsWithPenalties[index]
+                            .category.toString().split('.').last}'),
                         // Add a 'Pay' button to each ListTile
                         trailing: ElevatedButton(
                           onPressed: () {
                             // Handle the 'Pay' button press
-                            // You can navigate to a payment screen or perform other actions
-                            _handlePayButtonPress(context, itemsWithPenalties[index]);
+
+                            // You can navigate to a payment screen or perform
+                            // other actions
+                            _handlePayButtonPress(context, itemsWithPenalties
+                            [index]);
                           },
-                          child: Text('Pay'),
+                          child: const Text('Pay'),
                         ),
                       ),
                     ),
@@ -56,11 +61,14 @@ class PenaltyPage extends StatelessWidget {
   }
 
   // Function to handle the 'Pay' button press
-  void _handlePayButtonPress(BuildContext context, BookingRecord bookingRecord) {
+  void _handlePayButtonPress(BuildContext context, BookingRecord bookingRecord)
+  {
     TextEditingController paymentController = TextEditingController();
 
     // Add your logic here to handle the payment calculation
-    // For demonstration purposes, this example calculates a penalty based on the number of days overdue
+
+    // For demonstration purposes, this example calculates a penalty based on
+    // the number of days overdue
     DateTime borrowedDate = DateTime.parse(bookingRecord.borrowedDate);
     DateTime currentDate = DateTime.now();
     int daysDifference = currentDate.difference(borrowedDate).inDays;
@@ -72,7 +80,7 @@ class PenaltyPage extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Payment Details'),
+          title: const Text('Payment Details'),
           content: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
@@ -80,13 +88,14 @@ class PenaltyPage extends StatelessWidget {
               Text('Item: ${bookingRecord.itemName}'),
               Text('Penalty Rate: RM${penaltyRate.toStringAsFixed(2)} per day'),
               Text('Days Overdue: $daysDifference'),
-              Text('Total Penalty Amount: RM${penaltyAmount.toStringAsFixed(2)}'),
-              SizedBox(height: 16),
-              Text('Enter Payment Amount:'),
+              Text('Total Penalty Amount: RM${penaltyAmount.toStringAsFixed(
+                  2)}'),
+              const SizedBox(height: 16),
+              const Text('Enter Payment Amount:'),
               TextField(
                 controller: paymentController,
                 keyboardType: TextInputType.number,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   hintText: 'Enter amount',
                 ),
               ),
@@ -111,21 +120,22 @@ class PenaltyPage extends StatelessWidget {
                   } else {
                     // Show an error message if the payment is not sufficient
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Please enter exactly the amount of the penalty.'),
+                      const SnackBar(
+                        content: Text('Please enter exactly the amount of '
+                            'the penalty.'),
                       ),
                     );
                   }
                 } else {
                   // Show an error message if the input is empty
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
+                    const SnackBar(
                       content: Text('Please enter a valid amount.'),
                     ),
                   );
                 }
               },
-              child: Text('OK'),
+              child: const Text('OK'),
             ),
           ],
         );

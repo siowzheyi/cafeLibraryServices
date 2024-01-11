@@ -53,7 +53,8 @@ class _ReserveEquipmentPageState extends State<ReserveEquipmentPage> {
 
       if (pickedTime != null) {
         setState(() {
-          _startDate = "${pickedDate.year}-${pickedDate.month}-${pickedDate.day}";
+          _startDate = "${pickedDate.year}-${pickedDate.month}-${pickedDate
+              .day}";
           _startTime = "${pickedTime.hour}:${pickedTime.minute}";
           startTimeDateController.text = "$_startDate $_startTime";
         });
@@ -95,19 +96,19 @@ class _ReserveEquipmentPageState extends State<ReserveEquipmentPage> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text(
+            title: const Text(
               'Error',
               style: TextStyle(
                 color: Colors.red,
               ),
             ),
-            content: Text('Please fill in all the fields.'),
+            content: const Text('Please fill in all the fields.'),
             actions: [
               TextButton(
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
-                child: Text('OK'),
+                child: const Text('OK'),
               ),
             ],
           );
@@ -135,24 +136,25 @@ class _ReserveEquipmentPageState extends State<ReserveEquipmentPage> {
 
       // check if the duration is exactly for 1 hour
       if (difference.inHours == 1 && difference.inMinutes == 60) {
-        print('Equipment: $_selectedEquipment, From: $_startDate, $_startTime, To: $_endDate, $_endTime');
+        print('Equipment: $_selectedEquipment, From: $_startDate, $_startTime'
+            ', To: $_endDate, $_endTime');
         showDialog(
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text(
+              title: const Text(
                 'Success',
                 style: TextStyle(
                   color: Colors.green,
                 ),
               ),
-              content: Text('Your reservation has been submitted.'),
+              content: const Text('Your reservation has been submitted.'),
               actions: [
                 TextButton(
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                  child: Text('OK'),
+                  child: const Text('OK'),
                 ),
               ],
             );
@@ -163,19 +165,19 @@ class _ReserveEquipmentPageState extends State<ReserveEquipmentPage> {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text(
+              title: const Text(
                 'Error',
                 style: TextStyle(
                   color: Colors.red,
                 ),
               ),
-              content: Text('Please select exactly a 1-hour time slot.'),
+              content: const Text('Please select exactly a 1-hour time slot.'),
               actions: [
                 TextButton(
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                  child: Text('OK'),
+                  child: const Text('OK'),
                 ),
               ],
             );
@@ -189,23 +191,23 @@ class _ReserveEquipmentPageState extends State<ReserveEquipmentPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Equipment Reservation'),
+        title: const Text('Equipment Reservation'),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.pop(context);
           },
         ),
       ),
       body: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           children: <Widget>[
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Text(
-                '${_selectedEquipment}',
-                style: TextStyle(
+                _selectedEquipment,
+                style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 20.0,
                 ),
@@ -231,20 +233,20 @@ class _ReserveEquipmentPageState extends State<ReserveEquipmentPage> {
                 decoration: const InputDecoration(labelText: '-To-'),
               ),
             ),
-            SizedBox(height: 20),
-            Text(
+            const SizedBox(height: 20),
+            const Text(
               'Selection time for 1 hour only.',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 16.0,
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Row(
               children: [
                 ElevatedButton(
                   onPressed: _submitForm,
-                  child: Text('Submit'),
+                  child: const Text('Submit'),
                 ),
               ],
             ),

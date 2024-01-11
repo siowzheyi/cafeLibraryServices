@@ -68,20 +68,22 @@ class _EquipmentListScreenState extends State<EquipmentListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Equipment Listing'),
+        title: const Text('Equipment Listing'),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: (){
-            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage()));
+            Navigator.pushReplacement(context, MaterialPageRoute(builder:
+                (context) => HomePage()));
           },
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.search),
+            icon: const Icon(Icons.search),
             onPressed: () {
               showSearch(
                 context: context,
-                delegate: EquipmentSearchDelegate(equipment, addToSearchHistory),
+                delegate: EquipmentSearchDelegate(equipment,
+                    addToSearchHistory),
               );
             },
           ),
@@ -90,7 +92,7 @@ class _EquipmentListScreenState extends State<EquipmentListScreen> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(height: 16.0),
+          const SizedBox(height: 16.0),
           SingleChildScrollView(
             scrollDirection: Axis.vertical,
             child: Column(
@@ -104,8 +106,9 @@ class _EquipmentListScreenState extends State<EquipmentListScreen> {
                         if (i * 4 + j < equipment.length)
                           Container(
                             width: 150.0,
-                            margin: EdgeInsets.symmetric(horizontal: 8.0),
-                            child: EquipmentListItem(equipment: equipment[i * 4 + j]),
+                            margin: const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: EquipmentListItem(equipment:
+                            equipment[i * 4 + j]),
                           )
                         else
                           Container(), // Placeholder for empty cells
@@ -114,7 +117,7 @@ class _EquipmentListScreenState extends State<EquipmentListScreen> {
               ],
             ),
           ),
-          SizedBox(height: 16.0,),
+          const SizedBox(height: 16.0,),
         ],
       ),
     );
@@ -133,7 +136,8 @@ class Equipment {
 class EquipmentListItem extends StatelessWidget {
   final Equipment equipment;
 
-  const EquipmentListItem({Key? key, required this.equipment}) : super(key: key);
+  const EquipmentListItem({Key? key, required this.equipment}) : super(key:
+  key);
 
   @override
   Widget build(BuildContext context) {
@@ -152,8 +156,8 @@ class EquipmentListItem extends StatelessWidget {
         );
       },
       child: Card(
-        margin: EdgeInsets.symmetric(horizontal: 8.0),
-        child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 8.0),
+        child: SizedBox(
           width: 150.0, // Adjust the width based on your preference
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -171,18 +175,21 @@ class EquipmentListItem extends StatelessWidget {
                   children: [
                     Text(
                       equipment.name,
-                      style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold),
+                      style: const TextStyle(fontSize: 14.0, fontWeight:
+                      FontWeight.bold),
                     ),
                     Text(
-                      '${equipment.price}',
-                      style: TextStyle(fontSize: 12.0, fontStyle: FontStyle.italic),
+                      equipment.price,
+                      style: const TextStyle(fontSize: 12.0, fontStyle:
+                      FontStyle.italic),
                     ),
-                    SizedBox(height: 8.0),
+                    const SizedBox(height: 8.0),
                     Text(
                       equipment.isAvailable ? 'Available' : 'Checked Out',
                       style: TextStyle(
                         fontSize: 12.0,
-                        color: equipment.isAvailable ? Colors.green : Colors.red,
+                        color: equipment.isAvailable ? Colors.green : Colors
+                            .red,
                       ),
                     ),
                   ],
@@ -206,7 +213,7 @@ class EquipmentSearchDelegate extends SearchDelegate<String> {
   List<Widget> buildActions(BuildContext context) {
     return [
       IconButton(
-        icon: Icon(Icons.clear),
+        icon: const Icon(Icons.clear),
         onPressed: () {
           query = '';
         },
@@ -251,7 +258,8 @@ class EquipmentSearchDelegate extends SearchDelegate<String> {
             // Add the selected equipment to the search history
             addToSearchHistory(suggestionList[index]);
 
-            // You can navigate to the equipment details screen or handle the selection as needed
+            // You can navigate to the equipment details screen or handle the
+            // selection as needed
             Navigator.push(
               context,
               MaterialPageRoute(

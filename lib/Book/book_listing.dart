@@ -1,6 +1,10 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cafe_library_services/Book/book_details.dart';
 import 'package:cafe_library_services/Welcome/home.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import '../Controller/connection.dart';
+import 'dart:convert';
 
 void main(){
   runApp(BookListing());
@@ -27,33 +31,45 @@ class BookListScreen extends StatefulWidget {
 }
 
 class _BookListScreenState extends State<BookListScreen> {
-  final List<Book> books = [
-    Book('The Great Gatsby', 'F. Scott Fitzgerald', 'assets/great_gatsby.jpg', true, 'Classic'),
-    Book('To Kill a Mockingbird', 'Harper Lee', 'assets/to_kill_a_mockingbird.jpg', true, 'Classic'),
-    Book('1984', 'George Orwell', 'assets/1984.jpg', false, 'Dystopian'),
-    Book('Pride and Prejudice', 'Jane Austen', 'assets/pride_and_prejudice.jpg', true, 'Classic'),
-    Book('The Catcher in the Rye', 'J.D. Salinger', 'assets/catcher_in_the_rye.jpg', false, 'Fiction'),
-    Book('Makanan Warisan Malaysia', 'Kalsom Taib', 'assets/makanan_warisan_malaysia.jpg', true, 'Cooking'),
-    Book('Palestin - Kemenangan Yang Dekat', 'Karya Bestari', 'assets/palestin.jpg', false, 'History'),
-    Book('Brain Teasers', 'Lonely Planet K', 'assets/brain_teasers.jpg', true, 'Puzzle'),
-    Book('My ABC', 'Brown Watson', 'assets/abc.jpg', false, 'Children'),
-    Book('The Detective Dog', 'Macmillan UK', 'assets/dog.jpg', true, 'Children'),
-    Book('Sparring Partners', 'John Grisham', 'assets/sparring_partners.jpg', false, 'Fiction'),
-    Book('Hades', 'Aishah Zainal', 'assets/hades.jpg', true, 'Thriller'),
-  ];
+
+  List<Book> books = [];
+
+  Future<void> getBooks() async {
+    try {
+      var response = await http.get(Uri.parse(API.book));
+      if (response.statusCode == 200) {
+        List<dynamic> decodedData = jsonDecode(response.body);
+
+        setState(() {
+          books = decodedData.map((data) => Book(
+            data['name'] ?? '',
+            data['genre'] ?? '',
+            data['picture'] ?? '',
+            data['author_name'] ?? '',
+            int.tryParse(data['remainder_count'] ?? '') ?? 0,
+            int.tryParse(data['availability'] ?? '') ?? 1,
+          )).toList();
+        });
+
+        print(books);
+      }
+    } catch (ex) {
+      print("Error :: " + ex.toString());
+    }
+  }
 
   List<Book> filteredBooks = [];
   List<Book> searchHistory = [];
 
   @override
   void initState() {
-    super.initState();
+    getBooks();
     filteredBooks = List.from(books);
-    //searchHistory = List.from(searchHistory);
+    super.initState();
   }
 
   List<String> getGenres() {
-    Set<String> genres = Set();
+    Set<String> genres = {};
     for (var book in books) {
       genres.add(book.genre);
     }
@@ -64,8 +80,7 @@ class _BookListScreenState extends State<BookListScreen> {
     setState(() {
       filteredBooks = books
           .where((book) =>
-      book.title.toLowerCase().contains(query.toLowerCase()) ||
-          book.author.toLowerCase().contains(query.toLowerCase()))
+      book.name.toLowerCase().contains(query.toLowerCase()))
           .toList();
       //update search history based on the user's query
     });
@@ -73,7 +88,7 @@ class _BookListScreenState extends State<BookListScreen> {
 
   void addToSearchHistory(Book book) {
     setState(() {
-      searchHistory.add(book);
+      //searchHistory.add(book);
     });
   }
 
@@ -98,16 +113,17 @@ class _BookListScreenState extends State<BookListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Book Listing'),
+        title: const Text('Book Listing'),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: (){
-            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage()));
+            Navigator.pushReplacement(context, MaterialPageRoute(builder:
+                (context) => HomePage()));
           },
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.search),
+            icon: const Icon(Icons.search),
             onPressed: () {
               showSearch(
                 context: context,
@@ -121,21 +137,26 @@ class _BookListScreenState extends State<BookListScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: 16.0),
+            const SizedBox(height: 16.0),
             SingleChildScrollView(
               scrollDirection: Axis.vertical,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  const Text('Search book by genre:',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 32.0,
+                  ),),
                   Container(
-                    padding: EdgeInsets.symmetric(vertical: 16.0),
+                    padding: const EdgeInsets.symmetric(vertical: 16.0),
                     child: GenreSelectionWidget(filterBooksByGenre),
                   ),
                   Container(
-                    padding: EdgeInsets.symmetric(vertical: 16.0),
+                    padding: const EdgeInsets.symmetric(vertical: 16.0),
                     child: ListView.builder(
                       shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
+                      physics: const NeverScrollableScrollPhysics(),
                       itemCount: filteredBooks.length,
                       itemBuilder: (context, index) {
                         return BookListItem(book: filteredBooks[index]);
@@ -145,7 +166,7 @@ class _BookListScreenState extends State<BookListScreen> {
                 ],
               ),
             ),
-            SizedBox(height: 16.0,),
+            const SizedBox(height: 16.0,),
           ],
         ),
       )
@@ -157,7 +178,8 @@ class GenreBooksScreen extends StatelessWidget {
   final String genre;
   final List<Book> books;
 
-  const GenreBooksScreen({Key? key, required this.genre, required this.books}) : super(key: key);
+  const GenreBooksScreen({Key? key, required this.genre, required this.books})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -166,7 +188,7 @@ class GenreBooksScreen extends StatelessWidget {
         title: Text(genre),
       ),
       body: GridView.builder(
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 4,
           crossAxisSpacing: 8.0,
           mainAxisSpacing: 8.0,
@@ -188,7 +210,8 @@ class GenreSelectionWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Use the context to obtain the current state instance
-    final _BookListScreenState? state = context.findAncestorStateOfType<_BookListScreenState>();
+    final _BookListScreenState? state = context.findAncestorStateOfType<
+        _BookListScreenState>();
 
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
@@ -196,7 +219,7 @@ class GenreSelectionWidget extends StatelessWidget {
         children: [
           for (var genre in state!.getGenres())
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 8.0),
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
               child: ElevatedButton(
                 onPressed: () {
                   onGenreSelected(genre);
@@ -211,13 +234,14 @@ class GenreSelectionWidget extends StatelessWidget {
 }
 
 class Book {
-  final String title;
-  final String author;
-  final String imageUrl;
-  bool isAvailable;
+  final String name;
   final String genre;
+  final String picture;
+  final String author;
+  final int remainder;
+  final int availability;
 
-  Book(this.title, this.author, this.imageUrl, this.isAvailable, this.genre);
+  Book(this.name, this.genre, this.picture, this.author, this.remainder, this.availability);
 }
 
 class BookListItem extends StatelessWidget {
@@ -233,26 +257,33 @@ class BookListItem extends StatelessWidget {
           context,
           MaterialPageRoute(
             builder: (context) => BookDetailsPage(
-              title: book.title,
+              name: book.name,
+              genre: book.genre,
+              picture: book.picture,
               author: book.author,
-              imageUrl: book.imageUrl,
-              isAvailable: book.isAvailable,
+              remainder: book.remainder,
+              availability: book.availability,
             ),
           ),
         );
       },
       child: Card(
-        margin: EdgeInsets.symmetric(horizontal: 8.0),
-        child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 8.0),
+        clipBehavior: Clip.antiAlias, // Ensure that Card clips its children
+        child: SizedBox(
           width: 150.0,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Image.asset(
-                book.imageUrl,
-                width: double.infinity,
-                height: 200.0,
-                fit: BoxFit.cover,
+              Expanded(
+                child: Center(
+                  child: CachedNetworkImage(
+                    imageUrl: book.picture,
+                    placeholder: (context, url) => CircularProgressIndicator(),
+                    errorWidget: (context, url, error) => Text('Image is not loaded'),
+                    fit: BoxFit.cover,
+                  ),
+                ),
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -260,21 +291,14 @@ class BookListItem extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      book.title,
-                      style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold),
+                      book.name,
+                      style: const TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold),
                     ),
                     Text(
                       'by ${book.author}',
-                      style: TextStyle(fontSize: 12.0, fontStyle: FontStyle.italic),
+                      style: const TextStyle(fontSize: 12.0, fontStyle: FontStyle.italic),
                     ),
-                    SizedBox(height: 8.0),
-                    Text(
-                      book.isAvailable ? 'Available' : 'Checked Out',
-                      style: TextStyle(
-                        fontSize: 12.0,
-                        color: book.isAvailable ? Colors.green : Colors.red,
-                      ),
-                    ),
+                    const SizedBox(height: 8.0),
                   ],
                 ),
               ),
@@ -296,7 +320,7 @@ class BookSearchDelegate extends SearchDelegate<String> {
   List<Widget> buildActions(BuildContext context) {
     return [
       IconButton(
-        icon: Icon(Icons.clear),
+        icon: const Icon(Icons.clear),
         onPressed: () {
           query = '';
         },
@@ -328,28 +352,30 @@ class BookSearchDelegate extends SearchDelegate<String> {
         ? books
         : books
         .where((book) =>
-    book.title.toLowerCase().contains(query.toLowerCase()) ||
-        book.author.toLowerCase().contains(query.toLowerCase()))
+    book.name.toLowerCase().contains(query.toLowerCase()))
         .toList();
 
     return ListView.builder(
       itemCount: suggestionList.length,
       itemBuilder: (context, index) {
         return ListTile(
-          title: Text(suggestionList[index].title),
+          title: Text(suggestionList[index].name),
           onTap: () {
             // Add the selected book to the search history
             addToSearchHistory(suggestionList[index]);
 
-            // You can navigate to the book details screen or handle the selection as needed
+            // You can navigate to the book details screen or handle the
+            // selection as needed
             Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (context) => BookDetailsPage(
-                  title: suggestionList[index].title,
+                  name: suggestionList[index].name,
+                  genre: suggestionList[index].genre,
+                  picture: suggestionList[index].picture,
                   author: suggestionList[index].author,
-                  imageUrl: suggestionList[index].imageUrl,
-                  isAvailable: suggestionList[index].isAvailable,
+                  remainder: suggestionList[index].remainder,
+                  availability: suggestionList[index].availability,
                   // Pass more details as needed
                 ),
               ),

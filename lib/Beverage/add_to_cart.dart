@@ -57,21 +57,23 @@ class _BeverageOrderPageState extends State<BeverageOrderPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Order Beverages'),
+        title: const Text('Order Beverages'),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => BeverageListing()));
+            Navigator.pushReplacement(context, MaterialPageRoute(builder:
+                (context) => BeverageListing()));
           },
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.shopping_cart),
+            icon: const Icon(Icons.shopping_cart),
             onPressed: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => OrderSummaryPage(selectedBeverages: selectedBeverages),
+                  builder: (context) => OrderSummaryPage(selectedBeverages:
+                  selectedBeverages),
                 ),
               );
             },
@@ -79,7 +81,7 @@ class _BeverageOrderPageState extends State<BeverageOrderPage> {
         ],
       ),
       body: GridView.builder(
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
           crossAxisSpacing: 8.0,
           mainAxisSpacing: 8.0,
@@ -114,16 +116,18 @@ class _BeverageOrderPageState extends State<BeverageOrderPage> {
                     width: 100.0,
                     fit: BoxFit.cover,
                   ),
-                  SizedBox(height: 8.0),
+                  const SizedBox(height: 8.0),
                   Text(
                     beverage.name,
-                    style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+                    style: const TextStyle(fontSize: 16.0, fontWeight:
+                    FontWeight.bold),
                   ),
                   Text('RM${beverage.price.toStringAsFixed(2)}'),
-                  SizedBox(height: 2.0),
+                  const SizedBox(height: 2.0),
                   Text(
                     beverage.isAvailable
-                        ? selectedBeverages.contains(beverage) ? 'Selected' : 'Tap to select'
+                        ? selectedBeverages.contains(beverage) ? 'Selected'
+                        : 'Tap to select'
                         : 'Out of Stock',
                     style: TextStyle(
                       color: beverage.isAvailable ? Colors.green : Colors.red,
