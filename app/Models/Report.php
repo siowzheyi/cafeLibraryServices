@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Book extends Eloquent
+class Report extends Eloquent
 {
     use SoftDeletes;
 
@@ -28,20 +28,30 @@ class Book extends Eloquent
     // protected $casts = [
     //     'email_verified_at' => 'datetime',
     // ];
-    protected $dates = ['created_at', 'updated_at', 'deleted_at','expired_at'];
+    protected $dates = ['created_at', 'updated_at', 'deleted_at'];
     protected $guarded = [];
 
-    protected $table = 'books';
+    protected $table = 'reports';
 
  
-    public function library()
+    public function room()
     {
-        return $this->belongsTo('App\Models\Library','library_id','id');
+        return $this->belongsTo('App\Models\Room','room_id','id');
     }
    
-    public function booking()
+    public function equipment()
     {
-        return $this->hasMany('App\Models\Booking','book_id');
+        return $this->belongsTo('App\Models\Equipment','equipment_id','id');
+    }
+    
+    public function book()
+    {
+        return $this->belongsTo('App\Models\Book','book_id','id');
+    }
+    
+    public function user()
+    {
+        return $this->belongsTo('App\Models\User','user_id','id');
     }
 
 }

@@ -39,6 +39,9 @@ class BookController extends BaseController
         $result = $this->services->show($book);
 
         return $this->sendResponse($result, "Data successfully retrieved. "); 
+        // dd($result);
+        
+        // return view("",[])
     }
 
     // This api is for admin user to view list of Book
@@ -76,6 +79,35 @@ class BookController extends BaseController
          $result = $this->services->bookListing($input);
  
          return $this->sendResponse($result, "Data has been successfully retrieved. ");   
+     }
+
+     public function importBook(Request $request)
+     {
+        $input = $request->all();
+
+        App::setLocale($request->header('language'));
+
+        $validator = Validator::make($input, [
+            'excel' => array('required',function ($attribute, $value, $fail) {
+                $etx = $value->getClientOriginalExtension();
+                $formats = ['xls', 'xlsx', 'ods', 'csv'];
+                if (!in_array($etx, $formats)) {
+                    $fail('Only supports upload .xlsx, .xls files');
+                }
+            })
+        ]);
+
+        if ($validator->fails()) {
+            return $this->sendCustomValidationError($validator->errors());
+        }
+
+        $result = $this->services->importBook($request);
+        // dd($result['details']);
+        if($result['status'] == "success")
+        return $this->sendResponse("", "Data has been successfully imported. ");   
+        else
+        return $this->sendCustomValidationError($result['details']);
+
      }
 
 

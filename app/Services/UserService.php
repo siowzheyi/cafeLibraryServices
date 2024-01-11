@@ -8,6 +8,10 @@ use Config;
 use DateTime;
 use App\Models\User;
 use App\Models\Roles;
+use App\Models\Booking;
+use App\Models\Room;
+use App\Models\Book;
+use App\Models\Equipment;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -198,6 +202,244 @@ class UserService
         $user->save();
 
         return;
+    }
+
+    public function penaltyReport($request)
+    {
+        $library_id = $request['library_id'] ?? null;
+        // $searchValue = isset($search_arr) ? $search_arr : '';
+        
+        $user = auth()->user();
+
+        $records =  Booking::join('users','users.id','=','bookings.user_id')
+        ->leftjoin('books', function ($join) {
+            $join->on('books.id', '=', 'bookings.book_id');
+        })
+        ->leftjoin('equipments', function ($join) {
+            $join->on('equipments.id', '=', 'bookings.equipment_id');
+        })
+        ->leftjoin('rooms', function ($join) {
+            $join->on('rooms.id', '=', 'bookings.room_id');
+        })
+        ->where('bookings.penalty_status',1);
+        
+
+        if($library_id != null || $user->library_id != null)
+        {
+            if($user->library_id != null)
+            $library_id = $user->library_id;
+
+            $records =  Booking::join('users','users.id','=','bookings.user_id')
+            ->leftjoin('books', function ($join) use ($library_id) {
+                $join->on('books.id', '=', 'bookings.book_id')
+                ->where('books.library_id',$library_id);
+            })
+            ->leftjoin('equipments', function ($join) use ($library_id) {
+                $join->on('equipments.id', '=', 'bookings.equipment_id')
+                ->where('equipments.library_id',$library_id);
+            })
+            ->leftjoin('rooms', function ($join) use ($library_id) {
+                $join->on('rooms.id', '=', 'bookings.room_id')
+                ->where('rooms.library_id',$library_id);
+            })
+            ->where('bookings.penalty_status',1);
+        }
+
+        if($user->hasRole('user'))
+            $records = $records->where('bookings.user_id',$user->id);
+
+
+        $service = new Service();
+
+        $totalRecords = $records->count();
+
+        $totalRecordswithFilter = $records->count();
+
+        $records = $records->select(
+            'bookings.*',
+            'users.name as user_name'
+        )
+            ->orderBy('bookings.penalty_paid_status', 'asc')
+            ->orderBy('bookings.created_at', 'desc')
+
+            ->get();
+
+        $data_arr = array();
+        foreach ($records as $key => $record) {
+           
+
+            if($record->book_id != null)
+            {
+                $item_id = $record->book_id;
+                $item = Book::find($item_id);
+                $item_name = $item->name;
+                $item_picture = $item->picture ? $service->getImage('book',$item->id) : null;
+
+            }
+            elseif($record->equipment_id != null)
+            {
+                $item_id = $record->equipment_id;
+                $item = Equipment::find($item_id);
+                $item_name = $item->name;
+                $item_picture = $item->picture ? $service->getImage('equipment',$item->id) : null;
+
+            }
+            elseif($record->room_id != null)
+            {
+                $item_id = $record->room_id;
+                $item = Room::find($item_id);
+                $item_name = $item->room_no;
+                $item_picture = $item->picture ? $service->getImage('room',$item->id) : null;
+
+            }
+            $library = $item->library->first();
+
+            if($record->penalty_paid_status == 1)
+                $penalty_paid_status = "Paid";
+            else
+            $penalty_paid_status = "Haven't pay";
+
+
+            $data_arr[] = array(
+               "id" => $record->id,
+               "user_name" => $record->user_name,
+                // "item" => $item,
+                "item_id" => $item_id,
+                "item_name" => $item_name,
+                "item_picture" => $item_picture,
+
+                "library_name" => $library->name,
+                "library_id" => $library->id,
+
+                // "penalty_status" => $record->penalty_status,
+                "penalty_amount" => $record->penalty_amount,
+                "penalty_paid_status" => $penalty_paid_status,
+
+                "quantity" => $record->quantity,
+                // "total_price" => $record->total_price,
+                "created_at" => $record->created_at != null ? date('Y-m-d H:i:s',strtotime($record->created_at)) : null,
+
+
+           );
+        }
+
+        $result['iTotalRecords']  = $totalRecords;
+        $result["iTotalDisplayRecords"] = intval($totalRecordswithFilter);
+        $result['aaData'] =  $data_arr;
+
+        return $result;
+    }
+
+    public function penaltyReportItem($request, $booking_id)
+    {
+        // $library_id = $request['library_id'] ?? null;
+        // $searchValue = isset($search_arr) ? $search_arr : '';
+        
+        $user = auth()->user();
+
+        $records =  Booking::join('users','users.id','=','bookings.user_id')
+        ->leftjoin('books', function ($join) {
+            $join->on('books.id', '=', 'bookings.book_id');
+        })
+        ->leftjoin('equipments', function ($join) {
+            $join->on('equipments.id', '=', 'bookings.equipment_id');
+        })
+        ->leftjoin('rooms', function ($join) {
+            $join->on('rooms.id', '=', 'bookings.room_id');
+        })
+        ->where('bookings.penalty_status',1)
+        ->leftjoin('payments','payments.booking_id','=','bookings.id')
+        ->where('bookings.id',$booking_id);        
+
+        $service = new Service();
+
+        $totalRecords = $records->count();
+
+        $totalRecordswithFilter = $records->count();
+
+        $records = $records->select(
+            'bookings.*',
+            'users.name as user_name',
+            'users.phone_no as user_phone_no',
+            'payments.subtotal',
+            'payments.unit_price',
+            'payments.quantity',
+            'payments.total_price',
+            'payments.sst_amount',
+            'payments.service_charge_amount',
+            'payments.item_name'
+            
+        )
+            ->orderBy('bookings.penalty_paid_status', 'asc')
+            ->get();
+
+        $data_arr = array();
+        foreach ($records as $key => $record) {
+           
+
+            if($record->book_id != null)
+            {
+                $item_id = $record->book_id;
+                $item = Book::find($item_id);
+                $item_picture = $item->picture ? $service->getImage('book',$item->id) : null;
+
+            }
+            elseif($record->equipment_id != null)
+            {
+                $item_id = $record->equipment_id;
+                $item = Equipment::find($item_id);
+                $item_picture = $item->picture ? $service->getImage('equipment',$item->id) : null;
+
+            }
+            elseif($record->room_id != null)
+            {
+                $item_id = $record->room_id;
+                $item = Room::find($item_id);
+                $item_picture = $item->picture ? $service->getImage('room',$item->id) : null;
+
+            }
+            $library = $item->library->first();
+
+            if($record->penalty_paid_status == 1)
+                $penalty_paid_status = "Paid";
+            else
+            $penalty_paid_status = "Haven't pay";
+
+
+            $data_arr[] = array(
+               "id" => $record->id,
+               "user_name" => $record->user_name,
+               "user_phone_no" => $record->user_phone_no,
+                "item_id" => $item_id,
+                "item_name" => $record->item_name,
+                "item_picture" => $item_picture,
+                "unit_price"    =>  $record->unit_price,
+                "quantity"  =>  $record->quantity,
+                "subtotal"  =>  $record->subtotal,  
+                "sst_amount"  =>  $record->sst_amount,  
+                "service_charge_amount"  =>  $record->service_charge_amount,  
+                "total_price"  =>  $record->total_price,  
+
+                "library_name" => $library->name,
+                "library_id" => $library->id,
+
+                // "penalty_status" => $record->penalty_status,
+                "penalty_amount" => $record->penalty_amount,
+                "penalty_paid_status" => $penalty_paid_status,
+
+                "quantity" => $record->quantity,
+                // "total_price" => $record->total_price,
+                "created_at" => $record->created_at != null ? date('Y-m-d H:i:s',strtotime($record->created_at)) : null,
+
+
+           );
+        }
+
+        $result['iTotalRecords']  = $totalRecords;
+        $result["iTotalDisplayRecords"] = intval($totalRecordswithFilter);
+        $result['aaData'] =  $data_arr;
+
+        return $result;
     }
 
 }

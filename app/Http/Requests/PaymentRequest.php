@@ -4,11 +4,13 @@ namespace App\Http\Requests;
 
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Http\FormRequest;
-use App\Models\Room;
+use App\Models\Payment;
+use App\Models\Booking;
+use App\Models\Order;
 
 use Illuminate\Validation\Rule;
 
-class RoomRequest extends FormRequest
+class PaymentRequest extends FormRequest
 {
     /**
      * Determine if the user authorized to make this request.
@@ -30,33 +32,36 @@ class RoomRequest extends FormRequest
         $request = Request();
         $request_method = Request::method();
         $request_path = $request->path();
-       
+        // dd()
 
         if ($request_method == "POST") {
     
             return [
-                'room_no' => ['required'],
-                'room_type' => ['required'],
-                'remark' => ['nullable'],
-                'picture' => ['required'],
-
-                "library_id"   =>  array('nullable','exists:libraries,id',
-                Rule::requiredIf(function () use ($request) {
-                    return $request->user()->hasAnyRole(['superadmin', 'admin']);
-                }))
+                'type' => ['required','in:penalty,order'],
+                'booking_id' => ['nullable','required_if:type,penalty','exists:bookings,id',function ($attribute, $value, $fail){
+                    $booking = Booking::find($value);
+                    if($booking->penalty_status != 1 || $booking->penalty_paid_status != 0)
+                        $fail("This booking has no penalty");
+                }], 
+                'order_id' => ['nullable','required_if:type,order','exists:orders,id',function ($attribute, $value, $fail){
+                    $order = Order::find($value);
+                    if($order->payment_status == "success")
+                        $fail("This order has been paid");
+                }], 
+                
             ];
            
         } elseif ($request_method === "PATCH") {
             return [
-                'type' => array('required','in:status'),
+                // 'type' => array('required','in:status'),
             ];
         } elseif ($request_method == "PUT") {
             return [
-                'room_no' => ['required'],
-                'room_type' => ['required'],
-                'remark' => ['nullable'],
-                'status'   =>  array('required','in:1,0'),
-                'picture' => ['required'],
+                // 'title' => array('required'),
+                // 'status'   =>  array('required','in:1,0'),
+                // 'content' => ['required'],
+                // 'expired_at' => ['nullable'],
+                // 'picture'   =>  ['required'],
 
             ];
         }

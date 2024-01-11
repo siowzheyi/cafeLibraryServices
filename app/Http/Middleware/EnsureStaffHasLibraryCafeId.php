@@ -6,7 +6,7 @@ use Closure;
 use Session;
 use Illuminate\Support\Facades\Auth;
 
-class StaffAuthentication
+class EnsureStaffHasLibraryCafeId
 {
     /**
      * Hnadle an incoming request
@@ -20,8 +20,9 @@ class StaffAuthentication
         $user = auth()->user();
 
         if ($user) {
-            if (!$user->hasAnyRole(['staff','admin','superadmin'])) {
-                abort(401, 'This action is unauthorized.');
+            if ($user->hasRole('staff')) {
+                if($user->cafe_id == null && $user->library_id == null)
+                    abort(401, 'This action is unauthorized.');
             }
             
             return $next($request);

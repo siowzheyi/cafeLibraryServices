@@ -4,11 +4,11 @@ namespace App\Http\Requests;
 
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Http\FormRequest;
-use App\Models\Room;
+use App\Models\Order;
 
 use Illuminate\Validation\Rule;
 
-class RoomRequest extends FormRequest
+class OrderRequest extends FormRequest
 {
     /**
      * Determine if the user authorized to make this request.
@@ -30,20 +30,14 @@ class RoomRequest extends FormRequest
         $request = Request();
         $request_method = Request::method();
         $request_path = $request->path();
-       
+        // dd()
 
         if ($request_method == "POST") {
     
             return [
-                'room_no' => ['required'],
-                'room_type' => ['required'],
-                'remark' => ['nullable'],
-                'picture' => ['required'],
-
-                "library_id"   =>  array('nullable','exists:libraries,id',
-                Rule::requiredIf(function () use ($request) {
-                    return $request->user()->hasAnyRole(['superadmin', 'admin']);
-                }))
+                'beverage_id' => ['required','exists:beverages,id'],
+                'quantity' => ['required'],
+                'table_id' => ['required','exists:tables,id'],
             ];
            
         } elseif ($request_method === "PATCH") {
@@ -52,11 +46,11 @@ class RoomRequest extends FormRequest
             ];
         } elseif ($request_method == "PUT") {
             return [
-                'room_no' => ['required'],
-                'room_type' => ['required'],
-                'remark' => ['nullable'],
-                'status'   =>  array('required','in:1,0'),
-                'picture' => ['required'],
+                // 'title' => array('required'),
+                // 'status'   =>  array('required','in:1,0'),
+                // 'content' => ['required'],
+                // 'expired_at' => ['nullable'],
+                // 'picture'   =>  ['required'],
 
             ];
         }

@@ -10,6 +10,8 @@ use App\Models\User;
 use App\Models\Roles;
 use App\Models\Announcement;
 use App\Models\Library;
+use App\Models\Media;
+use Illuminate\Http\UploadedFile;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -27,11 +29,22 @@ class AnnouncementService
         
         $order_arr = $request->input('order');
         $columnSortOrder = isset($order_arr) ? $order_arr : 'desc';
-
+        $library_id = $request->input('library_id');
+        
         $user = auth()->user();
-        $library = Library::find($user->library_id);
+        if($user->hasRole('staff'))
+        {
+            $library = Library::find($user->library_id);
+        }
+        else
+        {
+            if(!isset($library_id) || $library_id == null)
+                return [];
+            else
+                $library = Library::find($library_id);
+        }
+        $service = new Service();
         $records = $library->announcement();
-        // dd($request);
 
         $totalRecords = $records->count();
 
@@ -51,8 +64,6 @@ class AnnouncementService
 
         $records = $records->select(
             'announcements.*',
-            'libraries.name as library_name',
-            'libraries.address as library_address'
         )
             ->orderBy('announcements.created_at', $columnSortOrder)
             ->get();
@@ -63,11 +74,9 @@ class AnnouncementService
                "id" => $record->id,
                "title" => $record->title,
                "content" => $record->content,
-               "expired_at" => date('Y-m-d H:i:s',strtotime($record->expired_at)),
-
+               "picture"    => $record->picture ? $service->getImage('announcement',$record->id) : null,      
+               "expired_at" => $record->expired_at != null ? date('Y-m-d H:i:s',strtotime($record->expired_at)) : null,
                "status" => $record->status,
-               "library_name" => $record->library_name,
-               "library_address" => $record->library_address,
 
            );
         }
@@ -81,13 +90,16 @@ class AnnouncementService
 
     public function show($announcement)
     {
+        $service = new Service();
         $library = $announcement->library()->first();
         $data = [
             "id"    =>  $announcement->id,
             "title"    =>  $announcement->title,
             "content"    =>  $announcement->content,
+            "picture"    => $announcement->picture ? $service->getImage('announcement',$announcement->id) : null,      
+
             "status"    =>  $announcement->status,
-            "expired_at" => date('Y-m-d H:i:s',strtotime($announcement->expired_at)),
+            "expired_at" => $announcement->expired_at != null ? date('Y-m-d H:i:s',strtotime($announcement->expired_at)) : null,
 
             "library_id"    =>  $announcement->library_id,
             "library_name"    =>  $library->name,
@@ -100,7 +112,9 @@ class AnnouncementService
 
     public function store($request)
     {
+        $raw_request = $request;
         $request = $request->validated();
+        // dd($request);
 
         $announcement = new Announcement();
         $announcement->title = $request['title'];
@@ -110,8 +124,21 @@ class AnnouncementService
 
 
         $user = auth()->user();
-        $announcement->library_id = $user->library_id;
+        if($user->hasRole('staff'))
+        {
+            $announcement->library_id = $user->library_id;
+        }
+        else
+        {
+            $announcement->library_id = $request['library_id'];
+
+        }
         $announcement->save();
+
+        if ($raw_request->hasfile('picture')) {
+            $service = new Service();
+            $service->storeImage('announcement',$raw_request->file('picture'),$announcement->id);
+        }
 
 
         return $announcement;
@@ -119,6 +146,7 @@ class AnnouncementService
 
     public function update($request, $announcement)
     {
+        $raw_request = $request;
         $request = $request->validated();
 
         if (isset($request['type'])) {
@@ -135,8 +163,53 @@ class AnnouncementService
         if(isset($request['expired_at']))
         $announcement->expired_at = $request['expired_at'];
         else
-        $announce->expired_at = null;
+        $announcement->expired_at = null;
         $announcement->save();
+
+         //update image of announcements
+         if($raw_request->hasfile('picture')) {
+            $file = $raw_request->file('picture');
+            $media = Media::where('model_type', 'App\Models\Announcement')->where('name', Config::get('main.announcement_image_path'))->where('model_id', $announcement->id)->first();
+            if($media == null) {
+                $service = new Service();
+                $service->storeImage('announcement', $file, $announcement->id);
+                $announcement->save();
+                return;
+            }
+            $previous_file = Storage::disk('public')->get($media->name . $media->file_name);
+            // $previous_file = $service->getImage('main',$media->id);
+
+
+            // Create a temporary file in the server's tmp directory
+            $tmpFilePath = tempnam(sys_get_temp_dir(), 'uploaded_file');
+            $tmpFile = new UploadedFile($tmpFilePath, $media->file_name, null, null, true);
+
+            // Write the file contents to the temporary file
+            file_put_contents($tmpFilePath, $previous_file);
+
+            $previous_file_name = preg_replace('/^[0-9]+_/', '', $tmpFile->getClientOriginalName());
+
+            $uploaded_file_name = $file->getClientOriginalName();
+            $uploaded_file_size = $file->getSize();
+            // dd($tmpFile->getSize(),$previous_file_size, $file,$previous_file_size , $uploaded_file_size);
+            //compare
+            if($previous_file_name != $uploaded_file_name || $tmpFile->getSize() != $uploaded_file_size) {
+                // $service->storeImage('main',$file, $request['display_name']);
+                $mime_type = $file->getClientOriginalExtension();
+                $storage_path = $media->name;
+
+                $path = Storage::disk('public')->putFileAs($storage_path, $file, $uploaded_file_name, ['visibility' => 'public']);
+                // dd($storage_path, $file, $uploaded_file_name,$path);
+
+                $media->file_name = $uploaded_file_name;
+                $media->mime_type = $mime_type;
+                // $media->display_name = $request['display_name'];
+                $announcement->picture = $uploaded_file_name;
+                $media->save();
+                $announcement->save();
+            }
+
+        }
 
         return;
     }
@@ -149,6 +222,7 @@ class AnnouncementService
         $records = Announcement::where('library_id',$request['library_id'])
                         ->where('status',1);
         // dd($request);
+        $service = new Service();
 
         $totalRecords = $records->count();
 
@@ -166,7 +240,8 @@ class AnnouncementService
                "id" => $record->id,
                "title" => $record->title,
                 "content" => $record->content,
-               
+                "picture"    => $record->picture ? $service->getImage('announcement',$record->id) : null,      
+
            );
         }
 

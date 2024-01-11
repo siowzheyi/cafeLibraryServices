@@ -27,9 +27,20 @@ class TableService
         
         $order_arr = $request->input('order');
         $columnSortOrder = isset($order_arr) ? $order_arr : 'desc';
+        $library_id = $request->input('library_id');
 
         $user = auth()->user();
-        $library = Library::find($user->library_id);
+        if($user->hasRole('staff'))
+        {
+            $library = Library::find($user->library_id);
+        }
+        else
+        {
+            if(!isset($library_id) || $library_id == null)
+                return [];
+            else
+                $library = Library::find($library_id);
+        }
         $records = $library->table()->join('libraries','libraries.id','=','tables.library_id');
         // dd($request);
 
@@ -95,6 +106,8 @@ class TableService
 
     public function store($request)
     {
+        $raw_request = $request;
+
         $request = $request->validated();
 
         $table = new Table();
@@ -102,7 +115,15 @@ class TableService
 
 
         $user = auth()->user();
-        $table->library_id = $user->library_id;
+        if($user->hasRole('staff'))
+        {
+            $table->library_id = $user->library_id;
+        }
+        else
+        {
+            $table->library_id = $request['library_id'];
+
+        }
         $table->save();
 
 
@@ -111,6 +132,8 @@ class TableService
 
     public function update($request, $table)
     {
+        $raw_request = $request;
+
         $request = $request->validated();
 
         if (isset($request['type'])) {

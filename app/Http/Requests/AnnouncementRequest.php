@@ -30,7 +30,7 @@ class AnnouncementRequest extends FormRequest
         $request = Request();
         $request_method = Request::method();
         $request_path = $request->path();
-       
+        // dd()
 
         if ($request_method == "POST") {
     
@@ -38,6 +38,12 @@ class AnnouncementRequest extends FormRequest
                 'title' => ['required'],
                 'content' => ['required'],
                 'expired_at' => ['nullable'],
+                'picture'   =>  ['required'],
+                "library_id"   =>  array('nullable','exists:libraries,id',
+                Rule::requiredIf(function () use ($request) {
+
+                    return $request->user()->hasAnyRole(['superadmin', 'admin']);
+                }))
             ];
            
         } elseif ($request_method === "PATCH") {
@@ -50,6 +56,7 @@ class AnnouncementRequest extends FormRequest
                 'status'   =>  array('required','in:1,0'),
                 'content' => ['required'],
                 'expired_at' => ['nullable'],
+                'picture'   =>  ['required'],
 
             ];
         }
