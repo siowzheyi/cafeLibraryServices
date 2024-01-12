@@ -1,3 +1,4 @@
+import 'package:cafe_library_services/Beverage/add_to_cart.dart';
 import 'package:cafe_library_services/Beverage/choose_beverage.dart';
 import 'package:flutter/material.dart';
 import '../Controller/connection.dart';
@@ -87,7 +88,7 @@ class _TableSelectionPageState extends State<TableSelectionPage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => BeverageListing(),
+                        builder: (context) => BeverageOrderPage(),
                       ),
                     );
                   },

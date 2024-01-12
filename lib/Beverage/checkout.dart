@@ -56,7 +56,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                     Beverage beverage = widget.selectedBeverages[index];
                     return ListTile(
                       title: Text(beverage.name),
-                      subtitle: Text('RM${beverage.price.toStringAsFixed(2)}'),
+                      subtitle: Text('RM${beverage.price}'),
                       trailing: Text('Quantity: ${beverage.quantity}'),
                     );
                   },
