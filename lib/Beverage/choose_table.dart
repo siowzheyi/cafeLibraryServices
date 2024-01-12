@@ -1,6 +1,9 @@
 import 'package:cafe_library_services/Beverage/choose_beverage.dart';
 import 'package:flutter/material.dart';
+import '../Controller/connection.dart';
 import 'beverage_listing.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 void main() {
   runApp(
@@ -22,11 +25,33 @@ class TableSelectionPage extends StatefulWidget {
 }
 
 class _TableSelectionPageState extends State<TableSelectionPage> {
-  // Dummy list of available tables
-  final List<int> availableTables = List.generate(15, (index) => index + 1);
 
-  // Dummy list of unavailable tables
-  final List<int> unavailableTables = [3, 5, 8];
+  List<Table> tables = [];
+
+  Future<void> getTables() async {
+    try {
+      var response = await http.get(Uri.parse(API.room));
+      if (response.statusCode == 200) {
+        List<dynamic> decodedData = jsonDecode(response.body);
+
+        setState(() {
+          tables = decodedData.map((data) => Table(
+            data['tableNo'] ?? '',
+          )).toList();
+        });
+
+        print(tables);
+      }
+    } catch (ex) {
+      print("Error :: " + ex.toString());
+    }
+  }
+
+  @override
+  void initState() {
+    getTables();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,9 +60,9 @@ class _TableSelectionPageState extends State<TableSelectionPage> {
         title: Text('Table Reservation'),
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
-          onPressed: (){
-            Navigator.pushReplacement(context, MaterialPageRoute(builder:
-                (context) => BeverageListing()));
+          onPressed: () {
+            Navigator.pushReplacement(
+                context, MaterialPageRoute(builder: (context) => BeverageListing()));
           },
         ),
       ),
@@ -54,31 +79,23 @@ class _TableSelectionPageState extends State<TableSelectionPage> {
             Wrap(
               spacing: 10,
               runSpacing: 10,
-              children: availableTables
+              children: tables
                   .map(
-                    (tableNumber) => ElevatedButton(
-                  onPressed: unavailableTables.contains(tableNumber)
-                      ? null // Disable button for unavailable tables
-                      : () {
-                    // Navigate to the beverage order page with the selected
-                    // table
+                    (table) => ElevatedButton(
+                  onPressed: () {
+                    // Navigate to the beverage order page with the selected table
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => BeverageOrderPage(
-                          selectedTable: tableNumber,
-                        ),
+                        builder: (context) => BeverageListing(),
                       ),
                     );
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: unavailableTables.contains(tableNumber)
-                        ? Colors.red // Set red background for unavailable
-                    // tables
-                        : Colors.green,
+                    backgroundColor: Colors.green,
                     padding: const EdgeInsets.all(16),
                   ),
-                  child: Text('$tableNumber'),
+                  child: Text('${table.tableNo}'),
                 ),
               )
                   .toList(),
@@ -88,4 +105,10 @@ class _TableSelectionPageState extends State<TableSelectionPage> {
       ),
     );
   }
+}
+
+class Table {
+  final String tableNo;
+
+  Table(this.tableNo);
 }

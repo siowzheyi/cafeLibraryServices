@@ -211,12 +211,12 @@ class _HomePageState extends State<HomePage> {
                         child: const Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Icon(Icons.coffee), // Replace 'yourLeadingIcon' with the desired leading icon
+                            Icon(Icons.coffee),
                             Text(
                               'Browse Cafe Menu',
                               style: TextStyle(fontSize: 32.0),
                             ),
-                            Icon(Icons.coffee), // Replace 'yourTrailingIcon' with the desired trailing icon
+                            Icon(Icons.coffee),
                           ],
                         ),
                       ),
@@ -283,12 +283,6 @@ class _HomePageState extends State<HomePage> {
                     builder: (context) => const LoginPage(),
                   ),
                 );
-              },
-            ),
-            ListTile(
-              title: const Text('Settings'),
-              onTap: () {
-                // go to profile settings
               },
             ),
           ],

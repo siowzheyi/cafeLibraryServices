@@ -4,17 +4,13 @@ import '../Report/report.dart';
 
 class EquipmentDetailsPage extends StatelessWidget {
   final String name;
-  final String price;
-  final String imageUrl;
-  bool isAvailable;
+  final String picture;
 
   // Add more properties as needed for equipment details
 
   EquipmentDetailsPage({
     required this.name,
-    required this.price,
-    required this.imageUrl,
-    required this.isAvailable,
+    required this.picture,
     // Add more constructor parameters as needed
   });
 
@@ -45,44 +41,36 @@ class EquipmentDetailsPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Image.asset(
-              imageUrl,
+            Image.network(
+              picture,
               width: double.infinity,
-              height: 900.0,
+              height: 500.0,
               fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                // Handle image loading error
+                return const Icon(Icons.error);
+              },
             ),
             const SizedBox(height: 16.0),
             Text(
-              'Title: $name',
+              name,
               style: const TextStyle(fontSize: 18.0, fontWeight: FontWeight
                   .bold),
             ),
-            Text(
-              'Fee: $price',
-              style: const TextStyle(fontSize: 16.0),
-            ),
-            Text(
-              isAvailable ? 'Available' : 'Checked out',
-              style: TextStyle(
-                fontSize: 16.0,
-                color: isAvailable ? Colors.green : Colors.red,
-              ),
-            ),
             // Add more details as needed
-            if (isAvailable)
-              ElevatedButton(
-                onPressed: () {
-                  // Navigate to the ReserveRoom when the button is pressed
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ReserveEquipmentPage(
-                        selectedEquipment: name,),
-                    ),
-                  );
-                },
-                child: const Text('Rent'),
-              ),
+            ElevatedButton(
+              onPressed: () {
+                // Navigate to the ReserveRoom when the button is pressed
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ReserveEquipmentPage(
+                      selectedEquipment: name,),
+                  ),
+                );
+              },
+              child: const Text('Rent'),
+            ),
           ],
         ),
       ),

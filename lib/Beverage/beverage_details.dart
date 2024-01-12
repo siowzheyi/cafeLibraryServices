@@ -3,18 +3,16 @@ import 'package:flutter/material.dart';
 
 class BeverageDetailsPage extends StatelessWidget {
   final String name;
+  final String category;
   final String price;
-  final String description;
-  final String imageUrl;
-  bool isAvailable;
+  final String picture;
   // Add more properties as needed for beverage details
 
   BeverageDetailsPage({
     required this.name,
+    required this.category,
     required this.price,
-    required this.description,
-    required this.imageUrl,
-    required this.isAvailable,
+    required this.picture,
     // Add more constructor parameters as needed
   });
 
@@ -29,43 +27,34 @@ class BeverageDetailsPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Image.asset(
-              imageUrl,
+            Image.network(
+              picture,
               width: double.infinity,
               height: 900.0,
               fit: BoxFit.cover,
             ),
             const SizedBox(height: 16.0),
             Text(
-              'Title: $name',
+              '$name',
               style: const TextStyle(fontSize: 18.0, fontWeight:
               FontWeight.bold),
             ),
             Text(
-              'Description: $description',
-              style: const TextStyle(fontSize: 16.0),
+              '$category',
+              style: const TextStyle(fontSize: 18.0),
             ),
-            Text(
-              isAvailable ? 'Available' : 'Out of stock',
-              style: TextStyle(
-                fontSize: 16.0,
-                color: isAvailable ? Colors.green : Colors.red,
-              ),
+            ElevatedButton(
+              onPressed: () {
+                // Navigate to the order when the button is pressed
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => BeverageOrderPage(),
+                  ),
+                );
+              },
+              child: const Text('Order'),
             ),
-            // Add more details as needed
-            if (isAvailable)
-              ElevatedButton(
-                onPressed: () {
-                  // Navigate to the order when the button is pressed
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => BeverageOrderPage(),
-                    ),
-                  );
-                },
-                child: const Text('Order'),
-              ),
           ],
         ),
       ),

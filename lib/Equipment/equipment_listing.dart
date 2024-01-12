@@ -1,6 +1,10 @@
 import 'package:cafe_library_services/Equipment/equipment_details.dart';
 import 'package:cafe_library_services/Welcome/home.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import '../Controller/connection.dart';
+
 
 void main(){
   runApp(EquipmentListing());
@@ -27,32 +31,44 @@ class EquipmentListScreen extends StatefulWidget {
 }
 
 class _EquipmentListScreenState extends State<EquipmentListScreen> {
-  final List<Equipment> equipment = [
-    Equipment('Controller', 'RM 5 per hour', 'assets/controller.jpg', true),
-    Equipment('Projector', 'RM 2 per hour', 'assets/projector.jpg', false),
-    Equipment('PS4', 'RM 5 per hour', 'assets/ps4.jpg', false),
-    Equipment('PS5', 'RM 6 per hour', 'assets/ps5.jpg', true),
-    Equipment('Chess', 'RM 2 per hour', 'assets/chess.jpg', true),
-    Equipment('Board games', 'RM 2 per hour', 'assets/board_games.jpg', false),
-    Equipment('Carom', 'RM 3 per hour', 'assets/carom.jpg', false),
-    Equipment('Saidina', 'RM 3 per hour', 'assets/saidina.jpg', true),
-  ];
+
+  List<Equipment> equipments = [];
+
+  Future<void> getEquipments() async {
+    try {
+      var response = await http.get(Uri.parse(API.equipment));
+      if (response.statusCode == 200) {
+        List<dynamic> decodedData = jsonDecode(response.body);
+
+        setState(() {
+          equipments = decodedData.map((data) => Equipment(
+              data['name'] ?? '',
+              data['picture'] ?? ''
+          )).toList();
+        });
+
+        print(equipments);
+      }
+    } catch (ex) {
+      print("Error :: " + ex.toString());
+    }
+  }
 
   List<Equipment> filteredEquipment = [];
   List<Equipment> searchHistory = [];
 
   @override
   void initState() {
+    getEquipments();
     super.initState();
-    filteredEquipment = List.from(equipment);
+    filteredEquipment = List.from(equipments);
   }
 
   void filterEquipment(String query) {
     setState(() {
-      filteredEquipment = equipment
+      filteredEquipment = equipments
           .where((equipment) =>
-      equipment.name.toLowerCase().contains(query.toLowerCase()) ||
-          equipment.price.toLowerCase().contains(query.toLowerCase()))
+      equipment.name.toLowerCase().contains(query.toLowerCase()))
           .toList();
       //update search history based on the user's query
     });
@@ -82,7 +98,7 @@ class _EquipmentListScreenState extends State<EquipmentListScreen> {
             onPressed: () {
               showSearch(
                 context: context,
-                delegate: EquipmentSearchDelegate(equipment,
+                delegate: EquipmentSearchDelegate(equipments,
                     addToSearchHistory),
               );
             },
@@ -103,12 +119,12 @@ class _EquipmentListScreenState extends State<EquipmentListScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       for (var j = 0; j < 4; j++)
-                        if (i * 4 + j < equipment.length)
+                        if (i * 4 + j < equipments.length)
                           Container(
                             width: 150.0,
                             margin: const EdgeInsets.symmetric(horizontal: 8.0),
                             child: EquipmentListItem(equipment:
-                            equipment[i * 4 + j]),
+                            equipments[i * 4 + j]),
                           )
                         else
                           Container(), // Placeholder for empty cells
@@ -126,11 +142,9 @@ class _EquipmentListScreenState extends State<EquipmentListScreen> {
 
 class Equipment {
   final String name;
-  final String price;
-  final String imageUrl;
-  bool isAvailable;
+  final String picture;
 
-  Equipment(this.name, this.price, this.imageUrl, this.isAvailable);
+  Equipment(this.name, this.picture);
 }
 
 class EquipmentListItem extends StatelessWidget {
@@ -148,9 +162,7 @@ class EquipmentListItem extends StatelessWidget {
           MaterialPageRoute(
             builder: (context) => EquipmentDetailsPage(
               name: equipment.name,
-              price: equipment.price,
-              imageUrl: equipment.imageUrl,
-              isAvailable: equipment.isAvailable,
+              picture: equipment.picture,
             ),
           ),
         );
@@ -162,11 +174,15 @@ class EquipmentListItem extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Image.asset(
-                equipment.imageUrl,
+              Image.network(
+                equipment.picture,
                 width: double.infinity,
                 height: 150.0,
                 fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  // Handle image loading error
+                  return const Icon(Icons.error);
+                },
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -178,20 +194,7 @@ class EquipmentListItem extends StatelessWidget {
                       style: const TextStyle(fontSize: 14.0, fontWeight:
                       FontWeight.bold),
                     ),
-                    Text(
-                      equipment.price,
-                      style: const TextStyle(fontSize: 12.0, fontStyle:
-                      FontStyle.italic),
-                    ),
                     const SizedBox(height: 8.0),
-                    Text(
-                      equipment.isAvailable ? 'Available' : 'Checked Out',
-                      style: TextStyle(
-                        fontSize: 12.0,
-                        color: equipment.isAvailable ? Colors.green : Colors
-                            .red,
-                      ),
-                    ),
                   ],
                 ),
               ),
@@ -245,8 +248,7 @@ class EquipmentSearchDelegate extends SearchDelegate<String> {
         ? equipment
         : equipment
         .where((equipment) =>
-    equipment.name.toLowerCase().contains(query.toLowerCase()) ||
-        equipment.price.toLowerCase().contains(query.toLowerCase()))
+    equipment.name.toLowerCase().contains(query.toLowerCase()))
         .toList();
 
     return ListView.builder(
@@ -265,9 +267,7 @@ class EquipmentSearchDelegate extends SearchDelegate<String> {
               MaterialPageRoute(
                 builder: (context) => EquipmentDetailsPage(
                   name: suggestionList[index].name,
-                  price: suggestionList[index].price,
-                  imageUrl: suggestionList[index].imageUrl,
-                  isAvailable: suggestionList[index].isAvailable,
+                  picture: suggestionList[index].picture,
                   // Pass more details as needed
                 ),
               ),

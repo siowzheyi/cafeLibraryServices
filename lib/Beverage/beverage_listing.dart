@@ -3,6 +3,9 @@ import 'package:cafe_library_services/Beverage/beverage_details.dart';
 import 'package:cafe_library_services/Beverage/choose_table.dart';
 import 'package:cafe_library_services/Welcome/home.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import '../Controller/connection.dart';
 
 void main() {
   runApp(BeverageListing());
@@ -29,29 +32,39 @@ class BeverageListScreen extends StatefulWidget {
 }
 
 class _BeverageListScreenState extends State<BeverageListScreen> {
-  final List<Beverage> beverages = [
-    Beverage('Hot Coffee Latte', 'RM8.50', 'One of the best beverage, Hot Coffee', 'assets/hot_coffee_latte.png', true),
-    Beverage('Mocha Iced Coffee', 'RM9.20', 'One of the best beverage, Ice Coffee', 'assets/mocha_iced_coffee.jpg', true),
-    Beverage('Java Chip Frappuccino', 'RM14.30', 'One of the best beverage, Frappe', 'assets/java_chip_frappucino.jpg', false),
-    Beverage('Strawberry Smoothies', 'RM11.20', 'One of the best beverage, Smoothies', 'assets/strawberry_smoothie.jpg', true),
-    Beverage('Red Velvet Cake', 'RM7.50', 'One of the best pastry, Cake', 'assets/red_velvet_cake.jpg', false),
-    Beverage('Croissant French Toast', 'RM8.30', 'One of the best pastry, Bread', 'assets/croissant_french_toast.jpg', false),
-    Beverage('Apple Pie', 'RM6.50', 'One of the best pastry, Apple Pie', 'assets/apple_pie.jpg', true),
-    Beverage('Cendol', 'RM5.00', 'Malaysian favourite, cendol', 'assets/cendol.jpg', true),
-    Beverage('Ais Kacang', 'RM14.30', 'Get one in this heat!', 'assets/ais_kacang.jpg', false),
-    Beverage('Kuih Lapis', 'RM3.40', 'Colorful sweetness', 'assets/kuih_lapis.jpg', true),
-    Beverage('Pineapple Tart', 'RM1.00', 'Hari Raya mood, anyone?', 'assets/pineapple_tart.jpg', false),
-    Beverage('Bubur Cha Cha', 'RM6.50', 'Cha cha cha!', 'assets/chacha.jpg', false),
-  ];
+
+  List<Beverage> beverages = [];
+
+  Future<void> getBeverages() async {
+    try {
+      var response = await http.get(Uri.parse(API.beverage));
+      if (response.statusCode == 200) {
+        List<dynamic> decodedData = jsonDecode(response.body);
+
+        setState(() {
+          beverages = decodedData.map((data) => Beverage(
+            data['name'] ?? '',
+            data['category'] ?? '',
+            data['price'] ?? '',
+            data['picture'] ?? ''
+          )).toList();
+        });
+
+        print(beverages);
+      }
+    } catch (ex) {
+      print("Error :: " + ex.toString());
+    }
+  }
 
   List<Beverage> filteredBeverages = [];
   List<Beverage> searchHistory = [];
 
   @override
   void initState() {
+    getBeverages();
     super.initState();
     filteredBeverages = List.from(beverages);
-    //searchHistory = List.from(searchHistory);
   }
 
   void filterBeverages(String query) {
@@ -188,13 +201,11 @@ class _BeverageListScreenState extends State<BeverageListScreen> {
 
 class Beverage {
   final String name;
+  final String category;
   final String price;
-  final String description;
-  final String imageUrl;
-  bool isAvailable;
+  final String picture;
 
-  Beverage(this.name, this.price, this.description, this.imageUrl, this
-      .isAvailable);
+  Beverage(this.name, this.category, this.price, this.picture);
 }
 
 class BeverageListItem extends StatelessWidget {
@@ -211,10 +222,9 @@ class BeverageListItem extends StatelessWidget {
           MaterialPageRoute(
             builder: (context) => BeverageDetailsPage(
               name: beverage.name,
+              category: beverage.category,
               price: beverage.price,
-              description: beverage.description,
-              imageUrl: beverage.imageUrl,
-              isAvailable: beverage.isAvailable,
+              picture: beverage.picture,
             ),
           ),
         );
@@ -226,8 +236,8 @@ class BeverageListItem extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Image.asset(
-                beverage.imageUrl,
+              Image.network(
+                beverage.picture,
                 width: double.infinity,
                 height: 150.0,
                 fit: BoxFit.cover,
@@ -243,18 +253,11 @@ class BeverageListItem extends StatelessWidget {
                       FontWeight.bold),
                     ),
                     Text(
-                      beverage.price,
+                      'RM${beverage.price}',
                       style: const TextStyle(fontSize: 12.0, fontStyle:
                       FontStyle.italic),
                     ),
                     const SizedBox(height: 8.0),
-                    Text(
-                      beverage.isAvailable ? 'Available' : 'Out of stock',
-                      style: TextStyle(
-                        fontSize: 12.0,
-                        color: beverage.isAvailable ? Colors.green : Colors.red,
-                      ),
-                    ),
                   ],
                 ),
               ),
@@ -328,10 +331,9 @@ class BeverageSearchDelegate extends SearchDelegate<String> {
               MaterialPageRoute(
                 builder: (context) => BeverageDetailsPage(
                   name: suggestionList[index].name,
+                  category: suggestionList[index].category,
                   price: suggestionList[index].price,
-                  description: suggestionList[index].description,
-                  imageUrl: suggestionList[index].imageUrl,
-                  isAvailable: suggestionList[index].isAvailable,
+                  picture: suggestionList[index].picture,
                   // Pass more details as needed
                 ),
               ),

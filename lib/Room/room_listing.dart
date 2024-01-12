@@ -1,6 +1,9 @@
 import 'package:cafe_library_services/Room/room_details.dart';
 import 'package:cafe_library_services/Welcome/home.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import '../Controller/connection.dart';
 
 void main() {
   runApp(RoomListing());
@@ -27,32 +30,45 @@ class RoomListScreen extends StatefulWidget {
 }
 
 class _RoomListScreenState extends State<RoomListScreen> {
-  final List<Room> rooms = [
-    Room('Discussion Room 1', 'assets/discussion_room.jpg', false),
-    Room('Discussion Room 2', 'assets/discussion_room.jpg', true),
-    Room('Meeting Room', 'assets/meeting_room.jpg', true),
-    Room('Carrel Room 1', 'assets/carrel_room.jpg', true),
-    Room('Carrel Room 2', 'assets/carrel_room.jpg', true),
-    Room('Carrel Room 3', 'assets/carrel_room.jpg', true),
-    Room('Carrel Room 4', 'assets/carrel_room.jpg', false),
-    Room('Presentation Room', 'assets/presentation_room.jpg', false),
-  ];
+
+  List<Room> rooms = [];
+
+  Future<void> getRooms() async {
+    try {
+      var response = await http.get(Uri.parse(API.room));
+      if (response.statusCode == 200) {
+        List<dynamic> decodedData = jsonDecode(response.body);
+
+        setState(() {
+          rooms = decodedData.map((data) => Room(
+            data['roomNo'] ?? '',
+            data['picture'] ?? '',
+            data['type'] ?? ''
+          )).toList();
+        });
+
+        print(rooms);
+      }
+    } catch (ex) {
+      print("Error :: " + ex.toString());
+    }
+  }
 
   List<Room> filteredRooms = [];
   List<Room> searchHistory = [];
 
   @override
   void initState() {
+    getRooms();
     super.initState();
     filteredRooms = List.from(rooms);
-    //searchHistory = List.from(searchHistory);
   }
 
   void filterRooms(String query) {
     setState(() {
       filteredRooms = rooms
           .where((room) =>
-      room.name.toLowerCase().contains(query.toLowerCase())).toList();
+      room.roomNo.toLowerCase().contains(query.toLowerCase())).toList();
       //update search history based on the user's query
     });
   }
@@ -122,11 +138,11 @@ class _RoomListScreenState extends State<RoomListScreen> {
 }
 
 class Room {
-  final String name;
-  final String imageUrl;
-  bool isAvailable;
+  final String roomNo;
+  final String picture;
+  final String type;
 
-  Room(this.name, this.imageUrl, this.isAvailable);
+  Room(this.roomNo, this.picture, this.type);
 }
 
 class RoomListItem extends StatelessWidget {
@@ -142,9 +158,9 @@ class RoomListItem extends StatelessWidget {
           context,
           MaterialPageRoute(
             builder: (context) => RoomDetailsPage(
-              name: room.name,
-              imageUrl: room.imageUrl,
-              isAvailable: room.isAvailable,
+              roomNo: room.roomNo,
+              picture: room.picture,
+              type: room.type,
             ),
           ),
         );
@@ -157,8 +173,8 @@ class RoomListItem extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Replace this with your room image
-              Image.asset(
-                room.imageUrl,
+              Image.network(
+                room.picture,
                 width: double.infinity,
                 height: 150.0,
                 fit: BoxFit.cover,
@@ -169,18 +185,15 @@ class RoomListItem extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      room.name,
+                      room.roomNo,
                       style: const TextStyle(fontSize: 14.0, fontWeight:
                       FontWeight.bold),
                     ),
-                    const SizedBox(height: 8.0),
                     Text(
-                      room.isAvailable ? 'Available' : 'In used',
-                      style: TextStyle(
-                        fontSize: 12.0,
-                        color: room.isAvailable ? Colors.green : Colors.red,
-                      ),
+                      room.type,
+                      style: const TextStyle(fontSize: 14.0),
                     ),
+                    const SizedBox(height: 8.0),
                   ],
                 ),
               ),
@@ -234,14 +247,14 @@ class RoomSearchDelegate extends SearchDelegate<String> {
         ? rooms
         : rooms
         .where((room) =>
-    room.name.toLowerCase().contains(query.toLowerCase()))
+    room.type.toLowerCase().contains(query.toLowerCase()))
         .toList();
 
     return ListView.builder(
       itemCount: suggestionList.length,
       itemBuilder: (context, index) {
         return ListTile(
-          title: Text(suggestionList[index].name),
+          title: Text(suggestionList[index].type),
           onTap: () {
             // Add the selected room to the search history
             addToSearchHistory(suggestionList[index]);
@@ -250,9 +263,9 @@ class RoomSearchDelegate extends SearchDelegate<String> {
               context,
               MaterialPageRoute(
                 builder: (context) => RoomDetailsPage(
-                  name: suggestionList[index].name,
-                  imageUrl: suggestionList[index].imageUrl,
-                  isAvailable: suggestionList[index].isAvailable,
+                  roomNo: suggestionList[index].roomNo,
+                  picture: suggestionList[index].picture,
+                  type: suggestionList[index].type,
                   // Pass more details as needed
                 ),
               ),

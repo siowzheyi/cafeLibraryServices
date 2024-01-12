@@ -3,16 +3,16 @@ import 'package:cafe_library_services/Room/reserve_room.dart';
 import '../Report/report.dart';
 
 class RoomDetailsPage extends StatelessWidget {
-  final String name;
-  final String imageUrl;
-  bool isAvailable;
+  final String roomNo;
+  final String picture;
+  final String type;
 
   // Add more properties as needed for room details
 
   RoomDetailsPage({
-    required this.name,
-    required this.imageUrl,
-    required this.isAvailable,
+    required this.roomNo,
+    required this.picture,
+    required this.type,
     // Add more constructor parameters as needed
   });
 
@@ -20,7 +20,7 @@ class RoomDetailsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(name),
+        title: Text(roomNo),
         actions: [
           // Add a Report button in the app bar
           IconButton(
@@ -44,40 +44,36 @@ class RoomDetailsPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Replace this with your room image
-            Image.asset(
-              imageUrl,
+            Image.network(
+              picture,
               width: double.infinity,
               height: 500.0,
               fit: BoxFit.cover,
             ),
             const SizedBox(height: 16.0),
             Text(
-              'Name: $name',
+              roomNo,
               style: const TextStyle(fontSize: 18.0, fontWeight: FontWeight
                   .bold),
             ),
             Text(
-              isAvailable ? 'Available' : 'In used',
-              style: TextStyle(
-                fontSize: 16.0,
-                color: isAvailable ? Colors.green : Colors.red,
-              ),
+              type,
+              style: const TextStyle(fontSize: 18.0),
             ),
             // Add more details as needed
-            if (isAvailable)
-              ElevatedButton(
-                onPressed: () {
-                  // Navigate to the ReserveRoom when the button is pressed
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ReserveRoomPage(selectedRoom:
-                      name,),
-                    ),
-                  );
-                },
-                child: const Text('Reserve'),
-              ),
+            ElevatedButton(
+              onPressed: () {
+                // Navigate to the ReserveRoom when the button is pressed
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ReserveRoomPage(selectedRoom:
+                    roomNo,),
+                  ),
+                );
+              },
+              child: const Text('Reserve'),
+            ),
           ],
         ),
       ),

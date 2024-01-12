@@ -24,7 +24,7 @@ class SearchHistory extends StatelessWidget {
           children: [
             for (var room in searchHistory)
               Chip(
-                label: Text(room.name), // Assuming 'name' is the property you want to display
+                label: Text(room.roomNo), // Assuming 'name' is the property you want to display
                 onDeleted: () {
                   // Handle deletion of search history item
                 },
