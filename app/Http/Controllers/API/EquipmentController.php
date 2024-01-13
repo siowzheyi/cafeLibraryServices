@@ -76,10 +76,10 @@ class EquipmentController extends BaseController
     {
         $result = $this->services->index($request);
 
-        return $this->sendResponse($result, "Data successfully retrieved. "); 
+        // return $this->sendResponse($result, "Data successfully retrieved. "); 
         // $result = $this->sendHTMLResponse($result, "Data successfully retrieved. "); 
         
-        // return view('library.equipment.index',["data" =>  $result['data']['aaData']]);
+        return view('library.equipment.index',["data" =>  $result['aaData']]);
     }
 
     public function edit(Equipment $equipment)
