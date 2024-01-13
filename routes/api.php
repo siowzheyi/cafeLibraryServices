@@ -28,11 +28,11 @@ use App\Http\Controllers\API\PaymentController;
 |
 */
 
-Route::post('login', [UserController::class, 'login'])->name('login');
-Route::post('register', [UserController::class, 'register'])->name('register');
+Route::post('login', [UserController::class, 'login'])->name('api_login');
+Route::post('register', [UserController::class, 'register'])->name('api_register');
 
 Route::middleware('auth:api')->group(function () {
-    Route::resource('user', UserController::class, array("as" => "api"));
+    // Route::resource('user', UserController::class, array("as" => "api"));
     Route::get('item_category', [ItemController::class, 'itemCategory'])->name('item_category');
     Route::get('beverage_listing', [BeverageController::class, 'beverageListing'])->name('beverage_listing');
     Route::get('table_listing', [TableController::class, 'tableListing'])->name('table_listing');
@@ -51,34 +51,7 @@ Route::middleware('auth:api')->group(function () {
     Route::resource('report', ReportController::class, array("as" => "api"));
     Route::resource('payment', PaymentController::class, array("as" => "api"));
 
-    Route::middleware(['staffauthentication'])->group(function () {
-
-            Route::prefix('staff')->group(function () {
-                
-                Route::resource('library', LibraryController::class, array("as" => "api"));
-                Route::resource('cafe', CafeController::class, array("as" => "api"));
-
-                Route::middleware(['ensurestaffhaslibrarycafeid'])->group(function () {
-
-                    Route::resource('announcement', AnnouncementController::class, array("as" => "api"));
-                    Route::resource('item', ItemController::class, array("as" => "api"));
-                    Route::resource('table', TableController::class, array("as" => "api"));
-                    Route::resource('beverage', BeverageController::class, array("as" => "api"));
-                    Route::resource('book', BookController::class, array("as" => "api"));
-                    Route::resource('equipment', EquipmentController::class, array("as" => "api"));
-                    Route::resource('room', RoomController::class, array("as" => "api"));
-                    Route::post('import_book', [BookController::class, 'importBook'])->name('import_book');
-
-                    Route::prefix('report')->group(function () {
-                        Route::get('detail_sales_report', [OrderController::class, 'detailSalesReport'])->name('detail_sales_report');
-                        Route::get('daily_sales_report', [OrderController::class, 'dailySalesReport'])->name('daily_sales_report');
-
-                    });
-
-
-                });
-            });
-    });
+   
 
 });
 

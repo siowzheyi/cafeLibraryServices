@@ -23,6 +23,18 @@ class BaseController extends Controller
         return response()->json($response, 200);
     }
 
+    public function sendHTMLResponse($result, $message)
+    {
+        $response = [
+            'status' => "success",
+            'data'    => $result,
+            'message' => $message,
+        ];
+
+
+        return $response;
+    }
+
 
     /**
      * return error response.
@@ -74,5 +86,15 @@ class BaseController extends Controller
             'message' => 'The given data was invalid',
         ];
         return response()->json($response, $code);
+    }
+    
+    public function sendHTMLCustomValidationError($error, $code = 422)
+    {
+        $response = [
+            'status' => "false",
+            'errors' => $error,
+            'message' => 'The given data was invalid',
+        ];
+        return $response;
     }
 }

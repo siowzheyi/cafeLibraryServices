@@ -12,6 +12,8 @@ use App\Models\Booking;
 use App\Models\Room;
 use App\Models\Book;
 use App\Models\Equipment;
+use App\Models\Cafe;
+use App\Models\Library;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -89,16 +91,16 @@ class UserService
 
         $records = User::join('roles','roles.id','=','users.role_id');
         // dd($request);
-        if($request->input('type') != null)
+        if($request->query('type') != null)
         {
             $role = Roles::where('name','staff')->first();
 
-            if($request->input('type') == 'cafe')
+            if($request->query('type') == 'cafe')
             {
                 $records = $records->where('users.role_id',$role->id)
                                     ->whereNotNull('users.cafe_id');
             }
-            elseif($request->input('type') == 'library')
+            elseif($request->query('type') == 'library')
             {
                 $records = $records->where('users.role_id',$role->id)
                                     ->whereNotNull('users.library_id');
@@ -150,6 +152,18 @@ class UserService
     public function show($user)
     {
         $role = Roles::find($user->role_id);
+        $building_name = null;
+
+        if($user->library_id != null)
+        {
+            $library = Library::find($user->library_id);
+            $building_name = $library->name;
+        }
+        elseif($user->cafe_id != null)
+        {
+            $cafe = Cafe::find($user->cafe_id);
+            $building_name = $cafe->name;
+        }
         $data = [
             "id"    =>  $user->id,
             "name"    =>  $user->name,
@@ -158,6 +172,7 @@ class UserService
             "status"    =>  $user->status,
             "library_id"    =>  $user->library_id,
             "cafe_id"    =>  $user->cafe_id,
+            "building_name" =>  $building_name,
             "role"    =>  $role->name,
 
         ];
@@ -167,7 +182,7 @@ class UserService
 
     public function store($request)
     {
-        $request = $request->validated();
+        // $request = $request->validated();
 
         $user = new User();
         $user->name = $request['name'];
@@ -185,7 +200,8 @@ class UserService
 
     public function update($request, $user)
     {
-        $request = $request->validated();
+        // $request = $request->validated();
+        // dd($request);
 
         if (isset($request['type'])) {
             if ($request['type'] === 'status') {
@@ -195,13 +211,15 @@ class UserService
             return;
         }
         $user->name = $request['name'];
-        $user->status = $request['status'];
+        // $user->status = $request['status'];
         $user->email = $request['email'];
         $user->phone_no = $request['phone_no'];
 
         $user->save();
 
-        return;
+        $data = $this->show($user);
+
+        return $data;
     }
 
     public function penaltyReport($request)

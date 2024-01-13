@@ -5,6 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Http\FormRequest;
 use App\Models\User;
+use App\Http\Controllers\API\BaseController as BaseController;
 
 use Illuminate\Validation\Rule;
 
@@ -50,7 +51,7 @@ class UserRequest extends FormRequest
         } elseif ($request_method == "PUT") {
             return [
                 'email' => array('required','unique:users,email,'.$this->user->id.',id,deleted_at,NULL'),
-                'status'   =>  array('required','in:1,0'),
+                // 'status'   =>  array('required','in:1,0'),
                 'name' => ['required'],
                 'phone_no' => ['required','unique:users,phone_no,'.$this->user->id.',id,deleted_at,NULL']
             ];
@@ -65,8 +66,8 @@ class UserRequest extends FormRequest
     protected function failedValidation(\Illuminate\Contracts\Validation\Validator $validator)
     {
         $errors = $this->validator->errors();
-        // dd($errors);
-        // return $this->sendError('Validation Error.', $validator->errors());
+        // $base_controller = new BaseController;
+        // return $base_controller->sendHTMLCustomValidationError($errors);
 
         throw new \Illuminate\Http\Exceptions\HttpResponseException(
             response()->json([

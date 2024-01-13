@@ -45,6 +45,7 @@ class AnnouncementController extends BaseController
     // This api is for admin user to view list of Announcement
     public function index(Request $request)
     {
+        // dd(1);
         $result = $this->services->index($request);
 
         return $this->sendResponse($result, "Data successfully retrieved. "); 
