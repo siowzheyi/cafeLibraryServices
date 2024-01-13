@@ -97,11 +97,11 @@ class UserController extends BaseController
         ]);
 
         if ($validator->fails()) {
-            // $error = $this->sendHTMLCustomValidationError($validator->errors());
-            // return view('staff.admin.view', compact('user'));
-            Session::flash('message-error', $validator->errors());
-            return redirect()->back();
+            return redirect()->back()
+                             ->withErrors($validator->errors())
+                             ->withInput();
         }
+        
 
         $result = $this->services->store($request);
         $data = $this->services->index($request);

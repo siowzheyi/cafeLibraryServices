@@ -35,11 +35,9 @@
                             <div class=""><h2 class="text-center font-weight-light my-4">CAFÉ LIBRARY SERVICES</h2></div>
                             <div class="card-header main-bgcolor"><h3 class="text-center font-weight-light my-4">Login</h3></div>
                             <div class="card-body">
-                                @if(session('status'))
-                                    <div class="alert alert-danger" role="alert">
-                                        {{ session('status') }}
-                                    </div>
-                                @endif
+                                @foreach ($errors->all() as $error)
+                                    <div class="alert alert-danger">{{ $error }}</div>
+                                @endforeach
 
                                
                                 {{-- Hello, i'm here: data: {{ $data }}; --}}
@@ -57,12 +55,10 @@
                                             <span class="fas fa-envelope"></span>
                                             </div>
                                         </div>
-                                        @error('email')
-                                            <span class="invalid-feedback" role="alert">
-                                                <strong>{{ $message }}</strong>
-                                            </span>
-                                        @enderror
                                     </div>
+                                    @if ($errors->has('email'))
+                                        <span class="text-danger">{{ $errors->first('email') }}</span>
+                                    @endif
                                     <div class="input-group mb-3">
                                         <input id="password" type="password" placeholder="Password" class="form-control @error('password') is-invalid @enderror" name="password" required autocomplete="current-password">
                                         <div class="input-group-append">

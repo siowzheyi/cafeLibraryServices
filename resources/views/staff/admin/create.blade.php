@@ -113,11 +113,6 @@
   
 
     <div id="layoutSidenav_content">
-        @if (Session::has('message-error'))
-            <div class="alert alert-danger" id="flash-message">
-                {{ Session::get('message-error') }}
-            </div>
-        @endif
         @if (Session::has('message-success'))
             <div class="alert alert-success" id="flash-message">
                 {{ Session::get('message-success') }}
@@ -131,6 +126,9 @@
                     <div class="form-group mb-2">
                         <label for="name">Name</label>
                         <input type="text" class="form-control" id="name" name="name" value="">
+                        @if ($errors->has('name'))
+                            <span class="text-danger">{{ $errors->first('name') }}</span>
+                        @endif
                     </div>
                     <div class="form-group mb-2">
                         <label for="phone_number">Phone number</label>

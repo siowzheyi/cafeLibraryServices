@@ -65,7 +65,7 @@ class AuthController extends Controller
             else
                 return redirect("login")->withSuccess('Oppes! Please use mobile to login');
         }
-        return redirect("login")->withSuccess('Oppes! You have entered invalid credentials');
+        return redirect("login")->withErrors('Oppes! You have entered invalid credentials');
     }
       
     /**
