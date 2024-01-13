@@ -50,8 +50,8 @@
                             <nav class="sb-sidenav-menu-nested nav">
                                 <a class="nav-link" href="{{ route('table.index') }}">Table</a>
                                 <a class="nav-link" href="{{ route('book.index') }}">Book</a>
-                                <a class="nav-link active" href="{{ route('room.index') }}">Room</a>
-                                <a class="nav-link" href="{{ route('equipment.index') }}">Equipment</a>
+                                <a class="nav-link " href="{{ route('room.index') }}">Room</a>
+                                <a class="nav-link active" href="{{ route('equipment.index') }}">Equipment</a>
                             </nav>
                         </div>
                     </div>
