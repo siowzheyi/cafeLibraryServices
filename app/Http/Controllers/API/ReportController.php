@@ -5,6 +5,8 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller as Controller;
 use App\Http\Controllers\API\BaseController as BaseController;
 use App\Services\ReportService;
+use Yajra\DataTables\DataTables;
+use Illuminate\Validation\Rule;
 
 use App\Http\Requests\ReportRequest;
 use App\Models\User;

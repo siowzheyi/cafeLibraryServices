@@ -73,30 +73,30 @@
                     <li class="breadcrumb-item"><a href="{{ route('room.index') }}">Library Room</a></li>
                     <li class="breadcrumb-item active">Edit</li>
                 </ol>
+                @foreach ($errors->all() as $error)
+                    <div class="alert alert-danger" id="flash-message">{{ $error }}</div>
+                @endforeach
                 <div class="row mb-4">
                     <div class="col-12">
-                        <form href="{{ route('Room.update') }}">
+                        <form action="{{ route('room.update',['room' => $data['id']]) }}" method="POST" enctype="multipart/form-data">
+                            @csrf
+                            @method('PUT')
                             <!--field in table-->
                             <div class="form-group mb-2">
                                 <label for="exampleFormControlInput1">Picture</label>
-                                <br><img src="{{ asset('images/meeting1.jpg') }}" width="200">
-                                <input type="file" class="form-control mt-2" id="exampleFormControlInput1"
-                                       value="Orange">
+                                <br><img src="{{ $data['picture'] }}" width="200">
+                                <input type="file" class="form-control mt-2" id="exampleFormControlInput1" name="picture">
                             </div>
                             <div class="form-group mb-2">
                                 <label for="exampleFormControlInput1">Room No.</label>
-                                <input type="text" class="form-control" id="exampleFormControlInput1" value="R2001">
+                                <input type="text" class="form-control" id="exampleFormControlInput1" name="room_no" value="{{ $data['room_no'] }}">
                             </div>
                             <div class="form-group mb-2">
                                 <label for="exampleFormControlInput1">Room Type</label>
-                                <input type="text" class="form-control" id="exampleFormControlInput1"
-                                       value="Meeting Room">
+                                <input type="text" class="form-control" id="exampleFormControlInput1" name="room_type"
+                                       value="{{ $data['room_type'] }}">
                             </div>
-                            <div class="form-group mb-2">
-                                <label for="exampleFormControlInput1">Quantity</label>
-                                <input type="text" class="form-control" id="exampleFormControlInput1" value="5">
-                            </div>
-                            <button type="submit" class="btn btn-success mt-3 mb-2">Submit</button>
+                            <input type="submit" class="btn btn-success mt-3 mb-2" value="Submit">
                         </form>
                     </div>
                 </div>

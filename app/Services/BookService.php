@@ -125,25 +125,24 @@ class BookService
         return $data;
     }
 
-    public function store($request)
+    public function store($request, $input)
     {
         $raw_request = $request;
-        $request = $request->validated();
 
         $category_id = ItemCategory::where('name','book')->first();
 
         $book = new Book();
-        $book->name = $request['name'];
-        $book->genre = $request['genre'];
-        $book->author_name = $request['author_name'];
-        $book->publisher_name = $request['publisher_name'];
+        $book->name = $input['name'];
+        $book->genre = $input['genre'];
+        $book->author_name = $input['author_name'];
+        $book->publisher_name = $input['publisher_name'];
 
-        if(isset($request['remark']))
-        $book->remark = $request['remark'];
-        $book->stock_count = $request['stock_count'];
-        $book->remainder_count = $request['stock_count'];
+        if(isset($input['remark']))
+        $book->remark = $input['remark'];
+        $book->stock_count = $input['stock_count'];
+        $book->remainder_count = $input['stock_count'];
 
-        $book->price = $request['price'];
+        $book->price = $input['price'];
         $book->item_category_id = $category_id->id;
 
 
@@ -154,7 +153,7 @@ class BookService
         }
         else
         {
-            $book->library_id = $request['library_id'];
+            $book->library_id = $input['library_id'];
 
         }
         $book->save();
@@ -166,33 +165,33 @@ class BookService
         return $book;
     }
 
-    public function update($request, $book)
+    public function update($request, $book, $input)
     {
         $raw_request = $request;
 
-        $request = $request->validated();
+        // $request = $request->validated();
 
-        if (isset($request['type'])) {
-            if ($request['type'] === 'status') {
+        if (isset($input['type'])) {
+            if ($input['type'] === 'status') {
                 $book->status = $book->status === 1 ? 0 : 1;
             }
             $book->save();
             return;
         }
-        $book->name = $request['name'];
-        $book->status = $request['status'];
+        $book->name = $input['name'];
+        // $book->status = $input['status'];
 
-        $book->genre = $request['genre'];
-        $book->author_name = $request['author_name'];
-        $book->publisher_name = $request['publisher_name'];
+        $book->genre = $input['genre'];
+        $book->author_name = $input['author_name'];
+        $book->publisher_name = $input['publisher_name'];
 
-        if(isset($request['remark']))
-        $book->remark = $request['remark'];
+        if(isset($input['remark']))
+        $book->remark = $input['remark'];
         else
         $book->remark = null;
 
-        $book->stock_count = $request['stock_count'];
-        $book->price = $request['price'];
+        $book->stock_count = $input['stock_count'];
+        $book->price = $input['price'];
 
         $book->save();
 
@@ -349,7 +348,11 @@ class BookService
         $user = auth()->user();
 
         try {
-            $check = Excel::import(new BooksImport($user->library_id), $path);
+            if($user->hasRole('staff'))
+                $check = Excel::import(new BooksImport($user->library_id), $path);
+            else
+                $check = Excel::import(new BooksImport($request['library_id']), $path);
+
         } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
              $failures = $e->failures();
              

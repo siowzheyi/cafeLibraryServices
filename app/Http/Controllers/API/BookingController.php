@@ -5,6 +5,8 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller as Controller;
 use App\Http\Controllers\API\BaseController as BaseController;
 use App\Services\BookingService;
+use Yajra\DataTables\DataTables;
+use Illuminate\Support\Facades\Session;
 
 use App\Http\Requests\BookingRequest;
 use App\Models\User;

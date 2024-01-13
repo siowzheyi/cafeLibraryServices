@@ -67,6 +67,9 @@
                         <li class="breadcrumb-item"><a href="{{ route('equipment.index') }}">Library Equipment</a></li>
                         <li class="breadcrumb-item active">Create new</li>
                     </ol>
+                    @foreach ($errors->all() as $error)
+                        <div class="alert alert-danger" id="flash-message">{{ $error }}</div>
+                    @endforeach
                     <div class="row mb-4">
                         <div class="col-12">
                             <form href="{{ route('Equipment.store') }}>

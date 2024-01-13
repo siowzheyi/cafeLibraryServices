@@ -2,16 +2,16 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
         <meta charset="utf-8" />
-        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-        <meta name="description" content="" />
-        <meta name="author" content="" />
-        <title>CAFÉ LIBRARY SERVICES</title>
-        <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
-        <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.css" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <title>CAFÉ LIBRARY SERVICES</title>
+    <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.css" />
 
-        <link href="{{ asset('css/styles.css') }}" rel="stylesheet" />
-        <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+    <link href="{{ asset('css/styles.css') }}" rel="stylesheet" />
+    <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
         <style>
             table {
                 border-collapse: collapse;
@@ -110,14 +110,68 @@
                             <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
                             <li class="breadcrumb-item active">Library Book</li>
                         </ol>
+
+                        <div class="row mb-2">
+                            <div class="col-12">
+                                <a href="{{ route('book.create') }}" class="btn btn-success float-end"><i class="fa fa-plus"></i> Create New Book</a>
+                                
+                                <a href="#" class="btn btn-success float-end" data-bs-toggle="modal" data-bs-target="#modelId"><i class="fa fa-plus"></i> Import New Book</a>
+                            </div>
+                        </div>
+
                        
                         <div class="card mb-4">
                             <div class="card-header">
                                 <i class="fas fa-table me-1"></i>
                                 List of Library Book
                             </div>
+                            <div class="card-body">
+                                <table id="datatablesSimple" >
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Book Name</th>
+                                            <th>Genre</th>
+                                            <th>Price</th>
+                                            <th>Availability</th>
+                                            <th>Status</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
 
-                            <form id="fileUploadForm" enctype="multipart/form-data" href="{{ route('book.index') }}">
+                              <!-- import dorm modal -->
+                            <div class="modal fade" id="modelId" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Import Book</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <form action="{{ route('importbook') }}" method="post" enctype="multipart/form-data">
+                                            <div class="modal-body">
+
+                                                {{ csrf_field() }}
+                                                
+                                                <div class="form-group">
+                                                    <input type="file" name="excel" required>
+                                                </div>
+                                                <input type="text" name="library_id" id="library_id"  hidden>
+
+                                                <div class="modal-footer">
+                                                    <button type="submit" class="btn btn-primary">Import</button>
+                                                </div>
+                                            </div>
+
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- <form id="fileUploadForm" enctype="multipart/form-data" href="{{ route('book.index') }}">
                                 <input type="file" id="fileInput" accept=".xls, .xlsx, .csv, .txt" />
                                 <button type="button" onclick="handleFile()">Upload and View</button>
                             </form>
@@ -126,8 +180,8 @@
                                 <!-- File data will be displayed here -->
                                 <table id="dataTable"></table>
                                 <div class="pagination" id="pagination"></div>
-                            </div>
-                        
+                            </div> --}}
+{{--                         
                             <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
                             <script>
                                 var currentData = [];
@@ -196,8 +250,7 @@
                                     currentPage = page;
                                     displayData(currentPage);
                                 }
-                            </script>
-
+                            </script> --}}
                         </div>
                     </div>
                 </main>
@@ -220,8 +273,107 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
         <script src="assets/demo/chart-area-demo.js"></script>
         <script src="assets/demo/chart-bar-demo.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js" crossorigin="anonymous"></script>
-        <script src="js/datatables-simple-demo.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+        <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.js"></script>
 
     </body>
+    <script>
+        $(document).ready(function() {
+    
+            // $.noConflict();
+            fetch_data();
+    
+            setTimeout(function() {
+                    $('#flash-message').fadeOut('fast');
+                }, 2000); // 2 seconds
+            var datatable;
+            var library_id = localStorage.getItem('library_id');
+    
+            $('#library_id').val(library_id);
+            // ajax function to get data from api to display at datatable
+            function fetch_data() {
+                datatable = $('#datatablesSimple').DataTable({
+                    processing: true,
+                    serverSide: true,
+                    ajax: {
+                        url: "{{ route('book.getBookDatatable') }}",
+                        data: {
+                            library_id: library_id,
+                        },
+                        type: 'GET',
+                    },
+                   
+                    'columnDefs': [{
+                        "targets": [0], // your case first column
+                        "className": "text-center",
+                        "width": "2%"
+                    }, {
+                        "targets": [1, 2, 3,4,5,6], // your case first column
+                        "className": "text-center",
+                    }, ],
+                    order: [
+                        [1, 'asc']
+                    ],
+    
+                    columns: [{
+                        "data": null,
+                        searchable: false,
+                        "sortable": false,
+                        render: function(data, type, row, meta) {
+                            return meta.row + meta.settings._iDisplayStart + 1;
+                        }
+                    }, {
+                        data: "name",
+                        name: 'name',
+                        orderable: true,
+                        searchable: true
+                    },{
+                        data: "genre",
+                        name: 'genre',
+                        orderable: false,
+                        searchable: false
+                    },{
+                        data: "price",
+                        name: 'price',
+                        orderable: false,
+                        searchable: false
+                    },{
+                        data: "availability",
+                        name: 'availability',
+                        orderable: false,
+                        searchable: false
+                    },{
+                        data: "status",
+                        name: 'status',
+                        orderable: false,
+                        searchable: false
+                    }, {
+                        data: 'action',
+                        name: 'action',
+                        orderable: false,
+                        searchable: false
+                    }, ]
+                });
+            }
+            // toggle data status
+            $(document).on('change', '.data-status', function() {
+            var dataId = $(this).attr('data-id');
+            var status = $(this).is(':checked') ? 1 : 0;
+    
+                $.ajax({
+                    url: '/staff/book/' + dataId,
+                    type: 'PATCH',
+                    data: { 
+                        type: "status",
+                        _token: "{{ csrf_token() }}",
+                    },
+                    success: function(result) {
+                        // Handle the result of the API call
+                        $('#datatablesSimple').DataTable().destroy();
+                        fetch_data();
+                    }
+                });
+            });
+        });
+    </script>
 </html>

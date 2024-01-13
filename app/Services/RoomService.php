@@ -113,19 +113,18 @@ class RoomService
         return $data;
     }
 
-    public function store($request)
+    public function store($request, $input)
     {
         $raw_request = $request;
-        $request = $request->validated();
 
         $category_id = ItemCategory::where('name','room')->first();
 
         $room = new Room();
-        $room->room_no = $request['room_no'];
-        $room->type = $request['room_type'];
+        $room->room_no = $input['room_no'];
+        $room->type = $input['room_type'];
 
-        if(isset($request['remark']))
-        $room->remark = $request['remark'];
+        if(isset($input['remark']))
+        $room->remark = $input['remark'];
         $room->item_category_id = $category_id->id;
 
 
@@ -136,7 +135,7 @@ class RoomService
         }
         else
         {
-            $room->library_id = $request['library_id'];
+            $room->library_id = $input['library_id'];
 
         }
         $room->save();
@@ -150,26 +149,23 @@ class RoomService
         return $room;
     }
 
-    public function update($request, $room)
+    public function update($request, $room, $input)
     {
         $raw_request = $request;
-
-        $request = $request->validated();
-
-        if (isset($request['type'])) {
-            if ($request['type'] === 'status') {
+        if (isset($input['type'])) {
+            if ($input['type'] === 'status') {
                 $room->status = $room->status === 1 ? 0 : 1;
             }
             $room->save();
             return;
         }
-        $room->room_no = $request['room_no'];
-        $room->status = $request['status'];
+        $room->room_no = $input['room_no'];
+        // $room->status = $input['status'];
 
-        $room->type = $request['room_type'];
+        $room->type = $input['room_type'];
 
-        if(isset($request['remark']))
-        $room->remark = $request['remark'];
+        if(isset($input['remark']))
+        $room->remark = $input['remark'];
         else
         $room->remark = null;
         $room->save();

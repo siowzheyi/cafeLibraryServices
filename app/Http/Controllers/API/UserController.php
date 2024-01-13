@@ -9,6 +9,8 @@ use App\Http\Requests\UserRequest;
 use App\Models\User;
 use Illuminate\Support\Facades\Session;
 use Yajra\DataTables\DataTables;
+use Illuminate\Validation\Rule;
+
 use DB;
 use Auth;
 use App;
@@ -127,11 +129,11 @@ class UserController extends BaseController
     {
         $result = $this->services->index($request);
         
-        $result = $this->sendHTMLResponse($result, "Data successfully retrieved. "); 
+        // $result = $this->sendHTMLResponse($result, "Data successfully retrieved. "); 
         
-        return view('staff.admin.index',["data" =>  $result['data']['aaData']]);
+        // return view('staff.admin.index',["data" =>  $result['data']['aaData']]);
 
-        // return $this->sendResponse($result, "Data successfully retrieved. "); 
+        return $this->sendResponse($result, "Data successfully retrieved. "); 
     }
 
     public function getUserDatatable(Request $request)

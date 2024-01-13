@@ -73,26 +73,30 @@
                     <li class="breadcrumb-item"><a href="{{ route('room.index') }}">Library Room</a></li>
                     <li class="breadcrumb-item active">Create new</li>
                 </ol>
+                @foreach ($errors->all() as $error)
+                    <div class="alert alert-danger" id="flash-message">{{ $error }}</div>
+                @endforeach
                 <div class="row mb-4">
                     <div class="col-12">
-                        <form href="{{ route('Room.store') }}">
+                        <form action="{{ route('room.store') }}" method="POST" enctype="multipart/form-data">
+                            @csrf
                             <div class="form-group mb-2">
                                 <label for="exampleFormControlInput1">Picture</label>
-                                <input type="file" class="form-control" id="exampleFormControlInput1" value="">
+                                <input type="file" class="form-control" name="picture" id="exampleFormControlInput1">
                             </div>
                             <div class="form-group mb-2">
                                 <label for="exampleFormControlInput1">Room No.</label>
-                                <input type="text" class="form-control" id="exampleFormControlInput1" value="">
+                                <input type="text" class="form-control" name="room_no" id="exampleFormControlInput1">
                             </div>
                             <div class="form-group mb-2">
                                 <label for="exampleFormControlInput1">Room Type</label>
-                                <input type="text"  class="form-control" id="exampleFormControlInput1" value="">
+                                <input type="text"  class="form-control" name="room_type" id="exampleFormControlInput1">
                             </div>
-                            <div class="form-group mb-2">
+                            {{-- <div class="form-group mb-2">
                                 <label for="exampleFormControlInput1">Quantity</label>
-                                <input type="text"  class="form-control" id="exampleFormControlInput1" value="">
-                            </div>
-                            <button type="submit" class="btn btn-success mt-3 mb-2">Submit</button>
+                                <input type="text"  class="form-control" id="exampleFormControlInput1" >
+                            </div> --}}
+                            <input type="submit" class="btn btn-success mt-3 mb-2" value="Submit">
                         </form>
                     </div>
                 </div>

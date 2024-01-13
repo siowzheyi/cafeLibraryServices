@@ -46,6 +46,12 @@ Route::get('logout', [AuthController::class, 'logout'])->name('logout');
 
 // Route::get('cafe/staff/index', [UserController::class, 'index'])->name('cafe.staff.index');
 Route::get('user/getUserDatatable', [UserController::class, 'getUserDatatable'])->name('user.getUserDatatable');
+Route::get('table/getTableDatatable', [TableController::class, 'getTableDatatable'])->name('table.getTableDatatable');
+Route::get('room/getRoomDatatable', [RoomController::class, 'getRoomDatatable'])->name('room.getRoomDatatable');
+Route::get('equipment/getEquipmentDatatable', [EquipmentController::class, 'getEquipmentDatatable'])->name('equipment.getEquipmentDatatable');
+Route::get('book/getBookDatatable', [BookController::class, 'getBookDatatable'])->name('book.getBookDatatable');
+Route::get('beverage/getBeverageDatatable', [BeverageController::class, 'getBeverageDatatable'])->name('beverage.getBeverageDatatable');
+
 Route::resource('user', UserController::class);
 
 Route::middleware(['staffauthentication'])->group(function () {
@@ -54,9 +60,9 @@ Route::middleware(['staffauthentication'])->group(function () {
         
         Route::resource('library', LibraryController::class);
         Route::resource('cafe', CafeController::class);
-
+        
         Route::middleware(['ensurestaffhaslibrarycafeid'])->group(function () {
-
+            
             Route::resource('announcement', AnnouncementController::class);
             Route::resource('item', ItemController::class);
             Route::resource('table', TableController::class);
@@ -64,6 +70,7 @@ Route::middleware(['staffauthentication'])->group(function () {
             Route::resource('book', BookController::class);
             Route::resource('equipment', EquipmentController::class);
             Route::resource('room', RoomController::class);
+            Route::post('importbook', [BookController::class, 'importBook'])->name('importbook');
             
             Route::prefix('report')->group(function () {
                 Route::get('detail_sales_report', [OrderController::class, 'detailSalesReport'])->name('detail_sales_report');

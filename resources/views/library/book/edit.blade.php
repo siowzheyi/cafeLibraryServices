@@ -8,7 +8,7 @@
         <meta name="author" content="" />
         <title>CAFÉ LIBRARY SERVICES</title>
         <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
-        <link href="css/styles.css?v=1.0" rel="stylesheet" />
+        <link href="{{ asset('css/styles.css') }}" rel="stylesheet" />
         <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
     </head>
     <body class="sb-nav-fixed">
@@ -70,43 +70,52 @@
                             <li class="breadcrumb-item"><a href="{{ route('book.index') }}">Library Book</a></li>
                             <li class="breadcrumb-item active">Edit</li>
                         </ol>
+                        @foreach ($errors->all() as $error)
+                            <div class="alert alert-danger" id="flash-message">{{ $error }}</div>
+                        @endforeach
                         <div class="row mb-4">
                             <div class="col-12">
-                                <form href="{{ route('Book.update') }}">
+                                <form action="{{ route('book.update',['book' => $data['id']]) }}" method='POST' enctype="multipart/form-data">
+                                    @method('PUT')
+                                    @csrf
+
                                     <div class="form-group mb-2">
                                         <label for="exampleFormControlInput1">Picture</label>
-                                        <br><img src="images/book1.jpg" width="200">
-                                        <input type="file" class="form-control mt-2" id="exampleFormControlInput1" value="Orange">
+                                        <br><img src="{{ $data['picture'] }}" width="200">
+                                        <input type="file" class="form-control mt-2" id="exampleFormControlInput1" name="picture" value="{{ $data['picture'] }}">
+                                    
                                     </div>
+                                   
                                     <div class="form-group mb-2">
                                         <label for="exampleFormControlInput1">Book Name</label>
-                                        <input type="text" class="form-control" id="exampleFormControlInput1" value="puteri Gunung Ledang">
+                                        <input type="text" class="form-control" id="exampleFormControlInput1" name="name" value="{{ $data['name'] }}">
                                     </div>
                                     <div class="form-group mb-2">
                                         <label for="exampleFormControlInput1">Genre</label>
-                                        <input type="text" class="form-control" id="exampleFormControlInput1" value="Fantacy">
+                                        <input type="text" class="form-control" id="exampleFormControlInput1" name="genre" value="{{ $data['genre'] }}">
                                     </div>
                                     <div class="form-group mb-2">
                                         <label for="exampleFormControlInput1">Author Name</label>
-                                        <input type="email" class="form-control" id="exampleFormControlInput1" value="Ayub Hassan">
+                                        <input type="text" class="form-control" id="exampleFormControlInput1" name="author_name" value="{{ $data['author_name'] }}">
                                     </div>
                                     <div class="form-group mb-2">
                                         <label for="exampleFormControlInput1">Publisher Name</label>
-                                        <input type="text" class="form-control" id="exampleFormControlInput1" value="Lady Bug Pink">
+                                        <input type="text" class="form-control" id="exampleFormControlInput1" name="publisher_name" value="{{ $data['publisher_name'] }}">
                                     </div>
                                     <div class="form-group mb-4">
                                         <label for="exampleFormControlInput1">Remark</label>
-                                        <input type="text" class="form-control" id="exampleFormControlInput1" value="OK">
+                                        <input type="text" class="form-control" id="exampleFormControlInput1" name="remark" value="{{ $data['remark'] }}">
                                     </div>
                                     <div class="form-group mb-4">
                                         <label for="exampleFormControlInput1">Price</label>
-                                        <input type="text" class="form-control" id="exampleFormControlInput1" value="RM19.90">
+                                        <input type="text" class="form-control" id="exampleFormControlInput1" name="price" value="{{ $data['price'] }}">
                                     </div>
                                     <div class="form-group mb-4">
                                         <label for="exampleFormControlInput1">Stock Count</label>
-                                        <input type="text" class="form-control" id="exampleFormControlInput1" value="450">
+                                        <input type="text" class="form-control" id="exampleFormControlInput1" name="stock_count" value="{{ $data['stock_count'] }}">
                                     </div>
-                                    <button type="submit" class="btn btn-success mb-2">Submit</button>
+                                    <input type="submit"class="btn btn-success mb-2" value="Submit">
+                                    {{-- <button type="submit" class="btn btn-success mb-2">Submit</button> --}}
                                 </form>
                             </div>
                         </div>
@@ -135,4 +144,13 @@
         <script src="js/datatables-simple-demo.js"></script>
 
     </body>
+    <script>
+        $(document).ready(function() {
+            
+            // not working dunnoe why
+            setTimeout(function() {
+                $('#flash-message').fadeOut('fast');
+            }, 2000); // 2 seconds
+        });
+    </script>
 </html>

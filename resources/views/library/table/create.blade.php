@@ -67,18 +67,18 @@
                         <li class="breadcrumb-item"><a href="{{ route('table.index') }}">Library Table</a></li>
                         <li class="breadcrumb-item active">Create new</li>
                     </ol>
+                    @foreach ($errors->all() as $error)
+                        <div class="alert alert-danger" id="flash-message">{{ $error }}</div>
+                    @endforeach
                     <div class="row mb-4">
                         <div class="col-12">
-                            <form href="{{ route('Table.store') }}">
+                            <form action="{{ route('table.store') }}" method="POST">
+                                @csrf
                                 <div class="form-group mb-2">
                                     <label for="exampleFormControlInput1">Table No.</label>
-                                    <input type="text" class="form-control" id="exampleFormControlInput1" value="">
+                                    <input type="text" class="form-control" id="exampleFormControlInput1" name="table_no">
                                 </div>
-                                <div class="form-group mb-2">
-                                    <label for="exampleFormControlInput1">Status</label>
-                                    <textarea class="form-control" id="exampleFormControlInput1" value=""></textarea>
-                                </div>
-                                <button type="submit" class="btn btn-success mt-3 mb-2">Submit</button>
+                                <input type="submit" class="btn btn-success mt-3 mb-2" value="Submit">
                             </form>
                         </div>
                     </div>

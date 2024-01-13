@@ -5,6 +5,9 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller as Controller;
 use App\Http\Controllers\API\BaseController as BaseController;
 use App\Services\EquipmentService;
+use Yajra\DataTables\DataTables;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Validation\Rule;
 
 use App\Http\Requests\EquipmentRequest;
 use App\Models\User;
@@ -60,26 +63,67 @@ class EquipmentController extends BaseController
         return $this->sendResponse("", "Equipment has been successfully updated. ");   
     }
 
-     // This api is for user to view list of Equipment
-     public function equipmentListing(Request $request)
-     {
-        $input = $request->all();
+    // This api is for user to view list of Equipment
+    public function equipmentListing(Request $request)
+    {
+    $input = $request->all();
 
-        App::setLocale($request->header('language'));
+    App::setLocale($request->header('language'));
 
-        $validator = Validator::make($input, [
-            'library_id' => array('required','exists:libraries,id'),
-            'search'    =>  array('nullable')
-        ]);
+    $validator = Validator::make($input, [
+        'library_id' => array('required','exists:libraries,id'),
+        'search'    =>  array('nullable')
+    ]);
 
-        if ($validator->fails()) {
-            return $this->sendCustomValidationError($validator->errors());
+    if ($validator->fails()) {
+        return $this->sendCustomValidationError($validator->errors());
+    }
+
+        $result = $this->services->equipmentListing($input);
+
+        return $this->sendResponse($result, "Data has been successfully retrieved. ");   
+    }
+
+    public function getEquipmentDatatable(Request $request)
+    {
+        if (request()->ajax()) {
+            $type = $request->type;
+
+            $user = auth()->user();
+            
+            $data = Equipment::whereNotNull('status');
+
+            if($user->hasRole('admin'))
+                $data = $data->where('equipments.library_id',$request->library_id);
+            else
+                $data = $data->where('equipments.library_id',$user->library_id);
+
+            $table = Datatables::of($data);
+
+            $table->addColumn('status', function ($row) {
+                $checked = $row->status == 1 ? 'checked' : '';
+                $status = $row->status == 1 ? 'Active' : 'Inactive';
+            
+                $btn = '<div class="form-check form-switch">';
+                $btn .= '<input class="form-check-input data-status" type="checkbox" data-id="'.$row->id.'" '.$checked.'>';
+                $btn .= '<label class="form-check-label">'.$status.'</label>';
+                $btn .= '</div>';
+            
+                return $btn;
+            });
+            
+
+            $table->addColumn('action', function ($row) {
+                $token = csrf_token();
+
+                $btn = '<a href="' . route('equipment.edit', ['equipment'=>$row->id]) . '" class="btn btn-sm btn-info"><i class="fa fa-pen"></i> Update</a>';
+                return $btn;
+            });
+
+            $table->rawColumns(['status','action']);
+            return $table->make(true);
         }
-
-         $result = $this->services->equipmentListing($input);
- 
-         return $this->sendResponse($result, "Data has been successfully retrieved. ");   
-     }
+    }
 
 
 }

@@ -8,7 +8,7 @@
         <meta name="author" content="" />
         <title>CAFÉ LIBRARY SERVICES</title>
         <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
-        <link href="css/styles.css?v=1.0" rel="stylesheet" />
+        <link href="{{ asset('css/styles.css') }}" rel="stylesheet" />
         <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
     </head>
     <body class="sb-nav-fixed">
@@ -70,45 +70,48 @@
                             <li class="breadcrumb-item"><a href="{{ route('book.index') }}">Library Book</a></li>
                             <li class="breadcrumb-item active">Create new</li>
                         </ol>
+                        @foreach ($errors->all() as $error)
+                            <div class="alert alert-danger" id="flash-message">{{ $error }}</div>
+                        @endforeach
                         <div class="row mb-4">
                             <div class="col-12">
-                                <form href="{{ route('Book.store') }}">
+                                <form action="{{ route('book.store') }}" method='POST' enctype="multipart/form-data">
+                                    @csrf
+
                                     <div class="form-group mb-2">
                                         <label for="exampleFormControlInput1">Picture</label>
-                                        <input type="file" class="form-control" id="exampleFormControlInput1" value="">
+                                        <input type="file" class="form-control" id="exampleFormControlInput1" name="picture">
                                     </div>
                                     <div class="form-group mb-2">
                                         <label for="exampleFormControlInput1">Book Name</label>
-                                        <input type="text" class="form-control" id="exampleFormControlInput1" value="">
+                                        <input type="text" class="form-control" id="exampleFormControlInput1" name="name">
                                     </div>
                                     <div class="form-group mb-2">
                                         <label for="exampleFormControlInput1">Genre</label>
-                                        <input type="text" class="form-control" id="exampleFormControlInput1" value="">
+                                        <input type="text" class="form-control" id="exampleFormControlInput1" name="genre">
                                     </div>
                                     <div class="form-group mb-2">
                                         <label for="exampleFormControlInput1">Author Name</label>
-                                        <input type="email" class="form-control" id="exampleFormControlInput1" value="">
+                                        <input type="text" class="form-control" id="exampleFormControlInput1" name="author_name">
                                     </div>
                                     <div class="form-group mb-2">
                                         <label for="exampleFormControlInput1">Publisher Name</label>
-                                        <input type="text" class="form-control" id="exampleFormControlInput1" value="">
+                                        <input type="text" class="form-control" id="exampleFormControlInput1" name="publisher_name">
                                     </div>
                                     <div class="form-group mb-4">
                                         <label for="exampleFormControlInput1">Remark</label>
-                                        <input type="text" class="form-control" id="exampleFormControlInput1" value="">
+                                        <input type="text" class="form-control" id="exampleFormControlInput1" name="remark">
                                     </div>
                                      <div class="form-group mb-4">
                                         <label for="exampleFormControlInput1">Price</label>
-                                        <input type="text" class="form-control" id="exampleFormControlInput1" value="">
-
+                                        <input type="text" class="form-control" id="exampleFormControlInput1" name="price">
                                     </div>
                                      <div class="form-group mb-4">
                                         <label for="exampleFormControlInput1">Stock</label>
-                                        <input type="text" class="form-control" id="exampleFormControlInput1" value="">
-                                        
+                                        <input type="number" class="form-control" id="exampleFormControlInput1" name="stock_count">
                                     </div>
-                                     
-                                    <button type="submit" class="btn btn-success mb-2">Submit</button>
+                                    <input type="number" class="form-control library_id" id="exampleFormControlInput1" name="library_id">
+                                    <input type="submit" class="btn btn-success mb-2" value="Submit">
                                 </form>
                             </div>
                         </div>
@@ -137,4 +140,11 @@
         <script src="js/datatables-simple-demo.js"></script>
 
     </body>
+    <script>
+        $(document).ready(function(){
+            var library_id = localStorage.getItem('library_id');
+            $('.library_id').val() = library_id;
+
+        });
+    </script>
 </html>

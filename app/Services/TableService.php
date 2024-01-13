@@ -106,9 +106,6 @@ class TableService
 
     public function store($request)
     {
-        $raw_request = $request;
-
-        $request = $request->validated();
 
         $table = new Table();
         $table->table_no = $request['table_no'];
@@ -132,9 +129,6 @@ class TableService
 
     public function update($request, $table)
     {
-        $raw_request = $request;
-
-        $request = $request->validated();
 
         if (isset($request['type'])) {
             if ($request['type'] === 'status') {
@@ -144,7 +138,6 @@ class TableService
             return;
         }
         $table->table_no = $request['table_no'];
-        $table->status = $request['status'];
 
         $table->save();
 
