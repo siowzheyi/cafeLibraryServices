@@ -8,6 +8,7 @@ use App\Services\EquipmentService;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\Rule;
+use App\Services\Service;
 
 use App\Http\Requests\EquipmentRequest;
 use App\Models\User;
@@ -24,15 +25,41 @@ class EquipmentController extends BaseController
         $this->services = $equipment_service;
     }
 
-    // This api is for admin user to create Equipment
-    public function store(EquipmentRequest $request)
+    public function create()
     {
-        $result = $this->services->store($request);
+        return view('library.equipment.create');
+    }
+
+    // This api is for admin user to create Equipment
+    public function store(Request $request)
+    {
+        $input = $request->all();
+
+        App::setLocale($request->header('language'));
+
+        $validator = Validator::make($input, [
+            'name' => ['required'],
+            'remark' => ['nullable'],
+            'picture' => ['required'],
+
+            "library_id"   =>  array('nullable','exists:libraries,id',
+            Rule::requiredIf(function () use ($request) {
+                return $request->user()->hasAnyRole(['superadmin', 'admin']);
+            }))
+        ]);
+
+        if ($validator->fails()) {
+            Session::flash('message-error', $validator->errors());
+
+            return redirect()->back()->withErrors($validator->errors());
+        }
+
+        $result = $this->services->store($request, $input);
         
         if($result != null)
-            return $this->sendResponse("", "Equipment has been successfully created. ");
+            return view('library.equipment.index')->withSuccess("Data successfully created. ");
         else
-            return $this->sendCustomValidationError(['Error'=>'Failed to create data. ']);
+            return redirect()->back()->withErrors("Data is not created.");
 
     }
 
@@ -49,35 +76,73 @@ class EquipmentController extends BaseController
     {
         $result = $this->services->index($request);
 
-        // return $this->sendResponse($result, "Data successfully retrieved. "); 
-        $result = $this->sendHTMLResponse($result, "Data successfully retrieved. "); 
+        return $this->sendResponse($result, "Data successfully retrieved. "); 
+        // $result = $this->sendHTMLResponse($result, "Data successfully retrieved. "); 
         
-        return view('library.equipment.index',["data" =>  $result['data']['aaData']]);
+        // return view('library.equipment.index',["data" =>  $result['data']['aaData']]);
+    }
+
+    public function edit(Equipment $equipment)
+    {
+        $service = new Service();
+        $data = [
+            "id" => $equipment->id,
+               "name" => $equipment->name,
+               "remark" => $equipment->remark,
+               "availability" => $equipment->availability,
+               "status" => $equipment->status,
+               "picture"    => $equipment->picture ? $service->getImage('equipment',$equipment->id) : null,      
+
+        ];
+
+        return view('library.equipment.edit',compact('data'));
     }
 
     // This api is for admin user to update certain Equipment
-    public function update(EquipmentRequest $request, Equipment $equipment)
+    public function update(Request $request, Equipment $equipment)
     {
-        $result = $this->services->update($request, $equipment);
+        $input = $request->all();
+        
+        App::setLocale($request->header('language'));
 
-        return $this->sendResponse("", "Equipment has been successfully updated. ");   
+        if($request->method() == "PUT")
+        {
+            $validator = Validator::make($input, [
+                'name' => ['required'],
+                'remark' => ['nullable'],
+                'picture' => ['nullable'],
+            ]);
+        }
+        else
+        {
+            $validator = Validator::make($input, [
+                'type' => array('required','in:status'),
+            ]);
+        }
+        
+        if ($validator->fails()) {
+            Session::flash('message-error', $validator->errors());
+            return redirect()->back()->withErrors($validator->errors());
+        }
+        $result = $this->services->update($request, $equipment, $input);
+        return view('library.equipment.index');
     }
 
     // This api is for user to view list of Equipment
     public function equipmentListing(Request $request)
     {
-    $input = $request->all();
+        $input = $request->all();
 
-    App::setLocale($request->header('language'));
+        App::setLocale($request->header('language'));
 
-    $validator = Validator::make($input, [
-        'library_id' => array('required','exists:libraries,id'),
-        'search'    =>  array('nullable')
-    ]);
+        $validator = Validator::make($input, [
+            'library_id' => array('required','exists:libraries,id'),
+            'search'    =>  array('nullable')
+        ]);
 
-    if ($validator->fails()) {
-        return $this->sendCustomValidationError($validator->errors());
-    }
+        if ($validator->fails()) {
+            return $this->sendCustomValidationError($validator->errors());
+        }
 
         $result = $this->services->equipmentListing($input);
 
@@ -91,7 +156,7 @@ class EquipmentController extends BaseController
 
             $user = auth()->user();
             
-            $data = Equipment::whereNotNull('status');
+            $data = Equipment::whereNotNull('status')->orderBy('created_at','desc');
 
             if($user->hasRole('admin'))
                 $data = $data->where('equipments.library_id',$request->library_id);

@@ -111,19 +111,18 @@ class EquipmentService
         return $data;
     }
 
-    public function store($request)
+    public function store($request, $input)
     {
         $raw_request = $request;
-        $request = $request->validated();
 
         $category_id = ItemCategory::where('name','equipment')->first();
 
         $equipment = new equipment();
-        $equipment->name = $request['name'];
+        $equipment->name = $input['name'];
         $equipment->availability = 1;
 
-        if(isset($request['remark']))
-        $equipment->remark = $request['remark'];
+        if(isset($input['remark']))
+        $equipment->remark = $input['remark'];
         $equipment->item_category_id = $category_id->id;
 
 
@@ -134,7 +133,7 @@ class EquipmentService
         }
         else
         {
-            $equipment->library_id = $request['library_id'];
+            $equipment->library_id = $input['library_id'];
 
         }
         $equipment->save();
@@ -146,24 +145,22 @@ class EquipmentService
         return $equipment;
     }
 
-    public function update($request, $equipment)
+    public function update($request, $equipment, $input)
     {
         $raw_request = $request;
 
-        $request = $request->validated();
-
-        if (isset($request['type'])) {
-            if ($request['type'] === 'status') {
+        if (isset($input['type'])) {
+            if ($input['type'] === 'status') {
                 $equipment->status = $equipment->status === 1 ? 0 : 1;
             }
             $equipment->save();
             return;
         }
-        $equipment->name = $request['name'];
-        $equipment->status = $request['status'];
+        $equipment->name = $input['name'];
+        // $equipment->status = $input['status'];
 
-        if(isset($request['remark']))
-        $equipment->remark = $request['remark'];
+        if(isset($input['remark']))
+        $equipment->remark = $input['remark'];
         else
         $equipment->remark = null;
 
@@ -196,7 +193,7 @@ class EquipmentService
             // dd($tmpFile->getSize(),$previous_file_size, $file,$previous_file_size , $uploaded_file_size);
             //compare
             if($previous_file_name != $uploaded_file_name || $tmpFile->getSize() != $uploaded_file_size) {
-                // $service->storeImage('main',$file, $request['display_name']);
+                // $service->storeImage('main',$file, $input['display_name']);
                 $mime_type = $file->getClientOriginalExtension();
                 $storage_path = $media->name;
 

@@ -50,8 +50,8 @@
                             <nav class="sb-sidenav-menu-nested nav">
                                 <a class="nav-link" href="{{ route('table.index') }}">Table</a>
                                 <a class="nav-link" href="{{ route('book.index') }}">Book</a>
-                                <a class="nav-link active" href="{{ route('room.index') }}">Room</a>
-                                <a class="nav-link" href="{{ route('equipment.index') }}">Equipment</a>
+                                <a class="nav-link " href="{{ route('room.index') }}">Room</a>
+                                <a class="nav-link active" href="{{ route('equipment.index') }}">Equipment</a>
                             </nav>
                         </div>
                     </div>
@@ -72,20 +72,22 @@
                     @endforeach
                     <div class="row mb-4">
                         <div class="col-12">
-                            <form href="{{ route('Equipment.store') }}>
+                            <form action="{{ route('equipment.store') }}" method="POST" enctype="multipart/form-data">
+                                @csrf
+                                
                                 <div class="form-group mb-2">
                                     <label for="exampleFormControlInput1">Picture</label>
-                                    <input type="file" class="form-control" id="exampleFormControlInput1" value="">
+                                    <input type="file" class="form-control" id="exampleFormControlInput1" name="picture">
                                 </div>
                                 <div class="form-group mb-2">
                                     <label for="exampleFormControlInput1">Equipment Name</label>
-                                    <input type="text" class="form-control" id="exampleFormControlInput1" value="">
+                                    <input type="text" class="form-control" id="exampleFormControlInput1" name="name">
                                 </div>
                                 <div class="form-group mb-2">
-                                    <label for="exampleFormControlInput1">Quantity</label>
-                                    <input type="text"  class="form-control" id="exampleFormControlInput1" value="">
+                                    <label for="exampleFormControlInput1">Remark</label>
+                                    <input type="text" class="form-control" id="exampleFormControlInput1" name="remark">
                                 </div>
-                                <button type="submit" class="btn btn-success mt-3 mb-2">Submit</button>
+                                <input type="submit" class="btn btn-success mt-3 mb-2" value="Submit">
                             </form>
                         </div>
                     </div>

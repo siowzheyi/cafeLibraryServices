@@ -68,12 +68,15 @@
                         <li class="breadcrumb-item"><a href="dashboard">Dashboard</a></li>
                         <li class="breadcrumb-item active">Library Equipment</li>
                     </ol>
-                    @foreach ($errors->all() as $error)
-                        <div class="alert alert-danger" id="flash-message">{{ $error }}</div>
-                    @endforeach
+                 
+                    @if (Session::has('message-error'))
+                        {{-- @foreach ($errors->all() as $error) --}}
+                            <div class="alert alert-danger" id="flash-message">{{ Session::get('message-error') }}</div>
+                        {{-- @endforeach --}}
+                    @endif
                     <div class="row mb-2">
                         <div class="col-12">
-                            <a href="{{ route('equipment.create') }}" class="btn btn-success float-end"><i class="fa fa-plus"></i> Create New Library Equipment</a>
+                            <a href="{{ route('equipment.create') }}" class="btn btn-success float-end"><i class="fa fa-plus"></i> Create New Equipment</a>
                         </div>
                     </div>
                     <div class="card mb-4">
@@ -86,49 +89,11 @@
                                 <thead>
                                     <tr>
                                         <th>#</th>
-                                        {{-- <th>Picture</th> --}}
                                         <th>Equipment Name</th>
-                                        {{-- <th>Quantity</th> --}}
                                         <th>Status</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
-                                {{-- <tbody>
-                                    <tr>
-                                        <td>1</td>
-                                        <td><img src="images/eqpmnt.jpg" width="100"></td>
-                                        <td>Controller PS5</td>
-                                        <td>5</td>
-                                        <td>
-                                            <div class="form-check form-switch">
-                                                <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" checked>
-                                                <label class="form-check-label" for="flexSwitchCheckChecked">Active</label>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <a href="{{ route('Equipment.show') }}" class="btn btn-sm btn-info"><i class="fa fa-eye"></i> View</a>
-                                            <a href="{{ route('Equipment.update') }}" class="btn btn-sm btn-primary"><i class="fa fa-edit"></i> Edit</a>
-                                            <a href="#" class="btn btn-sm btn-danger" onclick="alert('Successfully deleted.')"><i class="fa fa-trash"></i> Delete</a>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>2</td>
-                                        <td><img src="images/eqpmnt2.jpg" width="100"></td>
-                                        <td>Projector</td>
-                                        <td>5</td>
-                                        <td>
-                                            <div class="form-check form-switch">
-                                                <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked">
-                                                <label class="form-check-label" for="flexSwitchCheckChecked">Inactive</label>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <a href="{{ route('Equipment.show') }}" class="btn btn-sm btn-info"><i class="fa fa-eye"></i> View</a>
-                                            <a href="{{ route('Equipment.update') }}" class="btn btn-sm btn-primary"><i class="fa fa-edit"></i> Edit</a>
-                                            <a href="#" class="btn btn-sm btn-danger" onclick="alert('Successfully deleted.')"><i class="fa fa-trash"></i> Delete</a>
-                                        </td>
-                                    </tr>
-                                </tbody> --}}
                             </table>
                         </div>
                     </div>

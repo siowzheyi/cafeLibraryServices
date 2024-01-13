@@ -72,21 +72,23 @@
                     @endforeach
                     <div class="row mb-4">
                         <div class="col-12">
-                            <form href="{{ route('Equipment.update') }}>
+                            <form action="{{ route('equipment.update',['equipment'=> $data['id'] ]) }}" method="POST" enctype="multipart/form-data">
+                                @csrf
+                                @method('PUT')
                                 <div class="form-group mb-2">
                                     <label for="exampleFormControlInput1">Picture</label>
-                                    <br><img src="{{ asset('images/eqpmnt.jpg') }}" width="200">
-                                    <input type="file" class="form-control mt-2" id="exampleFormControlInput1" value="Orange">
+                                    <br><img src="{{ $data['picture'] }}" width="200">
+                                    <input type="file" class="form-control mt-2" id="exampleFormControlInput1" name="picture">
                                 </div>
                                 <div class="form-group mb-2">
                                     <label for="exampleFormControlInput1">Equipment Name</label>
-                                    <input type="text" class="form-control" id="exampleFormControlInput1" value="Controller PS5">
+                                    <input type="text" class="form-control" id="exampleFormControlInput1" name="name" value="{{ $data['name'] }}">
                                 </div>
                                 <div class="form-group mb-2">
-                                    <label for="exampleFormControlInput1">Quantity</label>
-                                    <input type="text" class="form-control" id="exampleFormControlInput1" value="5">
+                                    <label for="exampleFormControlInput1">Remark</label>
+                                    <input type="text" class="form-control" id="exampleFormControlInput1" name="remark" value="{{ $data['remark'] }}">
                                 </div> 
-                                <button type="submit" class="btn btn-success mt-3 mb-2">Submit</button>
+                                <input type="submit" class="btn btn-success mt-3 mb-2" value="Submit">
                             </form>
                         </div>
                     </div>
