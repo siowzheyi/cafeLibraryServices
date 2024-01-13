@@ -66,30 +66,15 @@ if (!$link) {
                             <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
                             Staff
                         </a>
-                        {{-- <a class="nav-link active" href="{{ route('annoucementindex') }}">
-                            <div class="sb-nav-link-icon"><i class="fas fa-podcast"></i></div>
-                            Announcement
-                        </a> --}}
+                        
+                        <a class="nav-link active" href="{{ route('library.index') }}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
+                            Library
+                        </a>
                     </div>
                 </div>
             </nav>
         </div>
-
-        {{-- <div id="layoutSidenav_content">
-            <main>
-                {{-- //tmbh utk admin can view: total staff, total cafe, sales for cafe, total library, annoucement --}}
-                {{-- <div class="container-fluid px-4">
-                    <h1 class="mt-4">Dashboard</h1>
-                    <ol class="breadcrumb mb-4">
-                        <li class="breadcrumb-item active">Dashboard</li>
-                    </ol>
-                    <div class="row">
-                        <p>Welcome to admin dashboard.</p>
-                    </div>
-                </div>
-            </main>
-        </div> --}} 
-
 
         <div id="layoutSidenav_content">
             <main>
@@ -107,7 +92,7 @@ if (!$link) {
                     <div class="container-fluid px-4">
                         <h1 class="mt-4">Cafe Report </h1>
                         <ol class="breadcrumb mb-4">
-                            <li class="breadcrumb-item"><a href="staff-cafe-page.php">Dashboard</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('cafe.index') }}">Dashboard Cafe</a></li>
                             <li class="breadcrumb-item active">Cafe Report</li>
                         </ol>
 
@@ -196,7 +181,7 @@ if (!$link) {
                     <div class="container-fluid px-4">
                         <h1 class="mt-4">Library Report</h1>
                         <ol class="breadcrumb mb-4">
-                            <li class="breadcrumb-item"><a href="staff-library-page.php">Dashboard</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('library.index') }}">Dashboard Library</a></li>
                             <li class="breadcrumb-item active">Library Staff</li>
                         </ol>
                         <div class="card mb-4">

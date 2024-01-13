@@ -53,10 +53,8 @@ class AuthController extends Controller
             $user = Auth::user();
             if($user->hasRole('staff'))
             {
-                if($user->library_id != null)
-                    return redirect('staff.library.index');
-                elseif($user->cafe_id != null)
-                    return redirect('staff.cafe.index');
+                if($user->library_id != null || $user->cafe_id != null)
+                    return redirect('dashboard');
                 else
                     return redirect('dashboard.library-cafe');
             }
@@ -95,7 +93,13 @@ class AuthController extends Controller
     public function dashboard()
     {
         if(Auth::check()){
-            return view('dashboard.index');
+            $user = auth()->user();
+            if($user->hasRole('admin'))
+                return view('dashboard.index');
+            elseif($user->cafe_id != null)
+                return view('dashboard.cafe');
+            elseif($user->library_id != null)
+                return view('dashboard.library');
         }
   
         return redirect("login")->withSuccess('Opps! You do not have access');

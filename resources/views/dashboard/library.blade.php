@@ -8,7 +8,10 @@
         <meta name="author" content="" />
         <title>CAFÉ LIBRARY SERVICES</title>
         <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
-        <link href="css/styles.css?v=1.0" rel="stylesheet" />
+
+        <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.css" />
+
+        <link href="{{ asset('css/styles.css') }}" rel="stylesheet" />
         <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
     </head>
     <body class="sb-nav-fixed">
@@ -36,7 +39,7 @@
                     <div class="sb-sidenav-menu">
                         <div class="nav">
                             <div class="sb-sidenav-menu-heading">MAIN</div>
-                            <a class="nav-link" href="{{ route('dashboard.library') }}">
+                            <a class="nav-link" href="{{ route('dashboard') }}">
                                 <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                                 Dashboard
                             </a>
@@ -49,12 +52,10 @@
                             </a>
                             <div class="collapse bgsubmenu show" id="collapseLayoutsLib" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                                 <nav class="sb-sidenav-menu-nested nav">
-                                 <a class="nav-link" href="{{ route('libstaffindex') }}">Staff Library</a>
-                                 <a class="nav-link" href="{{ route('libtableindex') }}">Table</a>
-                                 <a class="nav-link" href="{{ route('libbookindex') }}">Book</a>
-                                 <a class="nav-link active" href="{{ route('libroomindex') }}">Room</a>
-                                 <a class="nav-link" href="{{ route('eqpindex') }}">Equipment</a>
-                                    
+                                 <a class="nav-link" href="{{ route('table.index') }}">Table</a>
+                                 <a class="nav-link" href="{{ route('book.index') }}">Book</a>
+                                 <a class="nav-link" href="{{ route('room.index') }}">Room</a>
+                                 <a class="nav-link" href="{{ route('equipment.index') }}">Equipment</a>
                                 </nav>
                             </div> 
                            
@@ -67,7 +68,7 @@
                     <div class="container-fluid px-4">
                         <h1 class="mt-4">Library Report</h1>
                         <ol class="breadcrumb mb-4">
-                            <li class="breadcrumb-item"><a href="{{ route('dashboard.library') }}">Dashboard</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('library.dashboard') }}">Dashboard</a></li>
                             <li class="breadcrumb-item active">Library Staff</li>
                         </ol>
                         {{-- modify to get a report from db --}}

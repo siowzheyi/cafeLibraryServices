@@ -46,7 +46,11 @@ class RoomController extends BaseController
     {
         $result = $this->services->index($request);
 
-        return $this->sendResponse($result, "Data successfully retrieved. "); 
+        // return $this->sendResponse($result, "Data successfully retrieved. "); 
+        
+        $result = $this->sendHTMLResponse($result, "Data successfully retrieved. "); 
+        
+        return view('library.room.index',["data" =>  $result['data']['aaData']]);
     }
 
     // This api is for admin user to update certain Room

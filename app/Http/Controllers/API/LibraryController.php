@@ -21,6 +21,15 @@ class LibraryController extends BaseController
         $this->services = $library_service;
     }
 
+    public function dashboard()
+    {
+        if(Auth::check()){
+            return view('dashboard.library');
+        }
+  
+        return redirect("login")->withSuccess('Opps! You do not have access');
+    }
+
     // This api is for admin user to create library
     public function store(LibraryRequest $request)
     {
@@ -46,7 +55,10 @@ class LibraryController extends BaseController
     {
         $result = $this->services->index($request);
 
-        return $this->sendResponse($result, "Data successfully retrieved. "); 
+        // return $this->sendResponse($result, "Data successfully retrieved. "); 
+        $result = $this->sendHTMLResponse($result, "Data successfully retrieved. "); 
+        
+        return view('library.index',["data" =>  $result['data']['aaData']]);
     }
 
     // This api is for admin user to update certain library

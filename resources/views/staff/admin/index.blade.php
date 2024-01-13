@@ -41,18 +41,31 @@
                             Dashboard
                         </a>
                         <div class="sb-sidenav-menu-heading">PAGES</div>
-                        <button id="staffadmin">
+                        <a class="nav-link collapsed active" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayoutsLib" aria-expanded="false" aria-controls="collapseLayoutsLib">
+                            <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
+                            Staff
+                            <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                        </a>
+                        <div class="collapse bgsubmenu show" id="collapseLayoutsLib" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                            <nav class="sb-sidenav-menu-nested nav">
+                                <button id="staffadmin">
+                                    <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
+                                    Staff Admin
+                                </button>
+                                <button id="staffcafe">
+                                    <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
+                                    Staff Cafe
+                                </button>
+                                <button id="stafflibrary">
+                                    <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
+                                    Staff Library
+                                </button>
+                            </nav>
+                        </div> 
+                        <a class="nav-link active" href="{{ route('library.index') }}">
                             <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
-                            Staff Admin
-                        </button>
-                        <button id="staffcafe">
-                            <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
-                            Staff Cafe
-                        </button>
-                        <button id="stafflibrary">
-                            <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
-                            Staff Library
-                        </button>
+                            Library
+                        </a>
                     </div>
                 </div>
             </nav>

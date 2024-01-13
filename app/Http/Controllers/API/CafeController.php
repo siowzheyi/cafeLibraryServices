@@ -21,6 +21,15 @@ class CafeController extends BaseController
         $this->services = $cafe_service;
     }
 
+    public function dashboard()
+    {
+        if(Auth::check()){
+            return view('dashboard.cafe');
+        }
+  
+        return redirect("login")->withSuccess('Opps! You do not have access');
+    }
+
     // This api is for admin user to create Cafe
     public function store(CafeRequest $request)
     {
@@ -47,6 +56,9 @@ class CafeController extends BaseController
         $result = $this->services->index($request);
 
         return $this->sendResponse($result, "Data successfully retrieved. "); 
+        // $result = $this->sendHTMLResponse($result, "Data successfully retrieved. "); 
+        
+        // return view('cafe.index',["data" =>  $result['data']['aaData']]);
     }
 
     // This api is for admin user to update certain cafe

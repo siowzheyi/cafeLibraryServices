@@ -8,7 +8,9 @@
         <meta name="author" content="" />
         <title>CAFÉ LIBRARY SERVICES</title>
         <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
-        <link href="css/styles.css?v=1.0" rel="stylesheet" />
+        <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.css" />
+
+        <link href="{{ asset('css/styles.css') }}" rel="stylesheet" />
         <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
         <style>
             table {
@@ -75,7 +77,7 @@
                     <div class="sb-sidenav-menu">
                         <div class="nav">
                             <div class="sb-sidenav-menu-heading">MAIN</div>
-                            <a class="nav-link" href="staff-library-page.html">
+                            <a class="nav-link" href="{{route('dashboard')}}">
                                 <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                                 Dashboard
                             </a>
@@ -88,11 +90,10 @@
                             </a>
                             <div class="collapse bgsubmenu show" id="collapseLayoutsLib" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                                 <nav class="sb-sidenav-menu-nested nav">
-                                    <a class="nav-link" href="{{ route('User.index') }}">Staff Library</a>
-                                     <a class="nav-link" href="{{ route('Table.index') }}">Table</a>
-                                     <a class="nav-link" href="{{ route('Book.index') }}">Book</a>
-                                     <a class="nav-link active" href="{{ route('Room.index') }}">Room</a>
-                                     <a class="nav-link" href="{{ route('Equipment.index') }}">Equipment</a>
+                                    <a class="nav-link" href="{{ route('table.index') }}">Table</a>
+                                    <a class="nav-link active" href="{{ route('book.index') }}">Book</a>
+                                    <a class="nav-link " href="{{ route('room.index') }}">Room</a>
+                                    <a class="nav-link" href="{{ route('equipment.index') }}">Equipment</a>
                                     
                                 </nav>
                             </div> 
@@ -106,7 +107,7 @@
                     <div class="container-fluid px-4">
                         <h1 class="mt-4">Library Book</h1>
                         <ol class="breadcrumb mb-4">
-                            <li class="breadcrumb-item"><a href="staff-library-page.html">Dashboard</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
                             <li class="breadcrumb-item active">Library Book</li>
                         </ol>
                        
@@ -116,7 +117,7 @@
                                 List of Library Book
                             </div>
 
-                            <form id="fileUploadForm" enctype="multipart/form-data" href="{{ route('Book.index') }}">
+                            <form id="fileUploadForm" enctype="multipart/form-data" href="{{ route('book.index') }}">
                                 <input type="file" id="fileInput" accept=".xls, .xlsx, .csv, .txt" />
                                 <button type="button" onclick="handleFile()">Upload and View</button>
                             </form>

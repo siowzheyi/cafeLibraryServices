@@ -58,37 +58,6 @@
 
         
     </form>
-
-    <script>
-        function authenticate() {
-        var username = document.getElementById("username").value;
-        var password = document.getElementById("password").value;
-
-        // Example roles and credentials (replace with your actual backend logic)
-        var roles = {
-            "admin": { username: "admin", password: "admin123" },
-            "staffcafe": { username: "cafestaff", password: "cafe123" },
-            "stafflibrary": { username: "librarystaff", password: "library123" }
-        };
-
-        // Check if the provided credentials match any role
-        if (roles.admin.username === username && roles.admin.password === password) {
-            alert("Login successful for Admin");
-        //    window.location.href = "dashboard.html"; // Redirect to Admin page
-
-        //    window.location.href = "{{ route('login') }}";
-        //    console.log("123");
-        } else if (roles.staffcafe.username === username && roles.staffcafe.password === password) {
-            alert("Login successful for Staff Cafe");
-            window.location.href = "staff-cafe-page.html"; // Redirect to User page
-        } else if (roles.stafflibrary.username === username && roles.stafflibrary.password === password) {
-            alert("Login successful for Staff Library");
-            window.location.href = "staff-library-page.html"; // Redirect to Guest page
-        } else {
-            alert("Invalid credentials");
-        }
-        }
-    </script>
     </div>
     <div class="card-footer text-center py-3">
         <div class="small">Admin Dashboard</div>

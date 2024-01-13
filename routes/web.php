@@ -38,12 +38,11 @@ Route::get('/login/index', [\App\Http\Controllers\API\UserController::class, 'in
 Route::get('login', [AuthController::class, 'index'])->name('login');
 Route::post('post-login', [AuthController::class, 'postLogin'])->name('login.post'); 
 Route::get('dashboard', [AuthController::class, 'dashboard'])->name('dashboard');
+Route::get('cafe/dashboard', [CafeController::class, 'dashboard'])->name('cafe.dashboard');
+Route::get('library/dashboard', [LibraryController::class, 'dashboard'])->name('library.dashboard');
+
 Route::get('logout', [AuthController::class, 'logout'])->name('logout');
 // Route::get('announcement/index', [AnnouncementController::class, 'index'])->name('announcement.index');
-// Route::get('staff/index', [UserController::class, 'index'])->name('staff.index');
-// Route::get('staff/update', [UserController::class, 'edit'])->name('staff.update');
-// Route::get('staff/show', [UserController::class, 'show'])->name('staff.show');
-// Route::get('staff/store', [UserController::class, 'create'])->name('staff.store');
 
 // Route::get('cafe/staff/index', [UserController::class, 'index'])->name('cafe.staff.index');
 Route::get('user/getUserDatatable', [UserController::class, 'getUserDatatable'])->name('user.getUserDatatable');

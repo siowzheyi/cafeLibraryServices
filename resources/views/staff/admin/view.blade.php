@@ -38,24 +38,20 @@
                 <div class="sb-sidenav-menu">
                     <div class="nav">
                         <div class="sb-sidenav-menu-heading">MAIN</div>
-                        <a class="nav-link" href="{{ route('dashboard') }}">
+                        <a class="nav-link active" href="{{ route('dashboard') }}">
                             <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                             Dashboard
                         </a>
                         <div class="sb-sidenav-menu-heading">PAGES</div>
-                        <a class="nav-link" href="{{ route('user.index') }}">
+                        <a class="nav-link active" href="{{ route('user.index') }}">
                             <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
-                            Staff Admin
-                        </a>
-                        <a class="nav-link" href="{{ route('user.index',['type'=>'cafe']) }}">
-                            <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
-                            Staff Cafe
-                        </a>
-                        <a class="nav-link" href="{{ route('user.index',['type'=>'library']) }}">
-                            <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
-                            Staff Library
+                            Staff
                         </a>
                         
+                        <a class="nav-link active" href="{{ route('library.index') }}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
+                            Library
+                        </a>
                     </div>
                 </div>
             </nav>
