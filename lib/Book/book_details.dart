@@ -3,24 +3,21 @@ import 'package:cafe_library_services/Book/borrow_book.dart';
 import 'package:cafe_library_services/Report/report.dart';
 import 'package:flutter/material.dart';
 
-class BookDetailsPage extends StatelessWidget {
+class BookDetailsScreen extends StatelessWidget {
   final String name;
   final String genre;
   final String picture;
   final String author;
-  final int remainder;
-  final int availability;
+  // final int remainder;
+  // final int availability;
 
-  // Add more properties as needed for book details
-
-  BookDetailsPage({
+  BookDetailsScreen({
     required this.name,
     required this.genre,
     required this.picture,
     required this.author,
-    required this.remainder,
-    required this.availability,
-    // Add more constructor parameters as needed
+    // required this.remainder,
+    // required this.availability,
   });
 
   @override

@@ -2,13 +2,13 @@ import 'package:cafe_library_services/Equipment/rent_equipment.dart';
 import 'package:flutter/material.dart';
 import '../Report/report.dart';
 
-class EquipmentDetailsPage extends StatelessWidget {
+class EquipmentDetailsScreen extends StatelessWidget {
   final String name;
   final String picture;
 
   // Add more properties as needed for equipment details
 
-  EquipmentDetailsPage({
+  EquipmentDetailsScreen({
     required this.name,
     required this.picture,
     // Add more constructor parameters as needed

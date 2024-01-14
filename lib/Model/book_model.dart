@@ -2,12 +2,14 @@ class BookModel {
   String name;
   String author;
   String picture;
+  String genre;
 
   // constructor
   BookModel({
     required this.name,
     required this.author,
-    required this.picture
+    required this.picture,
+    required this.genre
   });
 
   // factory method to create a book from a map
@@ -15,7 +17,8 @@ class BookModel {
     return BookModel(
         name: map['name'] ?? '',
         author: map['author_name'] ?? '',
-        picture: map['picture'] ?? ''
+        picture: map['picture'] ?? '',
+        genre: map['genre'] ?? ''
     );
   }
 
@@ -25,6 +28,7 @@ class BookModel {
       'name': name,
       'author_name': author,
       'picture': picture,
+      'genre': genre
     };
   }
 }

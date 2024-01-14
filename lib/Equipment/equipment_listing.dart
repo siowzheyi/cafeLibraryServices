@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../Controller/connection.dart';
+import '../Model/equipment_model.dart';
+import '../Welcome/select_library.dart';
 
 
 void main(){
@@ -11,270 +13,213 @@ void main(){
 }
 
 class EquipmentListing extends StatelessWidget {
-  const EquipmentListing({super.key});
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Equipment Listing',
       theme: ThemeData(
         primarySwatch: Colors.green,
       ),
-      home: EquipmentListScreen(),
+      home: FutureBuilder<String>(
+        future: getLibraryIdFromSharedPreferences(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            if (snapshot.hasError) {
+              // Handle error
+              return Scaffold(
+                body: Center(
+                  child: Text('Error: ${snapshot.error}'),
+                ),
+              );
+            } else {
+              String libraryId = snapshot.data ?? '';
+              return EquipmentListScreen(libraryId: libraryId);
+            }
+          } else {
+            // While waiting for the Future to complete, show a loading indicator
+            return Scaffold(
+              body: Center(
+                child: CircularProgressIndicator(),
+              ),
+            );
+          }
+        },
+      ),
     );
   }
 }
 
 class EquipmentListScreen extends StatefulWidget {
+  final String libraryId;
+  final Map<String, String>? headers;
+
+  const EquipmentListScreen({Key? key, required this.libraryId, this.headers}) : super(key: key);
+
   @override
   _EquipmentListScreenState createState() => _EquipmentListScreenState();
 }
 
 class _EquipmentListScreenState extends State<EquipmentListScreen> {
+  late Future<List<EquipmentModel>> equipments;
 
-  List<Equipment> equipments = [];
-
-  Future<void> getEquipments() async {
+  Future<List<EquipmentModel>> getEquipmentList() async {
     try {
-      var response = await http.get(Uri.parse(API.equipment));
-      if (response.statusCode == 200) {
-        List<dynamic> decodedData = jsonDecode(response.body);
+      final String libraryId = await getLibraryIdFromSharedPreferences();
+      final String? token = await getToken();
 
-        setState(() {
-          equipments = decodedData.map((data) => Equipment(
-              data['name'] ?? '',
-              data['picture'] ?? ''
-          )).toList();
-        });
+      var url = Uri.parse('${API.equipment}?library_id=$libraryId');
+      var header = {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer ${token}"
+      };
+      var response = await http.get(
+          url,
+          headers: header
+      );
 
-        print(equipments);
+      if(response.statusCode == 200) {
+        try {
+          Map<String, dynamic> result = jsonDecode(response.body);
+          List<dynamic> aaDataList = result['data']['aaData'];
+          List<EquipmentModel> equipments = aaDataList
+              .map((data) => EquipmentModel.fromJson(data))
+              .toList();
+          return equipments;
+        } catch (error) {
+          print('Error decoding JSON: $error');
+          return [];
+        }
       }
-    } catch (ex) {
-      print("Error :: " + ex.toString());
+      print('Request URL: $url');
+      print('Request Headers: $header');
+      print(response.statusCode);
+      print(response.body);
+      return [];
+    } catch (error) {
+      print('Error fetching equipments: $error');
+      return [];
     }
   }
 
-  List<Equipment> filteredEquipment = [];
-  List<Equipment> searchHistory = [];
+  late Future<List<EquipmentModel>> equipmentList;
 
   @override
   void initState() {
-    getEquipments();
     super.initState();
-    filteredEquipment = List.from(equipments);
+    equipmentList = getEquipmentList();
+    fetchData();
   }
 
-  void filterEquipment(String query) {
-    setState(() {
-      filteredEquipment = equipments
-          .where((equipment) =>
-      equipment.name.toLowerCase().contains(query.toLowerCase()))
-          .toList();
-      //update search history based on the user's query
-    });
-  }
-
-  void addToSearchHistory(Equipment equipment) {
-    setState(() {
-      searchHistory.add(equipment);
-    });
+  Future<void> fetchData() async {
+    if (mounted) {
+      await getEquipmentList();
+      if (mounted) {
+        setState(() {
+          // Trigger a rebuild after data is fetched
+        });
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Equipment Listing'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: (){
-            Navigator.pushReplacement(context, MaterialPageRoute(builder:
-                (context) => HomePage()));
-          },
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.search),
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('Equipment Listing'),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
             onPressed: () {
-              showSearch(
-                context: context,
-                delegate: EquipmentSearchDelegate(equipments,
-                    addToSearchHistory),
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => HomePage(libraryId: ''),
+                ),
               );
             },
           ),
-        ],
-      ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 16.0),
-          SingleChildScrollView(
-            scrollDirection: Axis.vertical,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                for (var i = 0; i < 5; i++)
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      for (var j = 0; j < 4; j++)
-                        if (i * 4 + j < equipments.length)
-                          Container(
-                            width: 150.0,
-                            margin: const EdgeInsets.symmetric(horizontal: 8.0),
-                            child: EquipmentListItem(equipment:
-                            equipments[i * 4 + j]),
-                          )
-                        else
-                          Container(), // Placeholder for empty cells
-                    ],
-                  ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 16.0,),
-        ],
-      ),
-    );
-  }
-}
-
-class Equipment {
-  final String name;
-  final String picture;
-
-  Equipment(this.name, this.picture);
-}
-
-class EquipmentListItem extends StatelessWidget {
-  final Equipment equipment;
-
-  const EquipmentListItem({Key? key, required this.equipment}) : super(key:
-  key);
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => EquipmentDetailsPage(
-              name: equipment.name,
-              picture: equipment.picture,
-            ),
-          ),
-        );
-      },
-      child: Card(
-        margin: const EdgeInsets.symmetric(horizontal: 8.0),
-        child: SizedBox(
-          width: 150.0, // Adjust the width based on your preference
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Image.network(
-                equipment.picture,
-                width: double.infinity,
-                height: 150.0,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  // Handle image loading error
-                  return const Icon(Icons.error);
-                },
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      equipment.name,
-                      style: const TextStyle(fontSize: 14.0, fontWeight:
-                      FontWeight.bold),
-                    ),
-                    const SizedBox(height: 8.0),
-                  ],
+        ),
+        body: FutureBuilder<List<EquipmentModel>>(
+          future: equipmentList,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return Center(
+                child: Text('Error: ${snapshot.error}'),
+              );
+            } else {
+              List<EquipmentModel> results = snapshot.data!;
+              return Container(
+                child: ListView.builder(
+                  itemCount: results.length,
+                  itemBuilder: (context, index) {
+                    return Card(
+                      child: SizedBox(
+                        height: 100.0,
+                        child: ListTile(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => EquipmentDetailsScreen(
+                                  name: results[index].name,
+                                  picture: results[index].picture,
+                                ),
+                              ),
+                            );
+                          },
+                          title: Row(
+                            children: [
+                              Container(
+                                height: 60,
+                                width: 60,
+                                decoration: BoxDecoration(
+                                  color: Colors.green,
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Center(
+                                  child: Image.network(
+                                    '${results[index].picture}',
+                                    width: double.infinity,
+                                    height: 150.0,
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (context, error, stackTrace) {
+                                      // Handle image loading error
+                                      return const Icon(Icons.error);
+                                    },
+                                  ),
+                                ),
+                              ),
+                              SizedBox(width: 32),
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    '${results[index].name}',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  },
                 ),
-              ),
-            ],
-          ),
+              );
+            }
+          },
         ),
       ),
     );
   }
-}
-
-class EquipmentSearchDelegate extends SearchDelegate<String> {
-  final List<Equipment> equipment;
-  final Function(Equipment) addToSearchHistory;
-
-  EquipmentSearchDelegate(this.equipment, this.addToSearchHistory);
 
   @override
-  List<Widget> buildActions(BuildContext context) {
-    return [
-      IconButton(
-        icon: const Icon(Icons.clear),
-        onPressed: () {
-          query = '';
-        },
-      ),
-    ];
-  }
-
-  @override
-  Widget buildLeading(BuildContext context) {
-    return IconButton(
-      icon: AnimatedIcon(
-        icon: AnimatedIcons.menu_arrow,
-        progress: transitionAnimation,
-      ),
-      onPressed: () {
-        close(context, '');
-      },
-    );
-  }
-
-  @override
-  Widget buildResults(BuildContext context) {
-    return buildSuggestions(context);
-  }
-
-  @override
-  Widget buildSuggestions(BuildContext context) {
-    final suggestionList = query.isEmpty
-        ? equipment
-        : equipment
-        .where((equipment) =>
-    equipment.name.toLowerCase().contains(query.toLowerCase()))
-        .toList();
-
-    return ListView.builder(
-      itemCount: suggestionList.length,
-      itemBuilder: (context, index) {
-        return ListTile(
-          title: Text(suggestionList[index].name),
-          onTap: () {
-            // Add the selected equipment to the search history
-            addToSearchHistory(suggestionList[index]);
-
-            // You can navigate to the equipment details screen or handle the
-            // selection as needed
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => EquipmentDetailsPage(
-                  name: suggestionList[index].name,
-                  picture: suggestionList[index].picture,
-                  // Pass more details as needed
-                ),
-              ),
-            );
-          },
-        );
-      },
-    );
+  void dispose() {
+    // Clean up resources, cancel timers, etc.
+    super.dispose();
   }
 }

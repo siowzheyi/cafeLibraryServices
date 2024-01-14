@@ -1,4 +1,4 @@
-import 'package:cafe_library_services/Welcome/library_home.dart';
+import 'package:cafe_library_services/Welcome/select_library.dart';
 import 'package:cafe_library_services/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -58,17 +58,20 @@ class _LoginPageState extends State<LoginPage> {
 
         final decodedResponse = jsonDecode(responseBody);
         if (decodedResponse.containsKey('data') &&
-            decodedResponse['data'].containsKey('token')) {
+            decodedResponse['data'].containsKey('token') &&
+            decodedResponse['data'].containsKey('id')) {
           String token = decodedResponse['data']['token'];
+          int userId = decodedResponse['data']['id'];
 
-          // Save the token securely using SharedPreferences
+          // Save the token and user ID securely using SharedPreferences
           await _saveToken(token);
+          await _saveUserId(userId);
 
           // Navigate to the next screen
           _navigateToNextScreen();
         } else {
-          print('Token field is missing in the response');
-          throw Exception('Token field is missing in the response');
+          print('Token or ID field is missing in the response');
+          throw Exception('Token or ID field is missing in the response');
         }
       } else {
         print('HTTP request failed with status code: ${response.statusCode}');
@@ -89,6 +92,16 @@ class _LoginPageState extends State<LoginPage> {
   Future<String?> _getToken() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString('token');
+  }
+
+  Future<void> _saveUserId(int userId) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('userId', userId.toString());
+  }
+
+  Future<String?> _getUserId() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('userId');
   }
 
   void _navigateToNextScreen() async {

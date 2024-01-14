@@ -1,11 +1,13 @@
 class BeverageModel {
   String name;
+  String category;
   String price;
   String picture;
 
   // constructor
   BeverageModel({
     required this.name,
+    required this.category,
     required this.price,
     required this.picture
   });
@@ -14,6 +16,7 @@ class BeverageModel {
   factory BeverageModel.fromJson(Map<String, dynamic> json) {
     return BeverageModel(
         name: json['name'] ?? '',
+        category: json['category'] ?? '',
         price: json['price'] ?? '',
         picture: json['picture'] ?? ''
     );
@@ -23,6 +26,7 @@ class BeverageModel {
   Map<String, dynamic> toJson() {
     return {
       'name': name,
+      'category': category,
       'price': price,
       'picture': picture,
     };

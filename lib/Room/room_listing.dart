@@ -4,275 +4,247 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../Controller/connection.dart';
+import '../Model/room_model.dart';
+import '../Welcome/select_library.dart';
 
-void main() {
+
+void main(){
   runApp(RoomListing());
 }
 
 class RoomListing extends StatelessWidget {
-  const RoomListing({super.key});
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Room Listing',
       theme: ThemeData(
         primarySwatch: Colors.green,
       ),
-      home: RoomListScreen(),
+      home: FutureBuilder<String>(
+        future: getLibraryIdFromSharedPreferences(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            if (snapshot.hasError) {
+              // Handle error
+              return Scaffold(
+                body: Center(
+                  child: Text('Error: ${snapshot.error}'),
+                ),
+              );
+            } else {
+              String libraryId = snapshot.data ?? '';
+              return RoomListScreen(libraryId: libraryId);
+            }
+          } else {
+            // While waiting for the Future to complete, show a loading indicator
+            return Scaffold(
+              body: Center(
+                child: CircularProgressIndicator(),
+              ),
+            );
+          }
+        },
+      ),
     );
   }
 }
 
 class RoomListScreen extends StatefulWidget {
+  final String libraryId;
+  final Map<String, String>? headers;
+
+  const RoomListScreen({Key? key, required this.libraryId, this.headers}) : super(key: key);
+
   @override
   _RoomListScreenState createState() => _RoomListScreenState();
 }
 
 class _RoomListScreenState extends State<RoomListScreen> {
+  late Future<List<RoomModel>> rooms;
 
-  List<Room> rooms = [];
-
-  Future<void> getRooms() async {
+  Future<List<RoomModel>> getRoomList() async {
     try {
-      var response = await http.get(Uri.parse(API.room));
+      final String libraryId = await getLibraryIdFromSharedPreferences();
+      final String? token = await getToken();
+
+      var url = Uri.parse('${API.room}?library_id=$libraryId');
+      var header = {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer ${token}"
+      };
+      var response = await http.get(
+        url,
+        headers: header,
+      );
+
       if (response.statusCode == 200) {
-        List<dynamic> decodedData = jsonDecode(response.body);
+        try {
+          Map<String, dynamic> result = jsonDecode(response.body);
 
-        setState(() {
-          rooms = decodedData.map((data) => Room(
-            data['roomNo'] ?? '',
-            data['picture'] ?? '',
-            data['type'] ?? ''
-          )).toList();
-        });
+          // Check if 'aaData' is a List
+          if (result['data']['aaData'] is List) {
+            List<dynamic> aaDataList = result['data']['aaData'];
+            List<RoomModel> rooms = [];
 
-        print(rooms);
+            // Iterate through the 'aaData' list
+            for (var aaData in aaDataList) {
+              // Check if 'rooms' is a List
+              if (aaData['rooms'] is List) {
+                List<dynamic> roomsList = aaData['rooms'];
+
+                // Iterate through the 'rooms' list
+                for (var roomData in roomsList) {
+                  // Create a RoomModel instance from each room data and add it to the list
+                  rooms.add(RoomModel.fromJson(roomData));
+                }
+              }
+            }
+
+            return rooms;
+          } else {
+            print('Error: "aaData" is not a List');
+            return [];
+          }
+        } catch (error) {
+          print('Error decoding JSON: $error');
+          return [];
+        }
       }
-    } catch (ex) {
-      print("Error :: " + ex.toString());
+
+      print('Request URL: $url');
+      print('Request Headers: $header');
+      print(response.statusCode);
+      print(response.body);
+      return [];
+    } catch (error) {
+      print('Error fetching rooms: $error');
+      return [];
     }
   }
 
-  List<Room> filteredRooms = [];
-  List<Room> searchHistory = [];
+  late Future<List<RoomModel>> roomList;
 
   @override
   void initState() {
-    getRooms();
     super.initState();
-    filteredRooms = List.from(rooms);
+    roomList = getRoomList();
+    fetchData();
   }
 
-  void filterRooms(String query) {
-    setState(() {
-      filteredRooms = rooms
-          .where((room) =>
-      room.roomNo.toLowerCase().contains(query.toLowerCase())).toList();
-      //update search history based on the user's query
-    });
-  }
-
-  void addToSearchHistory(Room room) {
-    setState(() {
-      searchHistory.add(room);
-    });
+  Future<void> fetchData() async {
+    if (mounted) {
+      await getRoomList();
+      if (mounted) {
+        setState(() {
+          // Trigger a rebuild after data is fetched
+        });
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Room Listing'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pushReplacement(context, MaterialPageRoute(builder:
-                (context) => HomePage()));
-          },
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.search),
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('Room Listing'),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
             onPressed: () {
-              showSearch(
-                context: context,
-                delegate: RoomSearchDelegate(rooms, addToSearchHistory),
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => HomePage(libraryId: ''),
+                ),
               );
             },
           ),
-        ],
-      ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 16.0),
-          SingleChildScrollView(
-            scrollDirection: Axis.vertical,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                for (var i = 0; i < 5; i++)
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      for (var j = 0; j < 4; j++)
-                        if (i * 4 + j < rooms.length)
-                          Container(
-                            width: 150.0,
-                            margin: const EdgeInsets.symmetric(horizontal: 8.0),
-                            child: RoomListItem(room: rooms[i * 4 + j]),
-                          )
-                        else
-                          Container(), // Placeholder for empty cells
-                    ],
-                  ),
-              ],
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.search),
+              onPressed: () {},
             ),
-          ),
-          const SizedBox(height: 16.0,),
-        ],
-      ),
-    );
-  }
-}
-
-class Room {
-  final String roomNo;
-  final String picture;
-  final String type;
-
-  Room(this.roomNo, this.picture, this.type);
-}
-
-class RoomListItem extends StatelessWidget {
-  final Room room;
-
-  const RoomListItem({Key? key, required this.room}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => RoomDetailsPage(
-              roomNo: room.roomNo,
-              picture: room.picture,
-              type: room.type,
-            ),
-          ),
-        );
-      },
-      child: Card(
-        margin: const EdgeInsets.symmetric(horizontal: 8.0),
-        child: SizedBox(
-          width: 150.0, // Adjust the width based on your preference
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Replace this with your room image
-              Image.network(
-                room.picture,
-                width: double.infinity,
-                height: 150.0,
-                fit: BoxFit.cover,
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      room.roomNo,
-                      style: const TextStyle(fontSize: 14.0, fontWeight:
-                      FontWeight.bold),
-                    ),
-                    Text(
-                      room.type,
-                      style: const TextStyle(fontSize: 14.0),
-                    ),
-                    const SizedBox(height: 8.0),
-                  ],
+          ],
+        ),
+        body: FutureBuilder<List<RoomModel>>(
+          future: roomList,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return Center(
+                child: Text('Error: ${snapshot.error}'),
+              );
+            } else {
+              List<RoomModel> results = snapshot.data!;
+              return Container(
+                child: ListView.builder(
+                  itemCount: results.length,
+                  itemBuilder: (context, index) {
+                    return Card(
+                      child: SizedBox(
+                        height: 100.0,
+                        child: ListTile(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => RoomDetailsScreen(
+                                  roomNo: results[index].roomNo,
+                                  picture: results[index].picture,
+                                  type: results[index].type,
+                                ),
+                              ),
+                            );
+                          },
+                          title: Row(
+                            children: [
+                              Container(
+                                height: 60,
+                                width: 60,
+                                decoration: BoxDecoration(
+                                  color: Colors.green,
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Center(
+                                  child: Image.network(
+                                    '${results[index].picture}',
+                                    width: double.infinity,
+                                    height: 150.0,
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (context, error, stackTrace) {
+                                      // Handle image loading error
+                                      return const Icon(Icons.error);
+                                    },
+                                  ),
+                                ),
+                              ),
+                              SizedBox(width: 32),
+                              Column(
+                                children: [
+                                  Text(
+                                    '${results[index].roomNo}',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold) )
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  },
                 ),
-              ),
-            ],
-          ),
+              );
+            }
+          },
         ),
       ),
     );
   }
-}
-
-class RoomSearchDelegate extends SearchDelegate<String> {
-  final List<Room> rooms;
-  final Function(Room) addToSearchHistory;
-
-  RoomSearchDelegate(this.rooms, this.addToSearchHistory);
 
   @override
-  List<Widget> buildActions(BuildContext context) {
-    return [
-      IconButton(
-        icon: const Icon(Icons.clear),
-        onPressed: () {
-          query = '';
-        },
-      ),
-    ];
-  }
-
-  @override
-  Widget buildLeading(BuildContext context) {
-    return IconButton(
-      icon: AnimatedIcon(
-        icon: AnimatedIcons.menu_arrow,
-        progress: transitionAnimation,
-      ),
-      onPressed: () {
-        close(context, '');
-      },
-    );
-  }
-
-  @override
-  Widget buildResults(BuildContext context) {
-    return buildSuggestions(context);
-  }
-
-  @override
-  Widget buildSuggestions(BuildContext context) {
-    final suggestionList = query.isEmpty
-        ? rooms
-        : rooms
-        .where((room) =>
-    room.type.toLowerCase().contains(query.toLowerCase()))
-        .toList();
-
-    return ListView.builder(
-      itemCount: suggestionList.length,
-      itemBuilder: (context, index) {
-        return ListTile(
-          title: Text(suggestionList[index].type),
-          onTap: () {
-            // Add the selected room to the search history
-            addToSearchHistory(suggestionList[index]);
-
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => RoomDetailsPage(
-                  roomNo: suggestionList[index].roomNo,
-                  picture: suggestionList[index].picture,
-                  type: suggestionList[index].type,
-                  // Pass more details as needed
-                ),
-              ),
-            );
-          },
-        );
-      },
-    );
+  void dispose() {
+    // Clean up resources, cancel timers, etc.
+    super.dispose();
   }
 }

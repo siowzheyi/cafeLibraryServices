@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cafe_library_services/Beverage/beverage_listing.dart';
 import 'package:cafe_library_services/Record/booking_record.dart';
 import 'package:cafe_library_services/Record/order_record.dart';
@@ -6,10 +7,13 @@ import 'package:flutter/material.dart';
 import 'package:cafe_library_services/Book/book_listing.dart';
 import 'package:cafe_library_services/Equipment/equipment_listing.dart';
 import 'package:cafe_library_services/Welcome/login.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../Controller/connection.dart';
+import '../Model/announcement_model.dart';
 import '../Record/penalty_record.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'select_library.dart';
 
 void main() {
   runApp(CafeLibraryServicesApp());
@@ -22,13 +26,56 @@ class CafeLibraryServicesApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.green,
       ),
-      home: HomePage(),
+      home: FutureBuilder<String>(
+        future: getLibraryIdFromSharedPreferences(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            if (snapshot.hasError) {
+              // Handle error
+              return Scaffold(
+                body: Center(
+                  child: Text('Error: ${snapshot.error}'),
+                ),
+              );
+            } else {
+              // Use the libraryId value to create HomePage
+              String libraryId = snapshot.data ?? '';
+              return HomePage(libraryId: libraryId);
+            }
+          } else {
+            // While waiting for the Future to complete, show a loading indicator
+            return Scaffold(
+              body: Center(
+                child: CircularProgressIndicator(),
+              ),
+            );
+          }
+        },
+      ),
     );
   }
 }
 
+Future<String> getLibraryIdFromSharedPreferences() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  return prefs.getString('libraryId') ?? ''; // Default to an empty string if not found
+}
+
+Future<String> getCafeIdFromSharedPreferences() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  return prefs.getString('cafeId') ?? ''; // Default to an empty string if not found
+}
+
+Future<String> getUserIdFromSharedPreferences() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  return prefs.getString('userId') ?? ''; // Default to an empty string if not found
+}
+
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+  final String libraryId;
+  final Map<String, String>? headers;
+
+  const HomePage({Key? key, required this.libraryId, this.headers}) : super(key: key);
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -66,7 +113,7 @@ class _HomePageState extends State<HomePage> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const EquipmentListing(),
+                              builder: (context) => EquipmentListing(),
                             ),
                           );
                         },
@@ -93,7 +140,7 @@ class _HomePageState extends State<HomePage> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const RoomListing(),
+                              builder: (context) => RoomListing(),
                             ),
                           );
                         },
@@ -120,7 +167,7 @@ class _HomePageState extends State<HomePage> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const BookListing(),
+                              builder: (context) => BookListing(),
                             ),
                           );
                         },
@@ -156,7 +203,7 @@ class _HomePageState extends State<HomePage> {
                           children: [
                             Icon(Icons.paste),
                             Text(
-                              'Browse Booking Record',
+                              'Booking Record',
                               style: TextStyle(fontSize: 32.0),
                             ),
                             Icon(Icons.paste),
@@ -183,7 +230,7 @@ class _HomePageState extends State<HomePage> {
                           children: [
                             Icon(Icons.report),
                             Text(
-                              'Browse Penalty Record',
+                              'Penalty Record',
                               style: TextStyle(fontSize: 32.0),
                             ),
                             Icon(Icons.report),
@@ -201,7 +248,7 @@ class _HomePageState extends State<HomePage> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const BeverageListing(),
+                              builder: (context) => BeverageListing(),
                             ),
                           );
                         },
@@ -231,7 +278,7 @@ class _HomePageState extends State<HomePage> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const OrderRecordPage(),
+                              builder: (context) => OrderRecordListing(),
                             ),
                           );
                         },
@@ -243,7 +290,7 @@ class _HomePageState extends State<HomePage> {
                           children: [
                             Icon(Icons.receipt_long),
                             Text(
-                              'Browse Order Beverage Record',
+                              'Order Beverage Record',
                               style: TextStyle(fontSize: 32.0),
                             ),
                             Icon(Icons.receipt_long),
@@ -300,25 +347,50 @@ class ViewAnnouncement extends StatefulWidget {
 }
 
 class _ViewAnnouncementState extends State<ViewAnnouncement> {
-  List<dynamic> announcement = [];
+  late Future<List<AnnouncementModel>> announcements;
 
-  Future<void> getAnnouncements() async {
+  Future<List<AnnouncementModel>> getAnnouncementList() async {
     try {
-      var response = await http.get(Uri.parse(API.announcement));
-      if (response.statusCode == 200) {
-        setState(() {
-          announcement = jsonDecode(response.body);
-        });
-        print(announcement);
+      final String libraryId = await getLibraryIdFromSharedPreferences();
+      final String? token = await getToken();
+
+      var url = Uri.parse('${API.announcement}?library_id=$libraryId');
+      var header = {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer ${token}"
+      };
+      var response = await http.get(
+          url,
+          headers: header
+      );
+
+      if(response.statusCode == 200) {
+        try {
+          Map<String, dynamic> result = jsonDecode(response.body);
+          List<dynamic> aaDataList = result['data']['aaData'];
+          List<AnnouncementModel> announcements = aaDataList
+              .map((data) => AnnouncementModel.fromJson(data))
+              .toList();
+          return announcements;
+        } catch (error) {
+          print('Error decoding JSON: $error');
+          return [];
+        }
       }
-    } catch (ex) {
-      print("Error :: " + ex.toString());
+      print('Request URL: $url');
+      print('Request Headers: $header');
+      print(response.statusCode);
+      print(response.body);
+      return [];
+    } catch (error) {
+      print('Error fetching announcements: $error');
+      return [];
     }
   }
 
   @override
   void initState() {
-    getAnnouncements();
+    announcements = getAnnouncementList();
     super.initState();
   }
 
@@ -327,37 +399,53 @@ class _ViewAnnouncementState extends State<ViewAnnouncement> {
     return Column(
       children: [
         const Text('Announcements'),
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: List.generate(
-              announcement.length,
-                  (index) => Card(
-                elevation: 4.0,
-                child: SizedBox(
-                  width: 200.0,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(announcement[index]["title"] ?? "", style: const TextStyle(
-                          fontWeight: FontWeight.bold
-                      ),),
-                      Text(announcement[index]["content"] ?? ""),
-                      SizedBox(
-                        height: 250.0,
+        FutureBuilder<List<AnnouncementModel>>(
+          future: announcements,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return CircularProgressIndicator(); // Show a loading indicator while data is being fetched
+            } else if (snapshot.hasError) {
+              return Text('Error: ${snapshot.error}');
+            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return Text('No announcements available.');
+            } else {
+              List<AnnouncementModel> announcementList = snapshot.data!;
+              return SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: List.generate(
+                    announcementList.length,
+                        (index) => Card(
+                      elevation: 4.0,
+                      child: SizedBox(
                         width: 200.0,
-                        child: Image.network(
-                          announcement[index]["picture"] ?? "",
-                          fit: BoxFit.contain,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(announcementList[index].title ?? "",
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold)),
+                            Text(announcementList[index].content ?? ""),
+                            SizedBox(
+                              height: 250.0,
+                              width: 200.0,
+                              child: CachedNetworkImage(
+                                imageUrl: announcementList[index].getPictureUri().toString(),
+                                fit: BoxFit.contain,
+                                placeholder: (context, url) => CircularProgressIndicator(),
+                                errorWidget: (context, url, error) => Icon(Icons.error),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ],
+                    ),
                   ),
                 ),
-              ),
-            ),
-          ),
+              );
+            }
+          },
         ),
       ],
     );

@@ -1,388 +1,364 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cafe_library_services/Book/book_details.dart';
+import 'package:cafe_library_services/Book/search_book.dart';
 import 'package:cafe_library_services/Welcome/home.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import '../Controller/connection.dart';
 import 'dart:convert';
+import '../Controller/connection.dart';
+import '../Model/book_model.dart';
+import '../Welcome/select_library.dart';
+import 'books_by_genre.dart';
 
 void main(){
   runApp(BookListing());
 }
 
 class BookListing extends StatelessWidget {
-  const BookListing({super.key});
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Book Listing',
       theme: ThemeData(
         primarySwatch: Colors.green,
       ),
-      home: BookListScreen(),
+      home: FutureBuilder<String>(
+        future: getLibraryIdFromSharedPreferences(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            if (snapshot.hasError) {
+              // Handle error
+              return Scaffold(
+                body: Center(
+                  child: Text('Error: ${snapshot.error}'),
+                ),
+              );
+            } else {
+              String libraryId = snapshot.data ?? '';
+              return BookListScreen(libraryId: libraryId);
+            }
+          } else {
+            // While waiting for the Future to complete, show a loading indicator
+            return Scaffold(
+              body: Center(
+                child: CircularProgressIndicator(),
+              ),
+            );
+          }
+        },
+      ),
     );
   }
 }
 
 class BookListScreen extends StatefulWidget {
+  final String libraryId;
+  final Map<String, String>? headers;
+
+  const BookListScreen({Key? key, required this.libraryId, this.headers}) : super(key: key);
+
   @override
   _BookListScreenState createState() => _BookListScreenState();
 }
 
-class _BookListScreenState extends State<BookListScreen> {
+class FetchBook {
+  late List<BookModel> books;
 
-  List<Book> books = [];
-
-  Future<void> getBooks() async {
+  Future<List<BookModel>> getBookList({String? genre}) async {
     try {
-      var response = await http.get(Uri.parse(API.book));
+      final String libraryId = await getLibraryIdFromSharedPreferences();
+      final String? token = await getToken();
+      books = [];
+
+      var url = Uri.parse('${API.book}?library_id=$libraryId${genre != null ? '&genre=$genre' : ''}');
+      var header = {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer ${token}"
+      };
+
+      var response = await http.get(
+        url,
+        headers: header,
+      );
+
       if (response.statusCode == 200) {
-        List<dynamic> decodedData = jsonDecode(response.body);
+        try {
+          Map<String, dynamic> result = jsonDecode(response.body);
 
-        setState(() {
-          books = decodedData.map((data) => Book(
-            data['name'] ?? '',
-            data['genre'] ?? '',
-            data['picture'] ?? '',
-            data['author_name'] ?? '',
-            int.tryParse(data['remainder_count'] ?? '') ?? 0,
-            int.tryParse(data['availability'] ?? '') ?? 1,
-          )).toList();
-        });
+          // Check if 'aaData' is a List
+          if (result['data']['aaData'] is List) {
+            List<dynamic> aaDataList = result['data']['aaData'];
+            List<BookModel> books = [];
 
-        print(books);
+            // Iterate through the 'aaData' list
+            for (var aaData in aaDataList) {
+              // Check if 'books' is a List
+              if (aaData['books'] is List) {
+                List<dynamic> booksList = aaData['books'];
+
+                // Iterate through the 'books' list
+                for (var bookData in booksList) {
+                  // Create a BookModel instance from each book data and add it to the list
+                  books.add(BookModel.fromJson(bookData));
+                }
+              }
+            }
+
+            return books;
+          } else {
+            print('Error: "aaData" is not a List');
+            return [];
+          }
+        } catch (error) {
+          print('Error decoding JSON: $error');
+          return [];
+        }
       }
-    } catch (ex) {
-      print("Error :: " + ex.toString());
+
+      print('Request URL: $url');
+      print('Request Headers: $header');
+      print(response.statusCode);
+      print(response.body);
+      return [];
+    } catch (error) {
+      print('Error fetching books: $error');
+      return [];
     }
   }
 
-  List<Book> filteredBooks = [];
-  List<Book> searchHistory = [];
+  Future<List<String>> getGenreList({String? search}) async {
+    try {
+      final String libraryId = await getLibraryIdFromSharedPreferences();
+      final String? token = await getToken();
+
+      // Include the search parameter only if it's provided
+      var url = Uri.parse('${API.book}?library_id=$libraryId${search != null ? '&search=$search' : ''}');
+      var header = {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer $token"
+      };
+
+      var response = await http.get(
+        url,
+        headers: header,
+      );
+
+      if (response.statusCode == 200) {
+        try {
+          Map<String, dynamic> result = jsonDecode(response.body);
+
+          // Check if 'aaData' is a List
+          if (result['data']['aaData'] is List) {
+            List<dynamic> aaDataList = result['data']['aaData'];
+            List<String> genres = [];
+
+            // Iterate through the 'aaData' list
+            for (var aaData in aaDataList) {
+              // Check if 'genre' is available
+              if (aaData['genre'] != null) {
+                genres.add(aaData['genre']);
+              }
+            }
+
+            return genres;
+          } else {
+            print('Error: "aaData" is not a List');
+            return [];
+          }
+        } catch (error) {
+          print('Error decoding JSON: $error');
+          return [];
+        }
+      }
+
+      print('Request URL: $url');
+      print('Request Headers: $header');
+      print(response.statusCode);
+      print(response.body);
+      return [];
+    } catch (error) {
+      print('Error fetching genres: $error');
+      return [];
+    }
+  }
+}
+
+class _BookListScreenState extends State<BookListScreen> {
+
+  late Future<List<BookModel>> bookList;
+  late Future<List<String>> genreList;
 
   @override
   void initState() {
-    getBooks();
-    filteredBooks = List.from(books);
-    super.initState();
+    fetchData();
   }
 
-  List<String> getGenres() {
-    Set<String> genres = {};
-    for (var book in books) {
-      genres.add(book.genre);
-    }
-    return genres.toList();
-  }
-
-  void filterBooks(String query) {
-    setState(() {
-      filteredBooks = books
-          .where((book) =>
-      book.name.toLowerCase().contains(query.toLowerCase()))
-          .toList();
-      //update search history based on the user's query
-    });
-  }
-
-  void addToSearchHistory(Book book) {
-    setState(() {
-      //searchHistory.add(book);
-    });
-  }
-
-  void filterBooksByGenre(String genre) {
-    setState(() {
-      filteredBooks = books.where((book) => book.genre == genre).toList();
-      if (genre.isNotEmpty) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => GenreBooksScreen(
-              genre: genre,
-              books: filteredBooks,
-            ),
-          ),
-        );
-      }
-    });
+  Future<void> fetchData() async {
+    bookList = FetchBook().getBookList();
+    genreList = FetchBook().getGenreList();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Book Listing'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: (){
-            Navigator.pushReplacement(context, MaterialPageRoute(builder:
-                (context) => HomePage()));
-          },
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.search),
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('Book Listing'),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
             onPressed: () {
-              showSearch(
-                context: context,
-                delegate: BookSearchDelegate(books, addToSearchHistory),
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => HomePage(libraryId: ''),
+                ),
               );
             },
           ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 16.0),
-            SingleChildScrollView(
-              scrollDirection: Axis.vertical,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text('Search book by genre:',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 32.0,
-                  ),),
-                  Container(
-                    padding: const EdgeInsets.symmetric(vertical: 16.0),
-                    child: GenreSelectionWidget(filterBooksByGenre),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(vertical: 16.0),
-                    child: ListView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: filteredBooks.length,
-                      itemBuilder: (context, index) {
-                        return BookListItem(book: filteredBooks[index]);
-                      },
-                    ),
-                  ),
-                ],
-              ),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.search),
+              onPressed: () {
+                showSearch(
+                  context: context,
+                  delegate: SearchBook(),
+                );
+              },
             ),
-            const SizedBox(height: 16.0,),
           ],
         ),
-      )
-    );
-  }
-}
-
-class GenreBooksScreen extends StatelessWidget {
-  final String genre;
-  final List<Book> books;
-
-  const GenreBooksScreen({Key? key, required this.genre, required this.books})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(genre),
-      ),
-      body: GridView.builder(
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 4,
-          crossAxisSpacing: 8.0,
-          mainAxisSpacing: 8.0,
-        ),
-        itemCount: books.length,
-        itemBuilder: (context, index) {
-          return BookListItem(book: books[index]);
-        },
-      ),
-    );
-  }
-}
-
-class GenreSelectionWidget extends StatelessWidget {
-  final Function(String) onGenreSelected;
-
-  const GenreSelectionWidget(this.onGenreSelected);
-
-  @override
-  Widget build(BuildContext context) {
-    // Use the context to obtain the current state instance
-    final _BookListScreenState? state = context.findAncestorStateOfType<
-        _BookListScreenState>();
-
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        children: [
-          for (var genre in state!.getGenres())
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: ElevatedButton(
-                onPressed: () {
-                  onGenreSelected(genre);
+        body: Column(
+          children: [
+            FutureBuilder<List<String>>(
+              future: genreList,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return CircularProgressIndicator();
+                } else if (snapshot.hasError) {
+                  return Center(
+                    child: Text('Error: ${snapshot.error}'),
+                  );
+                } else {
+                  List<String> genres = snapshot.data!;
+                  return Row(
+                    children: genres
+                        .map(
+                          (genre) => Row(
+                            children: [
+                              ElevatedButton(
+                        onPressed: () {
+                              print('Pressed $genre');
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => GenreSpecificBookListScreen(genre: genre),
+                                ),
+                              );
+                        },
+                        child: Text(genre),
+                      ),
+                              SizedBox(width: 16.0),
+                            ],
+                          ),
+                    )
+                        .toList(),
+                  );
+                }
+              },
+            ),
+            Expanded(
+              child: FutureBuilder<List<BookModel>>(
+                future: bookList,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return Center(
+                      child: Text('Error: ${snapshot.error}'),
+                    );
+                  } else {
+                    List<BookModel> results = snapshot.data!;
+                    results.shuffle();
+                    return ListView.builder(
+                      itemCount: 20,
+                      itemBuilder: (context, index) {
+                        var book = results[index];
+                        return Card(
+                          child: SizedBox(
+                            height: 100.0,
+                            child: ListTile(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => BookDetailsScreen(
+                                      name: results[index].name,
+                                      genre: results[index].genre,
+                                      picture: results[index].picture,
+                                      author: results[index].author,
+                                    ),
+                                  ),
+                                );
+                              },
+                              title: Row(
+                                children: [
+                                  Container(
+                                    height: 60,
+                                    width: 60,
+                                    decoration: BoxDecoration(
+                                      color: Colors.green,
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: Center(
+                                      child: Image.network(
+                                        '${book.picture}',
+                                        width: double.infinity,
+                                        height: 150.0,
+                                        fit: BoxFit.cover,
+                                        errorBuilder: (context, error, stackTrace) {
+                                          // Handle image loading error
+                                          return const Icon(Icons.error);
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(width: 32),
+                                  Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        '${book.name}',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      Text(
+                                        '${book.author}',
+                                      ),
+                                      Text(
+                                        '${book.genre}',
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  }
                 },
-                child: Text(genre),
               ),
             ),
-        ],
-      ),
-    );
-  }
-}
-
-class Book {
-  final String name;
-  final String genre;
-  final String picture;
-  final String author;
-  final int remainder;
-  final int availability;
-
-  Book(this.name, this.genre, this.picture, this.author, this.remainder, this.availability);
-}
-
-class BookListItem extends StatelessWidget {
-  final Book book;
-
-  const BookListItem({Key? key, required this.book}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => BookDetailsPage(
-              name: book.name,
-              genre: book.genre,
-              picture: book.picture,
-              author: book.author,
-              remainder: book.remainder,
-              availability: book.availability,
-            ),
-          ),
-        );
-      },
-      child: Card(
-        margin: const EdgeInsets.symmetric(horizontal: 8.0),
-        clipBehavior: Clip.antiAlias, // Ensure that Card clips its children
-        child: SizedBox(
-          width: 150.0,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Center(
-                  child: CachedNetworkImage(
-                    imageUrl: book.picture,
-                    placeholder: (context, url) => CircularProgressIndicator(),
-                    errorWidget: (context, url, error) => Text('Image is not loaded'),
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      book.name,
-                      style: const TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold),
-                    ),
-                    Text(
-                      'by ${book.author}',
-                      style: const TextStyle(fontSize: 12.0, fontStyle: FontStyle.italic),
-                    ),
-                    const SizedBox(height: 8.0),
-                  ],
-                ),
-              ),
-            ],
-          ),
+          ],
         ),
       ),
     );
   }
-}
-
-class BookSearchDelegate extends SearchDelegate<String> {
-  final List<Book> books;
-  final Function(Book) addToSearchHistory;
-
-  BookSearchDelegate(this.books, this.addToSearchHistory);
 
   @override
-  List<Widget> buildActions(BuildContext context) {
-    return [
-      IconButton(
-        icon: const Icon(Icons.clear),
-        onPressed: () {
-          query = '';
-        },
-      ),
-    ];
-  }
-
-  @override
-  Widget buildLeading(BuildContext context) {
-    return IconButton(
-      icon: AnimatedIcon(
-        icon: AnimatedIcons.menu_arrow,
-        progress: transitionAnimation,
-      ),
-      onPressed: () {
-        close(context, '');
-      },
-    );
-  }
-
-  @override
-  Widget buildResults(BuildContext context) {
-    return buildSuggestions(context);
-  }
-
-  @override
-  Widget buildSuggestions(BuildContext context) {
-    final suggestionList = query.isEmpty
-        ? books
-        : books
-        .where((book) =>
-    book.name.toLowerCase().contains(query.toLowerCase()))
-        .toList();
-
-    return ListView.builder(
-      itemCount: suggestionList.length,
-      itemBuilder: (context, index) {
-        return ListTile(
-          title: Text(suggestionList[index].name),
-          onTap: () {
-            // Add the selected book to the search history
-            addToSearchHistory(suggestionList[index]);
-
-            // You can navigate to the book details screen or handle the
-            // selection as needed
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => BookDetailsPage(
-                  name: suggestionList[index].name,
-                  genre: suggestionList[index].genre,
-                  picture: suggestionList[index].picture,
-                  author: suggestionList[index].author,
-                  remainder: suggestionList[index].remainder,
-                  availability: suggestionList[index].availability,
-                  // Pass more details as needed
-                ),
-              ),
-            );
-          },
-        );
-      },
-    );
+  void dispose() {
+    // Clean up resources, cancel timers, etc.
+    super.dispose();
   }
 }

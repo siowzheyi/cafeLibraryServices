@@ -146,32 +146,65 @@ class _SignupPageState extends State<SignupPage> {
                       padding: const EdgeInsets.symmetric(horizontal: 40),
                       child: Column(
                         children: <Widget>[
-                          TextField(
-                            decoration: const InputDecoration(
-                                labelText: 'Name'),
+                          TextFormField(
+                            decoration: const InputDecoration(labelText: 'Name'),
                             controller: nameController,
+                            validator: (value) {
+                              if (value == null) {
+                                return 'Please enter your name';
+                              } else if (value.length < 8) {
+                                return 'Name is too short';
+                              }
+                              return null;
+                            },
                           ),
-                          TextField(
-                            decoration: const InputDecoration(
-                                labelText: 'Phone Number'),
-                            controller: phoneNumController,
+                          TextFormField(
+                            decoration: const InputDecoration(labelText: 'Phone number'),
+                            controller: nameController,
+                            validator: (value) {
+                              if (value == null) {
+                                return 'Please enter your phone number';
+                              }
+                              return null;
+                            },
                           ),
-                          TextField(
-                            decoration: const InputDecoration(
-                                labelText: 'Email'),
+                          TextFormField(
+                            decoration: const InputDecoration(labelText: 'Email'),
                             controller: emailController,
+                            validator: (value) {
+                              if (value == null) {
+                                return 'Please enter your email';
+                              } else if (!RegExp(r'^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$').hasMatch(value)) {
+                                return 'Please enter a valid email address';
+                              }
+                              return null;
+                            },
                           ),
-                          TextField(
-                            decoration: const InputDecoration(
-                                labelText: 'Password'),
+                          TextFormField(
+                            decoration: const InputDecoration(labelText: 'Password'),
                             obscureText: true,
                             controller: passwordController,
+                            validator: (value) {
+                              if (value == null) {
+                                return 'Please enter a password';
+                              } else if (value.length < 8 || value.length > 16) {
+                                return 'Password must be between 8 and 16 characters';
+                              }
+                              return null;
+                            },
                           ),
-                          TextField(
-                            decoration: const InputDecoration(
-                                labelText: 'Confirm Password'),
+                          TextFormField(
+                            decoration: const InputDecoration(labelText: 'Confirm Password'),
                             obscureText: true,
                             controller: confirmPasswordController,
+                            validator: (value) {
+                              if (value == null) {
+                                return 'Please confirm your password';
+                              } else if (value != passwordController.text) {
+                                return 'Passwords do not match';
+                              }
+                              return null;
+                            },
                           ),
                         ],
                       ),

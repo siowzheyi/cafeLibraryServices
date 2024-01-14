@@ -1,346 +1,360 @@
-import 'package:cafe_library_services/Beverage/add_to_cart.dart';
 import 'package:cafe_library_services/Beverage/beverage_details.dart';
-import 'package:cafe_library_services/Beverage/choose_table.dart';
 import 'package:cafe_library_services/Welcome/home.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../Controller/connection.dart';
+import '../Model/beverage_model.dart';
+import '../Welcome/select_library.dart';
 
 void main() {
   runApp(BeverageListing());
 }
 
 class BeverageListing extends StatelessWidget {
-  const BeverageListing({super.key});
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Beverage Listing',
       theme: ThemeData(
         primarySwatch: Colors.green,
       ),
-      home: BeverageListScreen(),
+      home: FutureBuilder<String>(
+        future: getLibraryIdFromSharedPreferences(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            if (snapshot.hasError) {
+              // Handle error
+              return Scaffold(
+                body: Center(
+                  child: Text('Error: ${snapshot.error}'),
+                ),
+              );
+            } else {
+              String cafeId = snapshot.data ?? '';
+              return BeverageListScreen(cafeId: cafeId);
+            }
+          } else {
+            // While waiting for the Future to complete, show a loading indicator
+            return Scaffold(
+              body: Center(
+                child: CircularProgressIndicator(),
+              ),
+            );
+          }
+        },
+      ),
     );
   }
 }
 
 class BeverageListScreen extends StatefulWidget {
+  final String cafeId;
+  final Map<String, String>? headers;
+
+  const BeverageListScreen({Key? key, required this.cafeId, this.headers}) : super(key: key);
+
   @override
   _BeverageListScreenState createState() => _BeverageListScreenState();
 }
 
-class _BeverageListScreenState extends State<BeverageListScreen> {
+class FetchBeverage {
+  late List<BeverageModel> beverages;
 
-  List<Beverage> beverages = [];
-
-  Future<void> getBeverages() async {
+  Future<List<BeverageModel>> getBeverageList({String? category}) async {
     try {
-      var response = await http.get(Uri.parse(API.beverage));
+      final String cafeId = await getCafeIdFromSharedPreferences();
+      final String? token = await getToken();
+      beverages = [];
+
+      var url = Uri.parse('${API.beverage}?cafe_id=$cafeId${category != null ? '&category=$category' : ''}');
+      var header = {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer ${token}"
+      };
+
+      var response = await http.get(
+        url,
+        headers: header,
+      );
+
       if (response.statusCode == 200) {
-        List<dynamic> decodedData = jsonDecode(response.body);
+        try {
+          Map<String, dynamic> result = jsonDecode(response.body);
 
-        setState(() {
-          beverages = decodedData.map((data) => Beverage(
-            data['name'] ?? '',
-            data['category'] ?? '',
-            data['price'] ?? '',
-            data['picture'] ?? ''
-          )).toList();
-        });
+          // Check if 'aaData' is a List
+          if (result['data']['aaData'] is List) {
+            List<dynamic> aaDataList = result['data']['aaData'];
+            List<BeverageModel> beverages = [];
 
-        print(beverages);
+            // Iterate through the 'aaData' list
+            for (var aaData in aaDataList) {
+              // Check if 'beverages' is a List
+              if (aaData['beverage'] is List) {
+                List<dynamic> beveragesList = aaData['beverage'];
+
+                // Iterate through the 'beverages' list
+                for (var beverageData in beveragesList) {
+                  // Create a BeverageModel instance from each beverage data and add it to the list
+                  beverages.add(BeverageModel.fromJson(beverageData));
+                }
+              }
+            }
+
+            return beverages;
+          } else {
+            print('Error: "aaData" is not a List');
+            return [];
+          }
+        } catch (error) {
+          print('Error decoding JSON: $error');
+          return [];
+        }
       }
-    } catch (ex) {
-      print("Error :: " + ex.toString());
+
+      print('Request URL: $url');
+      print('Request Headers: $header');
+      print(response.statusCode);
+      print(response.body);
+      return [];
+    } catch (error) {
+      print('Error fetching beverages: $error');
+      return [];
     }
   }
 
-  List<Beverage> filteredBeverages = [];
-  List<Beverage> searchHistory = [];
+  Future<List<String>> getCategoryList({String? search}) async {
+    try {
+      final String cafeId = await getCafeIdFromSharedPreferences();
+      final String? token = await getToken();
+
+      // Include the search parameter only if it's provided
+      var url = Uri.parse('${API.beverage}?cafe_id=$cafeId${search != null ? '&search=$search' : ''}');
+      var header = {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer $token"
+      };
+
+      var response = await http.get(
+        url,
+        headers: header,
+      );
+
+      if (response.statusCode == 200) {
+        try {
+          Map<String, dynamic> result = jsonDecode(response.body);
+
+          // Check if 'aaData' is a List
+          if (result['data']['aaData'] is List) {
+            List<dynamic> aaDataList = result['data']['aaData'];
+            List<String> categories = [];
+
+            // Iterate through the 'aaData' list
+            for (var aaData in aaDataList) {
+              // Check if 'category' is available
+              if (aaData['category'] != null) {
+                categories.add(aaData['category']);
+              }
+            }
+
+            return categories;
+          } else {
+            print('Error: "aaData" is not a List');
+            return [];
+          }
+        } catch (error) {
+          print('Error decoding JSON: $error');
+          return [];
+        }
+      }
+
+      print('Request URL: $url');
+      print('Request Headers: $header');
+      print(response.statusCode);
+      print(response.body);
+      return [];
+    } catch (error) {
+      print('Error fetching categories: $error');
+      return [];
+    }
+  }
+}
+
+class _BeverageListScreenState extends State<BeverageListScreen> {
+
+  late Future<List<BeverageModel>> beverageList;
+  late Future<List<String>> categoryList;
 
   @override
   void initState() {
-    getBeverages();
-    super.initState();
-    filteredBeverages = List.from(beverages);
+    fetchData();
   }
 
-  void filterBeverages(String query) {
-    setState(() {
-      filteredBeverages = beverages
-          .where((beverage) =>
-      beverage.name.toLowerCase().contains(query.toLowerCase()))
-          .toList();
-      //update search history based on the user's query
-    });
-  }
-
-  void addToSearchHistory(Beverage beverage) {
-    setState(() {
-      searchHistory.add(beverage);
-    });
+  Future<void> fetchData() async {
+    beverageList = FetchBeverage().getBeverageList();
+    categoryList = FetchBeverage().getCategoryList();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Beverage Listing'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: (){
-            Navigator.pushReplacement(context, MaterialPageRoute(builder:
-                (context) => HomePage()));
-          },
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.search),
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('Beverage Listing'),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
             onPressed: () {
-              showSearch(
-                context: context,
-                delegate: BeverageSearchDelegate(beverages, addToSearchHistory),
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => HomePage(libraryId: ''),
+                ),
               );
             },
           ),
-        ],
-      ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Padding(
-            padding: EdgeInsets.all(16.0),
-            child: Text(
-              'What would you like to order for today?',
-              style: TextStyle(
-                fontSize: 32.0,
-                fontWeight: FontWeight.bold,
-                fontFamily: 'Roboto',
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.search),
+              onPressed: () {
+                // showSearch(
+                //   context: context,
+                //   delegate: SearchBeverage(),
+                // );
+              },
+            ),
+          ],
+        ),
+        body: Column(
+          children: [
+            FutureBuilder<List<String>>(
+              future: categoryList,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return CircularProgressIndicator();
+                } else if (snapshot.hasError) {
+                  return Center(
+                    child: Text('Error: ${snapshot.error}'),
+                  );
+                } else {
+                  List<String> categories = snapshot.data!;
+                  return Row(
+                    children: categories
+                        .map(
+                          (genre) => Row(
+                        children: [
+                          ElevatedButton(
+                            onPressed: () {
+                              print('Pressed $genre');
+                              // Navigator.push(
+                              //   context,
+                              //   MaterialPageRoute(
+                              //     builder: (context) => GenreSpecificBeverageListScreen(genre: genre),
+                              //   ),
+                              // );
+                            },
+                            child: Text(genre),
+                          ),
+                          SizedBox(width: 16.0),
+                        ],
+                      ),
+                    )
+                        .toList(),
+                  );
+                }
+              },
+            ),
+            Expanded(
+              child: FutureBuilder<List<BeverageModel>>(
+                future: beverageList,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return Center(
+                      child: Text('Error: ${snapshot.error}'),
+                    );
+                  } else {
+                    List<BeverageModel> results = snapshot.data!;
+                    results.shuffle();
+                    return ListView.builder(
+                      itemCount: results.length,
+                      itemBuilder: (context, index) {
+                        var beverage = results[index];
+                        return Card(
+                          child: SizedBox(
+                            height: 100.0,
+                            child: ListTile(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => BeverageDetailsScreen(name: results[index].name,
+                                      category: results[index].category,
+                                       price: results[index].price,
+                                      picture: results[index].picture,),
+                                  ),
+                                );
+                              },
+                              title: Row(
+                                children: [
+                                  Container(
+                                    height: 60,
+                                    width: 60,
+                                    decoration: BoxDecoration(
+                                      color: Colors.green,
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: Center(
+                                      child: Image.network(
+                                        '${beverage.picture}',
+                                        width: double.infinity,
+                                        height: 150.0,
+                                        fit: BoxFit.cover,
+                                        errorBuilder: (context, error, stackTrace) {
+                                          // Handle image loading error
+                                          return const Icon(Icons.error);
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(width: 32),
+                                  Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        '${beverage.name}',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      Text(
+                                        'RM${beverage.price}',
+                                      ),
+                                      Text(
+                                        '${beverage.category}',
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  }
+                },
               ),
             ),
-          ),
-          const SizedBox(height: 16.0),
-          SingleChildScrollView(
-            scrollDirection: Axis.vertical,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                for (var i = 0; i < 5; i++)
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      for (var j = 0; j < 4; j++)
-                        if (i * 4 + j < beverages.length)
-                          Container(
-                            width: 150.0,
-                            margin: const EdgeInsets.symmetric(horizontal: 8.0),
-                            child: BeverageListItem(beverage:
-                            beverages[i * 4 + j]),
-                          )
-                        else
-                          Container(), // Placeholder for empty cells
-                    ],
-                  ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 16.0,),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Row(
-              children: [
-                ElevatedButton(
-                  child: const Text('Start ordering!'),
-                  onPressed: () {
-                    // go to order beverage page
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => BeverageOrderPage(),
-                      ),
-                    );
-                  },
-                ),
-                const SizedBox(width: 16.0,),
-                ElevatedButton(
-                  child: const Text('View table'),
-                  onPressed: () {
-                    // go to choose table
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => TableSelectionPage(),
-                      ),
-                    );
-                  },
-                ),
-                const SizedBox(width: 16.0,),
-                ElevatedButton(
-                  child: const Text('Add to cart'),
-                  onPressed: () {
-                    // go to order beverage page
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => BeverageOrderPage(),
-                      ),
-                    );
-                  },
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 16.0,),
-        ],
-      ),
-    );
-  }
-}
-
-class Beverage {
-  final String name;
-  final String category;
-  final String price;
-  final String picture;
-
-  Beverage(this.name, this.category, this.price, this.picture);
-}
-
-class BeverageListItem extends StatelessWidget {
-  final Beverage beverage;
-
-  const BeverageListItem({Key? key, required this.beverage}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => BeverageDetailsPage(
-              name: beverage.name,
-              category: beverage.category,
-              price: beverage.price,
-              picture: beverage.picture,
-            ),
-          ),
-        );
-      },
-      child: Card(
-        margin: const EdgeInsets.symmetric(horizontal: 8.0),
-        child: SizedBox(
-          width: 150.0, // Adjust the width based on your preference
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Image.network(
-                beverage.picture,
-                width: double.infinity,
-                height: 150.0,
-                fit: BoxFit.cover,
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      beverage.name,
-                      style: const TextStyle(fontSize: 14.0, fontWeight:
-                      FontWeight.bold),
-                    ),
-                    Text(
-                      'RM${beverage.price}',
-                      style: const TextStyle(fontSize: 12.0, fontStyle:
-                      FontStyle.italic),
-                    ),
-                    const SizedBox(height: 8.0),
-                  ],
-                ),
-              ),
-            ],
-          ),
+          ],
         ),
       ),
     );
   }
-}
-
-class BeverageSearchDelegate extends SearchDelegate<String> {
-  final List<Beverage> beverages;
-  final Function(Beverage) addToSearchHistory;
-
-  BeverageSearchDelegate(this.beverages, this.addToSearchHistory);
 
   @override
-  List<Widget> buildActions(BuildContext context) {
-    return [
-      IconButton(
-        icon: const Icon(Icons.clear),
-        onPressed: () {
-          query = '';
-        },
-      ),
-    ];
-  }
-
-  @override
-  Widget buildLeading(BuildContext context) {
-    return IconButton(
-      icon: AnimatedIcon(
-        icon: AnimatedIcons.menu_arrow,
-        progress: transitionAnimation,
-      ),
-      onPressed: () {
-        close(context, '');
-      },
-    );
-  }
-
-  @override
-  Widget buildResults(BuildContext context) {
-    return buildSuggestions(context);
-  }
-
-  @override
-  Widget buildSuggestions(BuildContext context) {
-    final suggestionList = query.isEmpty
-        ? beverages
-        : beverages
-        .where((beverage) =>
-    beverage.name.toLowerCase().contains(query.toLowerCase()) ||
-        beverage.price.toLowerCase().contains(query.toLowerCase()))
-        .toList();
-
-    return ListView.builder(
-      itemCount: suggestionList.length,
-      itemBuilder: (context, index) {
-        return ListTile(
-          title: Text(suggestionList[index].name),
-          onTap: () {
-            // Add the selected beverage to the search history
-            addToSearchHistory(suggestionList[index]);
-
-            // You can navigate to the beverage details screen or handle the
-            // selection as needed
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => BeverageDetailsPage(
-                  name: suggestionList[index].name,
-                  category: suggestionList[index].category,
-                  price: suggestionList[index].price,
-                  picture: suggestionList[index].picture,
-                  // Pass more details as needed
-                ),
-              ),
-            );
-          },
-        );
-      },
-    );
+  void dispose() {
+    // Clean up resources, cancel timers, etc.
+    super.dispose();
   }
 }

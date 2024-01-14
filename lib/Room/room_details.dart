@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:cafe_library_services/Room/reserve_room.dart';
 import '../Report/report.dart';
 
-class RoomDetailsPage extends StatelessWidget {
+class RoomDetailsScreen extends StatelessWidget {
   final String roomNo;
   final String picture;
   final String type;
 
   // Add more properties as needed for room details
 
-  RoomDetailsPage({
+  RoomDetailsScreen({
     required this.roomNo,
     required this.picture,
     required this.type,

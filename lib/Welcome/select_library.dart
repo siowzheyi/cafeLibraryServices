@@ -1,3 +1,4 @@
+import 'package:cafe_library_services/Welcome/login.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cafe_library_services/Welcome/home.dart';
@@ -19,6 +20,11 @@ class MyApp extends StatelessWidget {
   }
 }
 
+Future<String?> getToken() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  return prefs.getString('token');
+}
+
 class LibrarySelectionPage extends StatefulWidget {
   @override
   _LibrarySelectionPageState createState() => _LibrarySelectionPageState();
@@ -33,6 +39,17 @@ class _LibrarySelectionPageState extends State<LibrarySelectionPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(''),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => LoginPage(),
+              ),
+            );
+          },
+        ),
       ),
       body: Container(
         decoration: BoxDecoration(
@@ -62,6 +79,9 @@ class _LibrarySelectionPageState extends State<LibrarySelectionPage> {
                       labelStyle: TextStyle(color: Colors.black),
                       errorStyle: TextStyle(color: Colors.red),
                       hintStyle: TextStyle(color: Colors.black12),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.zero,
+                      ),
                     ),
                   ),
                 ),
@@ -108,10 +128,21 @@ class _LibrarySelectionPageState extends State<LibrarySelectionPage> {
     prefs.setString('libraryId', libraryId);
   }
 
-  void navigateToLibraryHome() {
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => HomePage()),
-    );
+  void navigateToLibraryHome() async {
+    String libraryId = await getLibraryIdFromSharedPreferences();
+    String? token = await getToken();
+
+    if (token != null) {
+      Map<String, String> headers = {'Authorization': 'Bearer $token'};
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => HomePage(libraryId: libraryId, headers: headers),
+        ),
+      );
+    } else {
+      Text('Invalid library ID, try again.');
+    }
   }
 }

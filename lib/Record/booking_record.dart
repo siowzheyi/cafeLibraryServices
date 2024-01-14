@@ -70,7 +70,7 @@ class _BookingPageState extends State<BookingPage> {
         leading: IconButton(
           onPressed: () {
             Navigator.pushReplacement(context, MaterialPageRoute(builder:
-                (context) => HomePage()));
+                (context) => HomePage(libraryId: '',)));
           },
           icon: const Icon(
             Icons.arrow_back,

@@ -1,14 +1,14 @@
 import 'package:cafe_library_services/Beverage/add_to_cart.dart';
 import 'package:flutter/material.dart';
 
-class BeverageDetailsPage extends StatelessWidget {
+class BeverageDetailsScreen extends StatelessWidget {
   final String name;
   final String category;
   final String price;
   final String picture;
   // Add more properties as needed for beverage details
 
-  BeverageDetailsPage({
+  BeverageDetailsScreen({
     required this.name,
     required this.category,
     required this.price,
@@ -38,6 +38,10 @@ class BeverageDetailsPage extends StatelessWidget {
               '$name',
               style: const TextStyle(fontSize: 18.0, fontWeight:
               FontWeight.bold),
+            ),
+            Text(
+              'RM$price',
+              style: const TextStyle(fontSize: 18.0),
             ),
             Text(
               '$category',

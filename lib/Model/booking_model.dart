@@ -1,27 +1,22 @@
-class AnnouncementModel {
+class BookingModel {
   String title;
   String content;
   String picture;
 
   // constructor
-  AnnouncementModel({
+  BookingModel({
     required this.title,
     required this.content,
     required this.picture
   });
 
   // factory method to create an announcement from a map
-  factory AnnouncementModel.fromJson(Map<String, dynamic> json) {
-    return AnnouncementModel(
+  factory BookingModel.fromJson(Map<String, dynamic> json) {
+    return BookingModel(
         title: json['title'] ?? 'Unloaded',
         content: json['content'] ?? 'Unloaded',
         picture: json['picture'] ?? 'Image is not loaded'
     );
-  }
-
-  // Method to convert the picture value into a Uri
-  Uri getPictureUri() {
-    return Uri.parse(picture ?? '');
   }
 
   // convert the announcement instance to a map
