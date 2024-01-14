@@ -8,6 +8,7 @@ use App\Services\BeverageService;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\Rule;
+use App\Services\Service;
 
 use App\Http\Requests\BeverageRequest;
 use App\Models\User;
@@ -24,15 +25,38 @@ class BeverageController extends BaseController
         $this->services = $beverage_service;
     }
 
-    // This api is for admin user to create Beverage
-    public function store(BeverageRequest $request)
+    public function create()
     {
-        $result = $this->services->store($request);
+        return view('cafe.menu.create');
+    }
+
+    // This api is for admin user to create Beverage
+    public function store(Request $request)
+    {
+        $input = $request->all();
         
-        if($result != null)
-            return $this->sendResponse("", "Data has been successfully created. ");
-        else
-            return $this->sendCustomValidationError(['Error'=>'Failed to create data. ']);
+        App::setLocale($request->header('language'));
+
+        $validator = Validator::make($input, [
+            'name' => ['required'],
+            'price' => ['required'],
+            'name' => ['required'],
+            'remark' => ['nullable'],
+            'category' => ['required'],
+            'picture' => ['required'],
+            "cafe_id"   =>  array('nullable','exists:cafes,id',
+            Rule::requiredIf(function () use ($request) {
+                return $request->user()->hasAnyRole(['superadmin', 'admin']);
+            }))
+        ]);
+                
+
+        // dd($input);
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator->errors());
+        }
+        $result = $this->services->store($request, $input);
+        return view('cafe.menu.index')->withSuccess("Successfully added new menu!");
 
     }
 
@@ -49,15 +73,61 @@ class BeverageController extends BaseController
     {
         $result = $this->services->index($request);
 
-        return $this->sendResponse($result, "Data successfully retrieved. "); 
+        // return $this->sendResponse($result, "Data successfully retrieved. "); 
+        return view('cafe.menu.index');
+    }
+
+    public function edit(Beverage $beverage)
+    {
+        $service = new Service();
+        $data = [
+            "id"    =>  $beverage->id,
+            "name"    =>  $beverage->name,
+            "category"    =>  $beverage->category,
+
+            "status"    =>  $beverage->status,
+            "remark"    =>  $beverage->remark,
+            "price"    =>  $beverage->price,
+            "picture"    => $beverage->picture ? $service->getImage('beverage',$beverage->id) : null,      
+
+        ];
+        return view('cafe.menu.edit',compact('data'));
     }
 
     // This api is for admin user to update certain Beverage
-    public function update(BeverageRequest $request, Beverage $beverage)
+    public function update(Request $request, Beverage $beverage)
     {
-        $result = $this->services->update($request, $beverage);
+        $input = $request->all();
+        
+        App::setLocale($request->header('language'));
 
-        return $this->sendResponse("", "Data has been successfully updated. ");
+        if($request->method() == "PUT")
+        {
+            $validator = Validator::make($input, [
+                'name' => array('required'),
+                // 'status'   =>  array('required','in:1,0'),
+                'price' => ['required'],
+                'category' => ['required'],
+                'picture' => ['nullable'],
+
+                'remark' => ['nullable'],
+            ]);
+        }
+        else
+        {
+            $validator = Validator::make($input, [
+                'type' => array('required','in:status'),
+
+            ]);
+        }
+        
+        // dd($input);
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator->errors());
+        }
+        $result = $this->services->update($request, $beverage, $input);
+        // dd(1);
+        return view('cafe.menu.index');
        
     }
 
@@ -81,6 +151,50 @@ class BeverageController extends BaseController
         $result = $this->services->beverageListing($input);
 
         return $this->sendResponse($result, "Data has been successfully retrieved. ");
+    }
+
+    public function getBeverageDatatable(Request $request)
+    {
+        if (request()->ajax()) {
+            $type = $request->type;
+
+            $user = auth()->user();
+            
+            $data = Beverage::whereNotNull('status')->orderBy('created_at','desc')->where('category',$type);
+
+            if($user->hasRole('admin'))
+                $data = $data->where('beverages.cafe_id',$request->cafe_id);
+            else
+                $data = $data->where('beverages.cafe_id',$user->cafe_id);
+
+            
+
+            $table = Datatables::of($data);
+
+
+            $table->addColumn('status', function ($row) {
+                $checked = $row->status == 1 ? 'checked' : '';
+                $status = $row->status == 1 ? 'Active' : 'Inactive';
+            
+                $btn = '<div class="form-check form-switch">';
+                $btn .= '<input class="form-check-input data-status" type="checkbox" data-id="'.$row->id.'" '.$checked.'>';
+                $btn .= '<label class="form-check-label">'.$status.'</label>';
+                $btn .= '</div>';
+            
+                return $btn;
+            });
+            
+
+            $table->addColumn('action', function ($row) {
+                $token = csrf_token();
+
+                $btn = '<a href="' . route('beverage.edit', ['beverage'=>$row->id]) . '" class="btn btn-sm btn-info"><i class="fa fa-pen"></i> Update</a>';
+                return $btn;
+            });
+
+            $table->rawColumns(['status','action']);
+            return $table->make(true);
+        }
     }
 
 

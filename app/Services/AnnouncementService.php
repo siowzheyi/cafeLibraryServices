@@ -157,7 +157,7 @@ class AnnouncementService
         }
         $announcement->title = $input['title'];
         $announcement->content = $input['content'];
-        $announcement->status = $input['status'];
+        // $announcement->status = $input['status'];
 
         if(isset($input['expired_at']))
         $announcement->expired_at = $input['expired_at'];

@@ -46,9 +46,15 @@ Route::middleware('auth:api')->group(function () {
     Route::get('penalty_report', [UserController::class, 'penaltyReport'])->name('penalty_report');
     Route::get('penalty_report_item/{booking_id}', [UserController::class, 'penaltyReportItem'])->name('penalty_report_item');
 
-    Route::resource('order', OrderController::class, array("as" => "api"));
-    Route::resource('booking', BookingController::class, array("as" => "api"));
-    Route::resource('report', ReportController::class, array("as" => "api"));
+    Route::get('order/{order}', [OrderController::class, 'show'])->name('api.order.show');
+    Route::post('order', [OrderController::class, 'store'])->name('api.order.store');
+
+    Route::get('booking/{booking}', [BookingController::class, 'show'])->name('api.booking.show');
+    Route::post('booking',[ BookingController::class, 'store'])->name('api.booking.store');
+
+    Route::get('report/{report}', [ReportController::class, 'show'])->name('api.report.show');
+    Route::post('report', [ReportController::class, 'store'])->name('api.report.store');
+    
     Route::resource('payment', PaymentController::class, array("as" => "api"));
 
    

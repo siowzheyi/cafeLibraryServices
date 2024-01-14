@@ -50,26 +50,25 @@
                         <div class="collapse show" id="collapseLayoutsCafe" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                             <nav class="sb-sidenav-menu-nested nav">
                                 {{-- <a class="nav-link" href="{{ route('User.index') }}">Staff Cafe</a> --}}
-                                <a class="nav-link collapsed active" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayoutsCafe" aria-expanded="false" aria-controls="collapseLayoutsCafe">
+                                <a class="nav-link collapsed " href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayoutsCafe" aria-expanded="false" aria-controls="collapseLayoutsCafe">
                                     <div class="sb-nav-link-icon"><i class="fas fa-plus"></i></div>
                                     Menu
                                     <div class="sb-sidenav-collapse-arrow"><i class=""></i></div>
                                 </a>
                                 <div class="collapse show" id="collapseLayoutsCafe" aria-labelledby="card-header" data-bs-parent="#sidenavAccordion">
                                     <nav class="sb-sidenav-menu-nested nav">
-                                        <a class="nav-link menu active" id="hotCoffee" >Hot Coffee</a>
-                                        <a class="nav-link menu" id="iceCoffee">Ice Coffee</a>
-                                        <a class="nav-link menu" id="blendedCoffee">Blended Coffee</a>
-                                        <a class="nav-link menu" id="smoothies">Smoothies</a>
-                                        <a class="nav-link menu" id="cake">Cake</a>
-                                        <a class="nav-link menu" id="bread">Bread</a>
+                                        <a class="nav-link menu" href="{{ route('beverage.index') }}""  >Hot Coffee</a>
+                                        <a class="nav-link menu" href="{{ route('beverage.index') }}">Ice Coffee</a>
+                                        <a class="nav-link menu" href="{{ route('beverage.index') }}">Blended Coffee</a>
+                                        <a class="nav-link menu" href="{{ route('beverage.index') }}">Smoothies</a>
+                                        <a class="nav-link menu" href="{{ route('beverage.index') }}">Cake</a>
+                                        <a class="nav-link menu" href="{{ route('beverage.index') }}">Bread</a>
                                     </nav>
                                 </div> 
                               
-                                
                             </nav>
                         </div> 
-                        <a class="nav-link" href="{{ route('order.index') }}">
+                        <a class="nav-link active" href="{{ route('order.index') }}">
                             <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                             Order
                         </a>
@@ -83,7 +82,7 @@
                     <h1 class="mt-4">Cafe Beverage</h1>
                     <ol class="breadcrumb mb-4">
                         <li class="breadcrumb-item"><a href="{{ route('cafe.dashboard') }}">Dashboard</a></li>
-                        <li class="breadcrumb-item active" id="title">Hot Coffee</li>
+                        <li class="breadcrumb-item active">Order</li>
                     </ol>
                     @if (Session::has('success'))
                         <div class="alert alert-success" id="flash-message">
@@ -93,25 +92,21 @@
                     @foreach ($errors->all() as $error)
                         <div class="alert alert-danger" id="flash-message">{{ $error }}</div>
                     @endforeach
-                    <div class="row mb-2">
-                        <div class="col-12">
-                            <a href="{{ route('beverage.create') }}" class="btn btn-success float-end"><i class="fa fa-plus"></i> Create New Menu</a>
-                        </div>
-                    </div>
                     <div class="card mb-4">
                         <div class="card-header">
                             <i class="fas fa-table me-1"></i>
-                            List of Menu
+                            List of Order
                         </div>
                         <div class="card-body">
                             <table id="datatablesSimple">
                                 <thead>
                                     <tr>
                                         <th>#</th>
-                                        {{-- <th>Picture</th> --}}
-                                      
-                                        <th>Name</th>
-                                        <th>Price</th>
+                                        <th>Order No</th>
+                                        <th>Menu</th>
+                                        <th>Quantity</th>
+                                        <th>Table No</th>
+                                        <th>Created At</th>
                                         <th>Status</th>
                                         <th>Action</th>
                                     </tr>
@@ -121,6 +116,15 @@
                     </div>
                 </div>
             </main>
+
+            <!-- Modal -->
+            <div class="modal fade" id="orderModal" tabindex="-1" role="dialog" aria-labelledby="orderModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                  <div class="modal-content">
+                    <!-- Modal content goes here -->
+                  </div>
+                </div>
+              </div>
             <footer class="py-4 bg-light mt-auto">
                 <div class="container-fluid px-4">
                     <div class="d-flex align-items-center justify-content-between small">
@@ -150,7 +154,6 @@
     $(document).ready(function() {
 
         // $.noConflict();
-        var type = "hot coffee";
         fetch_data();
 
         setTimeout(function() {
@@ -160,59 +163,7 @@
         var cafe_id = localStorage.getItem('cafe_id');
 
         // destroy datatable and reload again
-        $('#hotCoffee').click(function() {
-            type = "hot coffee";
-            $('#title').html("Hot Coffee");
-            $('.menu').removeClass('active');
-            $(this).addClass('active');
-            $('#datatablesSimple').DataTable().destroy();
-            fetch_data();
-        });
-        $('#iceCoffee').click(function() {
-            type = "ice coffee";
-            $('#title').html("Ice Coffee");
-            $('.menu').removeClass('active');
-            $(this).addClass('active');
-
-            $('#datatablesSimple').DataTable().destroy();
-            fetch_data();
-        });
-        $('#blendedCoffee').click(function() {
-            type = "blended coffee";
-            $('#title').html("Blended Coffee");
-            $('.menu').removeClass('active');
-            $(this).addClass('active');
-
-            $('#datatablesSimple').DataTable().destroy();
-            fetch_data();
-        });
-        $('#smoothies').click(function() {
-            type = "smoothies";
-            $('#title').html("Smoothies");
-            $('.menu').removeClass('active');
-            $(this).addClass('active');
-
-            $('#datatablesSimple').DataTable().destroy();
-            fetch_data();
-        });
-        $('#cake').click(function() {
-            type = "cake";
-            $('#title').html("Cake");
-            $('.menu').removeClass('active');
-            $(this).addClass('active');
-
-            $('#datatablesSimple').DataTable().destroy();
-            fetch_data();
-        });
-        $('#bread').click(function() {
-            type = "bread";
-            $('#title').html("Bread");
-            $('.menu').removeClass('active');
-            $(this).addClass('active');
-
-            $('#datatablesSimple').DataTable().destroy();
-            fetch_data();
-        });
+       
         $('#cafe_id').val(cafe_id);
         // ajax function to get data from api to display at datatable
         function fetch_data() {
@@ -220,10 +171,9 @@
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: "{{ route('beverage.getBeverageDatatable') }}",
+                    url: "{{ route('order.getOrderDatatable') }}",
                     data: {
                         cafe_id: cafe_id,
-                        type:type
                     },
                     type: 'GET',
                 },
@@ -232,7 +182,7 @@
                     "className": "text-center",
                     "width": "2%"
                 }, {
-                    "targets": [1, 2, 3,4], // your case first column
+                    "targets": [1, 2, 3,4,5,6,7], // your case first column
                     "className": "text-center",
                 }, ],
                 order: [
@@ -247,13 +197,28 @@
                         return meta.row + meta.settings._iDisplayStart + 1;
                     }
                 }, {
-                    data: "name",
-                    name: 'name',
+                    data: "order_no",
+                    name: 'order_no',
                     orderable: true,
                     searchable: true
                 },{
-                    data: "price",
-                    name: 'price',
+                    data: "beverage_name",
+                    name: 'beverage_name',
+                    orderable: false,
+                    searchable: false
+                }, {
+                    data: "quantity",
+                    name: 'quantity',
+                    orderable: true,
+                    searchable: true
+                },{
+                    data: "table_no",
+                    name: 'table_no',
+                    orderable: false,
+                    searchable: false
+                },{
+                    data: "created_at",
+                    name: 'created_at',
                     orderable: false,
                     searchable: false
                 },{
@@ -275,7 +240,7 @@
         var status = $(this).is(':checked') ? 1 : 0;
 
             $.ajax({
-                url: '/staff/beverage/' + dataId,
+                url: '/staff/order/' + dataId,
                 type: 'PATCH',
                 data: { 
                     type: "status",
@@ -287,6 +252,54 @@
                     fetch_data();
                 }
             });
+        });
+
+        // show data details
+        $(document).on('click', '.showData', function() {
+            var data_id = $(this).attr('id');
+                $.ajax({
+                    url: '/staff/order/'+data_id+'/edit', // Replace with your API endpoint
+                    method: 'GET',
+                    success: function(data) {
+                        var modalContent = `
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="orderModalLabel">Order Receipt</h5>
+                            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <h6><strong>Order No:</strong> ${data.order_no}</h6>
+                            <p><span><strong>Payment Status:</strong> ${data.payment_status}</span><p>
+                            <p><strong>Receipt No:</strong> ${data.receipt_no} 
+                            <span style="float:right"><strong>Table No:</strong> ${data.table_no}</span></p>
+                            <p><strong>User Name:</strong> ${data.user_name}
+                            <span style="float:right"><strong> Phone No:</strong> ${data.user_phone_no}</span></p>
+                            <p><strong>Created At:</strong> ${data.created_at}
+                            <span style="float:right"><strong>Status:</strong> ${data.status}</span></p>
+                            <hr>
+
+                            <p><strong>Menu Name:</strong> ${data.beverage_name}</p>
+                            <p><strong>Unit Price (RM):</strong> ${data.unit_price}
+                            <span style="float:right"><strong>Quantity:</strong> ${data.quantity}</span></p>
+                            <hr>
+
+                            <p><strong>Subtotal (RM):</strong> ${data.subtotal}</p>
+                            <p><strong>SST Amount (RM):</strong> ${data.sst_amount}</p>
+                            <p><strong>Service Charge Amount (RM):</strong> ${data.service_charge_amount}</p>
+                            <hr>
+                            <p><strong>Total Price (RM):</strong> ${data.total_price}</p>
+                           
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        </div>
+                        `;
+
+                        $('#orderModal .modal-content').html(modalContent);
+                        $('#orderModal').modal('show');
+                    }
+                });
         });
     });
 </script>

@@ -39,7 +39,7 @@
                 <div class="sb-sidenav-menu">
                     <div class="nav">
                         <div class="sb-sidenav-menu-heading">MAIN</div>
-                        <a class="nav-link" href="{{ route('dashboard') }}">
+                        <a class="nav-link active" href="{{ route('dashboard') }}">
                             <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                             Dashboard
                         </a>
@@ -53,24 +53,27 @@
                         <div class="collapse show" id="collapseLayoutsCafe" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                             <nav class="sb-sidenav-menu-nested nav">
                                 {{-- <a class="nav-link" href="{{ route('cafestaffindex') }}">Staff Cafe</a> --}}
-                                <a class="nav-link collapsed active" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayoutsCafe" aria-expanded="false" aria-controls="collapseLayoutsCafe">
-                                    <div class="sb-nav-link-icon"><i class="fas fa-plus"></i></div>
+                                <a class="nav-link collapsed " href="{{ route('beverage.index') }}" data-bs-toggle="collapseLayoutsCafe" data-bs-target="#collapseLayoutsMenu" aria-expanded="false" aria-controls="collapseLayoutsCafe">
+                                    <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
                                     Menu
-                                    <div class="sb-sidenav-collapse-arrow"><i class=""></i></div>
+                                    <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
                                 </a>
-                                <div class="collapse show" id="collapseLayoutsCafe" aria-labelledby="card-header" data-bs-parent="#sidenavAccordion">
+                                <div class="collapse bgsubmenu show" id="collapseLayoutsMenu" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                                     <nav class="sb-sidenav-menu-nested nav">
-                                    <a class="nav-link" href="#">Hot Coffee</a>
-                                    <a class="nav-link" href="#">Ice Coffee</a>
-                                    <a class="nav-link" href="#">Blended Coffee</a>
-                                    <a class="nav-link" href="#">Smoothies</a>
-                                    <a class="nav-link" href="#">Cake</a>
-                                    <a class="nav-link" href="#">Bread</a>
+                                        <a class="nav-link" id="#" >Hot Coffee</a>
+                                        <a class="nav-link" id="#">Ice Coffee</a>
+                                        <a class="nav-link" id="#">Blended Coffee</a>
+                                        <a class="nav-link" id="#">Smoothies</a>
+                                        <a class="nav-link" id="#">Cake</a>
+                                        <a class="nav-link" id="#">Bread</a>
                                     </nav>
                                 </div> 
-                               
                             </nav>
                         </div> 
+                        <a class="nav-link active" href="{{ route('order.index') }}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                            Order
+                        </a>
                     </div>
                 </div>
             </nav>
@@ -84,52 +87,28 @@
                         <li class="breadcrumb-item active">Cafe Report</li>
                     </ol>
 
-                    <!-- Charts and tables (assuming you have Chart.js and DataTables set up) -->
-                    <div class="row">
-                        <!-- Charts -->
+                    <div class="column">
+                        <div class="col-xl-6">
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    <i class="fas fa-chart-area me-1"></i>
+                                    Daily Sales Report
+                                </div>
+                                <div class="card-body"><canvas id="myAreaChart" width="100%" height="40"></canvas></div>
+                            </div>
+                        </div>
+                        <div class="col-xl-6">
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    <i class="fas fa-chart-bar me-1"></i>
+                                    Every Transaction Sales Report
+                                </div>
+                                <div class="card-body"><canvas id="myBarChart" width="100%" height="40"></canvas></div>
+                            </div>
+                        </div>
                     </div>
 
-                    <!-- Order List -->
-                    <div class="card mb-4">
-                        <div class="card-header">
-                            <i class="fas fa-table me-1"></i>
-                            List of Order
-                        </div>
-                        <div class="card-body">
-                            <table id="datatablesSimple" class="table">
-                                <thead>
-                                    <tr>
-                                        <th>#</th>
-                                        <th>Order No</th>
-                                        <th>Beverage Name</th>
-                                        <th>Quantity</th>
-                                        <th>Total</th>
-                                        <th>Status</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
-                                {{-- <tbody>
-                                    @foreach($orders as $order)
-                                        <tr>
-                                            <td>{{ $order->id }}</td>
-                                            <td>{{ $order->beverage_name }}</td>
-                                            <td>{{ $order->quantity }}</td>
-                                            <td>{{ $order->total }}</td>
-                                            <td>
-                                                <div class="form-check form-switch">
-                                                    <input class="form-check-input" type="checkbox" id="status_{{ $order->id }}" {{ $order->status ? 'checked' : '' }}>
-                                                    <label class="form-check-label" for="status_{{ $order->id }}">{{ $order->status ? 'Delivered' : 'Pending' }}</label>
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <a href="{{ route('order.view', ['id' => $order->id]) }}" class="btn btn-sm btn-info"><i class="fa fa-eye"></i> View</a>
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                </tbody> --}}
-                            </table>
-                        </div>
-                    </div>
+                    
                 </div>
             </main>
             <footer class="py-4 bg-light mt-auto">

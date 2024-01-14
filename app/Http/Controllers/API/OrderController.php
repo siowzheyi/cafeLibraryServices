@@ -5,10 +5,16 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller as Controller;
 use App\Http\Controllers\API\BaseController as BaseController;
 use App\Services\OrderService;
+use DB;
+use Yajra\DataTables\DataTables;
+use App\Services\Service;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Validation\Rule;
 
 use App\Http\Requests\OrderRequest;
 use App\Models\User;
 use App\Models\Order;
+use App\Models\Beverage;
 
 use Auth;
 use App;
@@ -47,7 +53,8 @@ class OrderController extends BaseController
     {
         $result = $this->services->index($request);
 
-        return $this->sendResponse($result, "Data successfully retrieved. "); 
+        // return $this->sendResponse($result, "Data successfully retrieved. "); 
+        return view('cafe.order.index');
     }
 
     // This api is for admin user to update certain Order
@@ -56,6 +63,48 @@ class OrderController extends BaseController
         $result = $this->services->update($request, $order);
 
         return $this->sendResponse("", "Order has been successfully updated. ");      
+    }
+
+    public function edit(Order $order)
+    {
+        $service = new Service();
+        $user = $order->user()->first();
+        $beverage = Beverage::find($order->beverage_id);
+        $payment = $order->payment()->first();
+
+        if($order->status == 1)
+            $status = "Completed";
+        else
+            $status = "Pending";
+
+        
+        $data = [
+            "id" => $order->id,
+               "order_no" => $order->order_no,
+               "payment_status" => $order->payment_status,
+               "status" => $status,
+               "beverage_id" => $order->beverage_id,
+               "beverage_name" => $order->beverage_name,
+               "beverage_picture"   =>  $beverage->picture ? $service->getImage('beverage',$beverage->id) : null,
+               "unit_price" => $payment->unit_price,
+               "quantity" => $payment->quantity,
+               "subtotal" => $payment->subtotal,
+               "sst_amount" => $payment->sst_amount,
+               "service_charge_amount" => $payment->service_charge_amount,
+               "total_price" => $payment->total_price,
+               "receipt_no" => $payment->receipt_no,
+
+               "table_no" => $order->table_no,
+               "table_id" => $order->table_id,
+               "user_id" => $order->user_id,
+               "user_name" => $user->name,
+               "user_phone_no" => $user->phone_no,
+
+               "created_at" => $order->created_at != null ? date('Y-m-d H:i:s',strtotime($order->created_at)) : null,
+
+        ];
+
+        return $data;
     }
 
     // This api is for admin user to view list of Order listing
@@ -92,6 +141,51 @@ class OrderController extends BaseController
         $result = $this->services->dailySalesReport($request);
 
         return $this->sendResponse($result, "Data successfully retrieved. "); 
+    }
+
+    public function getOrderDatatable(Request $request)
+    {
+        if (request()->ajax()) {
+            $type = $request->type;
+
+            $user = auth()->user();
+            
+            $data = Order::join('beverages','beverages.id','=','orders.beverage_id')
+            ->select('orders.*','beverages.cafe_id')
+            ->orderBy('orders.created_at','asc');
+
+            if($user->hasRole('admin'))
+                $data = $data->where('beverages.cafe_id',$request->cafe_id);
+            else
+                $data = $data->where('beverages.cafe_id',$user->cafe_id);
+
+            $table = Datatables::of($data);
+
+           
+
+            $table->addColumn('status', function ($row) {
+                $checked = $row->status == 1 ? 'checked' : '';
+                $status = $row->status == 1 ? 'Completed' : 'Pending';
+            
+                $btn = '<div class="form-check form-switch">';
+                $btn .= '<input class="form-check-input data-status" type="checkbox" data-id="'.$row->id.'" '.$checked.'>';
+                $btn .= '<label class="form-check-label">'.$status.'</label>';
+                $btn .= '</div>';
+            
+                return $btn;
+            });
+            
+
+            $table->addColumn('action', function ($row) {
+                $token = csrf_token();
+
+                $btn ='<button id="'.$row->id.'" data_id="' . $row->id . '" data-token="' . $token . '" class="btn btn-primary m-1 showData" data-bs-toggle="modal" data-bs-target="#orderModal">View</button>';
+                return $btn;
+            });
+
+            $table->rawColumns(['availability','status','action']);
+            return $table->make(true);
+        }
     }
 
 

@@ -36,7 +36,7 @@
                 <div class="sb-sidenav-menu">
                     <div class="nav">
                         <div class="sb-sidenav-menu-heading">MAIN</div>
-                        <a class="nav-link" href="staff-cafe-page.html">
+                        <a class="nav-link" href="{{ route('dashboard') }}">
                             <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                             Dashboard
                         </a>
@@ -49,7 +49,7 @@
                         </a>
                         <div class="collapse" id="collapseLayoutsCafe" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                             <nav class="sb-sidenav-menu-nested nav">
-                                <a class="nav-link" href="{{ route('User.index') }}">Staff Cafe</a>
+
                                 <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayoutsBeverage" aria-expanded="false" aria-controls="collapseLayoutsBeverage">
                                     <div class="sb-nav-link-icon"><i class="fas fa-plus"></i></div>
                                     Beverage
@@ -57,16 +57,16 @@
                                 </a>
                                 <div class="collapse" id="collapseLayoutsBeverage" aria-labelledby="card-header" data-bs-parent="#sidenavAccordion">
                                     <nav class="sb-sidenav-menu-nested nav">
-                                        <a class="nav-link" href="{{ route('Beverage.index') }}">Hot Coffee</a>
-                                        <a class="nav-link" href="{{ route('Beverage.index') }}">Ice Coffee</a>
-                                        <a class="nav-link" href="{{ route('Beverage.index') }}">Blended Coffee</a>
-                                        <a class="nav-link" href="{{ route('Beverage.index') }}">Smoothies</a>
-                                        <a class="nav-link" href="{{ route('Beverage.index') }}">Cake</a>
-                                        <a class="nav-link" href="{{ route('Beverage.index') }}">Bread</a>
+                                        <a class="nav-link" href="{{ route('beverage.index') }}">Hot Coffee</a>
+                                        <a class="nav-link" href="{{ route('beverage.index') }}">Ice Coffee</a>
+                                        <a class="nav-link" href="{{ route('beverage.index') }}">Blended Coffee</a>
+                                        <a class="nav-link" href="{{ route('beverage.index') }}">Smoothies</a>
+                                        <a class="nav-link" href="{{ route('beverage.index') }}">Cake</a>
+                                        <a class="nav-link" href="{{ route('beverage.index') }}">Bread</a>
                                     </nav>
-                                </div>
+                                </div> 
                             </nav>
-                        </div>
+                        </div> 
                     </div>
                 </div>
             </nav>
@@ -74,31 +74,44 @@
         <div id="layoutSidenav_content">
             <main>
                 <div class="container-fluid px-4">
-                    <h1 class="mt-4">Edit Hot Coffee</h1>
+                    <h1 class="mt-4">Edit Menu</h1>
                     <ol class="breadcrumb mb-4">
-                        <li class="breadcrumb-item"><a href="staff-cafe-page.html">Dashboard</a></li>
-                        <li class="breadcrumb-item"><a href="{{ route('Beverage.index') }}">Hot Coffee</a></li>
-                        <li class="breadcrumb-item active">Edit</li>
+                        <li class="breadcrumb-item"><a href="={{ route('cafe.dashboard') }}">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a href="{{ route('beverage.index') }}">Menu</a></li>
+                        <li class="breadcrumb-item active">Edit {{ $data['category'] }}</li>
                     </ol>
+                    @foreach ($errors->all() as $error)
+                        <div class="alert alert-danger" id="flash-message">{{ $error }}</div>
+                    @endforeach
                     <div class="row mb-4">
                         <div class="col-12">
-                            <form href="{{ route('Beverage.update') }}">
+                            <form action="{{ route('beverage.update',['beverage'=>$data['id']]) }}" method="POST" enctype="multipart/form-data">
+                                @csrf
+                                @method('PUT')
                                 <div class="form-group mb-2">
                                     <label for="exampleFormControlInput1">Name</label>
-                                    <input type="text" class="form-control" id="exampleFormControlInput1" value="Hot Hazelnut Latte">
+                                    <input type="text" class="form-control" id="exampleFormControlInput1" name="name" value="{{ $data['name'] }}">
                                 </div>
                                 <div class="form-group mb-2">
                                     <label for="exampleFormControlInput1">Price</label>
-                                    <input type="text" class="form-control" id="exampleFormControlInput1" value="RM5.60">
+                                    <input type="text" class="form-control" id="exampleFormControlInput1" name="price" value="{{ $data['price'] }}">
                                 </div>
                                 
                                 <div class="form-group mb-2">
                                     <label for="exampleFormControlInput1">Picture</label>
-                                    <br><img src="{{ asset('images/1.jpg') }}" width="200">
-                                    <input type="file" class="form-control mt-2" id="exampleFormControlInput1" value="Orange">
+                                    <br><img src="{{ $data['picture'] }}" width="200">
+                                    <input type="file" class="form-control mt-2" id="exampleFormControlInput1" name="picture" >
                                 </div>
-                                
-                                <button type="submit" class="btn btn-success mt-3 mb-2">Submit</button>
+                                <select name="category" id="category">
+                                    <option value="hot coffee">Hot Coffee</option>
+                                    <option value="ice coffee">Ice Coffee</option>
+                                    <option value="blended coffee">Blended Coffee</option>
+                                    <option value="smoothies">Smoothies</option>
+                                    <option value="bread">Bread</option>
+                                    <option value="cake">Cake</option>
+
+                                </select>
+                                <input type="submit" class="btn btn-success mt-3 mb-2" value="Submit">
                             </form>
                         </div>
                     </div>

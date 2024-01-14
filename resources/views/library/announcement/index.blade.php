@@ -66,7 +66,18 @@
 
                                 </nav>
                             </div> 
-                            
+                            <a class="nav-link" href="{{route('booking.index')}}">
+                                <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                                Booking 
+                            </a>
+                            <a class="nav-link" href="{{route('report.index')}}">
+                                <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                                Reported List
+                            </a>
+                            <a class="nav-link" href="{{route('report.index')}}">
+                                <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                                Penalty Report
+                            </a>
                         </div>
                     </div>
                 </nav>
@@ -97,7 +108,7 @@
                         <div class="card mb-4">
                             <div class="card-header">
                                 <i class="fas fa-table me-1"></i>
-                                List of staff
+                                List of Announcement
                             </div>
                             <div class="card-body">
                                 <table id="datatablesSimple">
@@ -112,27 +123,6 @@
                                             <th>Action</th>
                                         </tr>
                                     </thead>
-                                    {{-- <tbody>
-                                        <tr>
-                                            <td>1</td>
-                                            <td><img src="images/annoucement.jpeg" width="100"></td>
-                                            <td>Clean Room & Equipment</td>
-                                            <td>Please alert.....</td>
-                                            <td>1st Jan 2024</td>
-                                            <td>
-                                                <div class="form-check form-switch">
-                                                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" checked>
-                                                    <label class="form-check-label" for="flexSwitchCheckChecked">Active</label>
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <a href="{{ route('announcement.edit') }}" class="btn btn-sm btn-primary"><i class="fa fa-edit"></i> Edit</a>
-                                                <a href="{{ route('announcement.destroy') }}" class="btn btn-sm btn-danger" onclick="alert('Successfully deleted.')"><i class="fa fa-trash"></i> Delete</a>
-                                            </td>
-                                        </tr>
-                                            
-                                        </tr>
-                                    </tbody> --}}
                                 </table>
                             </div>
                         </div>
@@ -272,7 +262,6 @@
                     setTimeout(function() {
                         $('#confirmModal').modal('hide');
                     }, 2000);
-                    console.log('it works');
 
                     $('div.flash-message').html(data);
 
@@ -280,8 +269,6 @@
                 },
                 error: function(data) {
                     $('div.flash-message').html(data);
-                    console.log("it doesn't Works");
-
                 }
             })
         });

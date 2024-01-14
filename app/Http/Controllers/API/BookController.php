@@ -147,61 +147,61 @@ class BookController extends BaseController
         return view('library.book.index');
     }
 
-     // This api is for user to view list of Book
-     public function bookListing(Request $request)
-     {
-        $input = $request->all();
+    // This api is for user to view list of Book
+    public function bookListing(Request $request)
+    {
+    $input = $request->all();
 
-        App::setLocale($request->header('language'));
+    App::setLocale($request->header('language'));
 
-        $validator = Validator::make($input, [
-            'library_id' => array('required','exists:libraries,id'),
-            'search'    =>  array('nullable')
-        ]);
+    $validator = Validator::make($input, [
+        'library_id' => array('required','exists:libraries,id'),
+        'search'    =>  array('nullable')
+    ]);
 
-        if ($validator->fails()) {
-            return $this->sendCustomValidationError($validator->errors());
-        }
+    if ($validator->fails()) {
+        return $this->sendCustomValidationError($validator->errors());
+    }
 
-         $result = $this->services->bookListing($input);
- 
-         return $this->sendResponse($result, "Data has been successfully retrieved. ");   
-     }
+        $result = $this->services->bookListing($input);
 
-     public function importBook(Request $request)
-     {
-        $input = $request->all();
+        return $this->sendResponse($result, "Data has been successfully retrieved. ");   
+    }
 
-        App::setLocale($request->header('language'));
+    public function importBook(Request $request)
+    {
+    $input = $request->all();
 
-        $validator = Validator::make($input, [
-            'excel' => array('required',function ($attribute, $value, $fail) {
-                $etx = $value->getClientOriginalExtension();
-                $formats = ['xls', 'xlsx', 'ods', 'csv'];
-                if (!in_array($etx, $formats)) {
-                    $fail('Only supports upload .xlsx, .xls files');
-                }
-            }),
-            'library_id'    =>  array('nullable')
-        ]);
+    App::setLocale($request->header('language'));
 
-        if ($validator->fails()) {
-            // return $this->sendCustomValidationError($validator->errors());
-            return redirect('/staff/book')->withErros("Data has not been successfully imported");
+    $validator = Validator::make($input, [
+        'excel' => array('required',function ($attribute, $value, $fail) {
+            $etx = $value->getClientOriginalExtension();
+            $formats = ['xls', 'xlsx', 'ods', 'csv'];
+            if (!in_array($etx, $formats)) {
+                $fail('Only supports upload .xlsx, .xls files');
+            }
+        }),
+        'library_id'    =>  array('nullable')
+    ]);
 
-        }
-
-        $result = $this->services->importBook($request);
-        // dd($result['details']);
-        if($result['status'] == "success")
-        // return $this->sendResponse("", "Data has been successfully imported. ");   
-        return redirect('/staff/book')->withSuccess("Data has been successfully imported");
-
-        else
-        // return $this->sendCustomValidationError($result['details']);
+    if ($validator->fails()) {
+        // return $this->sendCustomValidationError($validator->errors());
         return redirect('/staff/book')->withErros("Data has not been successfully imported");
 
-     }
+    }
+
+    $result = $this->services->importBook($request);
+    // dd($result['details']);
+    if($result['status'] == "success")
+    // return $this->sendResponse("", "Data has been successfully imported. ");   
+    return redirect('/staff/book')->withSuccess("Data has been successfully imported");
+
+    else
+    // return $this->sendCustomValidationError($result['details']);
+    return redirect('/staff/book')->withErros("Data has not been successfully imported");
+
+    }
 
     public function getBookDatatable(Request $request)
     {

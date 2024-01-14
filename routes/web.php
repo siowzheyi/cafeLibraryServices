@@ -57,6 +57,8 @@ Route::get('beverage/getBeverageDatatable', [BeverageController::class, 'getBeve
 Route::get('announcement/getAnnouncementDatatable', [AnnouncementController::class, 'getAnnouncementDatatable'])->name('announcement.getAnnouncementDatatable');
 Route::get('cafe/getCafeDatatable', [CafeController::class, 'getCafeDatatable'])->name('cafe.getCafeDatatable');
 Route::get('library/getLibraryDatatable', [LibraryController::class, 'getLibraryDatatable'])->name('library.getLibraryDatatable');
+Route::get('library/getBookingDatatable', [BookingController::class, 'getBookingDatatable'])->name('booking.getBookingDatatable');
+Route::get('cafe/getOrderDatatable', [OrderController::class, 'getOrderDatatable'])->name('order.getOrderDatatable');
 
 Route::resource('user', UserController::class);
 
@@ -77,12 +79,17 @@ Route::middleware(['staffauthentication'])->group(function () {
             Route::resource('equipment', EquipmentController::class);
             Route::resource('room', RoomController::class);
             Route::post('importbook', [BookController::class, 'importBook'])->name('importbook');
+
+            Route::resource('order', OrderController::class)->except(['show','store']);
+            Route::resource('booking', BookingController::class)->except(['show','store']);
+            Route::resource('report', ReportController::class)->except(['show','store']);
             
             Route::prefix('report')->group(function () {
                 Route::get('detail_sales_report', [OrderController::class, 'detailSalesReport'])->name('detail_sales_report');
                 Route::get('daily_sales_report', [OrderController::class, 'dailySalesReport'])->name('daily_sales_report');
 
             });
+
 
 
         });

@@ -36,7 +36,7 @@
                 <div class="sb-sidenav-menu">
                     <div class="nav">
                         <div class="sb-sidenav-menu-heading">MAIN</div>
-                        <a class="nav-link" href="staff-cafe-page.html">
+                        <a class="nav-link" href="{{ route('dashboard') }}">
                             <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                             Dashboard
                         </a>
@@ -49,7 +49,6 @@
                         </a>
                         <div class="collapse" id="collapseLayoutsCafe" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                             <nav class="sb-sidenav-menu-nested nav">
-                                <a class="nav-link" href="{{ route('User.index') }}">Staff Cafe</a>
 
                                 <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayoutsBeverage" aria-expanded="false" aria-controls="collapseLayoutsBeverage">
                                     <div class="sb-nav-link-icon"><i class="fas fa-plus"></i></div>
@@ -58,12 +57,12 @@
                                 </a>
                                 <div class="collapse" id="collapseLayoutsBeverage" aria-labelledby="card-header" data-bs-parent="#sidenavAccordion">
                                     <nav class="sb-sidenav-menu-nested nav">
-                                        <a class="nav-link" href="{{ route('Beverage.index') }}">Hot Coffee</a>
-                                        <a class="nav-link" href="{{ route('Beverage.index') }}">Ice Coffee</a>
-                                        <a class="nav-link" href="{{ route('Beverage.index') }}">Blended Coffee</a>
-                                        <a class="nav-link" href="{{ route('Beverage.index') }}">Smoothies</a>
-                                        <a class="nav-link" href="{{ route('Beverage.index') }}">Cake</a>
-                                        <a class="nav-link" href="{{ route('Beverage.index') }}">Bread</a>
+                                        <a class="nav-link" href="{{ route('beverage.index') }}">Hot Coffee</a>
+                                        <a class="nav-link" href="{{ route('beverage.index') }}">Ice Coffee</a>
+                                        <a class="nav-link" href="{{ route('beverage.index') }}">Blended Coffee</a>
+                                        <a class="nav-link" href="{{ route('beverage.index') }}">Smoothies</a>
+                                        <a class="nav-link" href="{{ route('beverage.index') }}">Cake</a>
+                                        <a class="nav-link" href="{{ route('beverage.index') }}">Bread</a>
                                     </nav>
                                 </div> 
                             </nav>
@@ -81,24 +80,40 @@
                         <li class="breadcrumb-item"><a href="{{ route('beverage.index') }}">Menu</a></li>
                         <li class="breadcrumb-item active">Create new Menu</li>
                     </ol>
+                    @foreach ($errors->all() as $error)
+                    <div class="alert alert-danger" id="flash-message">{{ $error }}</div>
+                @endforeach
                     <div class="row mb-4">
                         <div class="col-12">
-                            <form ref="{{ route('beverage.store') }}">
+                            <form action="{{ route('beverage.store') }}" method="POST" enctype="multipart/form-data">
+                                @csrf
+                                
                                 <div class="form-group mb-2">
                                     <label for="exampleFormControlInput1">Name</label>
-                                    <input type="text" class="form-control" id="exampleFormControlInput1" value="">
+                                    <input type="text" class="form-control" id="exampleFormControlInput1" name="name">
                                 </div>
                                 <div class="form-group mb-2">
                                     <label for="exampleFormControlInput1">Price</label>
-                                    <input type="text" class="form-control" id="exampleFormControlInput1" value="">
+                                    <input type="text" class="form-control" id="exampleFormControlInput1" name="price">
                                 </div>
                                
                                 <div class="form-group mb-2">
                                     <label for="exampleFormControlInput1">Picture</label>
-                                    <input type="file" class="form-control" id="exampleFormControlInput1" value="">
+                                    <input type="file" class="form-control" id="exampleFormControlInput1" name="picture">
                                 </div>
-                                
-                                <button type="submit" class="btn btn-success mt-3 mb-2">Submit</button>
+
+                                <label for="category">Category:</label>
+
+                                <select name="category" id="category">
+                                    <option value="hot coffee">Hot Coffee</option>
+                                    <option value="ice coffee">Ice Coffee</option>
+                                    <option value="blended coffee">Blended Coffee</option>
+                                    <option value="smoothies">Smoothies</option>
+                                    <option value="bread">Bread</option>
+                                    <option value="cake">Cake</option>
+
+                                </select>
+                                <input type="submit" class="btn btn-success mt-3 mb-2" value="Submit">
                             </form>
                         </div>
                     </div>
@@ -126,4 +141,10 @@
     <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js" crossorigin="anonymous"></script>
     <script src="{{ asset('js/datatables-simple-demo.js') }}"></script>
 </body>
+<script>
+    $(document).ready(function(){
+        $('#category').val() 
+
+    });
+</script>
 </html>

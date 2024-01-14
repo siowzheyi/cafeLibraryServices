@@ -41,22 +41,34 @@
                             Dashboard
                         </a>
                         <div class="sb-sidenav-menu-heading">PAGES</div>
-                        
-                        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayoutsLib" aria-expanded="false" aria-controls="collapseLayoutsLib">
+                       
+                        <a class="nav-link collapsed active" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayoutsLib" aria-expanded="false" aria-controls="collapseLayoutsLib">
                             <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
                             Library
                             <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
                         </a>
-                        <div class="collapse bgsubmenu" id="collapseLayoutsLib" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                        <div class="collapse bgsubmenu show" id="collapseLayoutsLib" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                             <nav class="sb-sidenav-menu-nested nav">
-                                <a class="nav-link" href="{{ route('table.index') }}">Table</a>
-                                <a class="nav-link" href="{{ route('book.index') }}">Book</a>
-                                <a class="nav-link active" href="{{ route('room.index') }}">Room</a>
+                                <a class="nav-link active" href="{{ route('table.index') }}">Table</a>
+                                <a class="nav-link " href="{{ route('book.index') }}">Book</a>
+                                <a class="nav-link " href="{{ route('room.index') }}">Room</a>
                                 <a class="nav-link" href="{{ route('equipment.index') }}">Equipment</a>
-                                <a class="nav-link" href="{{ route('announcement.index') }}">Announcement</a>
+                                <a class="nav-link " href="{{ route('announcement.index') }}">Announcement</a>
 
                             </nav>
-                        </div>
+                        </div> 
+                        <a class="nav-link" href="{{route('booking.index')}}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                            Booking 
+                        </a>
+                        <a class="nav-link" href="{{route('report.index')}}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                            Reported List
+                        </a>
+                        <a class="nav-link" href="{{route('report.index')}}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                            Penalty Report
+                        </a>
                     </div>
                 </div>
             </nav>

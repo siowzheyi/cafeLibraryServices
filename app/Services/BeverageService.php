@@ -193,19 +193,17 @@ class BeverageService
         return $data;
     }
 
-    public function store($request)
+    public function store($request, $input)
     {
         $raw_request = $request;
-
-        $request = $request->validated();
 
         $item_category = ItemCategory::where('name','beverage')->first();
 
         $beverage = new Beverage();
-        $beverage->name = $request['name'];
+        $beverage->name = $input['name'];
         $beverage->item_category_id = $item_category->id;
-        $beverage->price = $request['price'];
-        $beverage->category = $request['category'];
+        $beverage->price = $input['price'];
+        $beverage->category = $input['category'];
 
         $user = auth()->user();
         if($user->hasRole('staff'))
@@ -214,12 +212,12 @@ class BeverageService
         }
         else
         {
-            $beverage->cafe_id = $request['cafe_id'];
+            $beverage->cafe_id = $input['cafe_id'];
 
         }
 
-        if(isset($request['remark']))
-            $beverage->remark = $request['remark'];
+        if(isset($input['remark']))
+            $beverage->remark = $input['remark'];
 
         
 
@@ -234,26 +232,24 @@ class BeverageService
         return $beverage;
     }
 
-    public function update($request, $beverage)
+    public function update($request, $beverage, $input)
     {
         $raw_request = $request;
 
-        $request = $request->validated();
-
-        if (isset($request['type'])) {
-            if ($request['type'] === 'status') {
+        if (isset($input['type'])) {
+            if ($input['type'] === 'status') {
                 $beverage->status = $beverage->status === 1 ? 0 : 1;
             }
             $beverage->save();
             return;
         }
-        $beverage->name = $request['name'];
-        $beverage->status = $request['status'];
-        $beverage->price = $request['price'];
-        $beverage->category = $request['category'];
+        $beverage->name = $input['name'];
+        // $beverage->status = $input['status'];
+        $beverage->price = $input['price'];
+        $beverage->category = $input['category'];
 
-        if(isset($request['remark']))
-            $beverage->remark = $request['remark'];
+        if(isset($input['remark']))
+            $beverage->remark = $input['remark'];
         else
             $beverage->remark = null;
 
