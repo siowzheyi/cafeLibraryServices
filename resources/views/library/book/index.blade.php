@@ -94,7 +94,8 @@
                                     <a class="nav-link active" href="{{ route('book.index') }}">Book</a>
                                     <a class="nav-link " href="{{ route('room.index') }}">Room</a>
                                     <a class="nav-link" href="{{ route('equipment.index') }}">Equipment</a>
-                                    
+                                    <a class="nav-link" href="{{ route('announcement.index') }}">Announcement</a>
+
                                 </nav>
                             </div> 
                             
@@ -110,6 +111,11 @@
                             <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
                             <li class="breadcrumb-item active">Library Book</li>
                         </ol>
+                        @if (Session::has('success'))
+                            <div class="alert alert-success" id="flash-message">
+                                {{ Session::get('success') }}
+                            </div>
+                        @endif
 
                         <div class="row mb-2">
                             <div class="col-12">

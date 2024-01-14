@@ -140,9 +140,6 @@ class BookController extends BaseController
         
         // dd($input);
         if ($validator->fails()) {
-            // $error = $this->sendHTMLCustomValidationError($validator->errors());
-            // return view('staff.admin.view', compact('user'));
-            Session::flash('message-error', $validator->errors());
             return redirect()->back()->withErrors($validator->errors());
         }
         $result = $this->services->update($request, $book, $input);

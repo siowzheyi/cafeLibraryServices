@@ -8,7 +8,7 @@ use App\Services\CafeService;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\Rule;
-
+use DB;
 use App\Http\Requests\CafeRequest;
 use App\Models\User;
 use App\Models\Cafe;
@@ -28,6 +28,14 @@ class CafeController extends BaseController
     {
         if(Auth::check()){
             return view('dashboard.cafe');
+        }
+  
+        return redirect("login")->withSuccess('Opps! You do not have access');
+    }
+    public function dashboardCafe()
+    {
+        if(Auth::check()){
+            return view('cafe.dashboard');
         }
   
         return redirect("login")->withSuccess('Opps! You do not have access');
@@ -58,10 +66,10 @@ class CafeController extends BaseController
     {
         $result = $this->services->index($request);
 
-        return $this->sendResponse($result, "Data successfully retrieved. "); 
+        // return $this->sendResponse($result, "Data successfully retrieved. "); 
         // $result = $this->sendHTMLResponse($result, "Data successfully retrieved. "); 
         
-        // return view('cafe.index',["data" =>  $result['data']['aaData']]);
+        return view('cafe.index');
     }
 
     // This api is for admin user to update certain cafe
@@ -70,8 +78,35 @@ class CafeController extends BaseController
         $result = $this->services->update($request, $cafe);
 
         return $this->sendResponse("", "Cafe has been successfully updated. ");
-       
-}
+    }
+
+    public function getCafeDatatable(Request $request)
+    {
+        if (request()->ajax()) {
+            $type = $request->type;
+
+            $user = auth()->user();
+            
+            $data = Cafe::join('libraries','libraries.id','=','cafes.library_id')
+            ->orderBy('cafes.created_at','desc')
+            ->select('cafes.name','cafes.id','libraries.name as library_name',
+            DB::raw('(CASE WHEN cafes.status = 1 THEN "Active" ELSE "Inactive" END) AS status'));
+            
+
+            $table = Datatables::of($data);
+
+            $table->addColumn('action', function ($row) {
+                $token = csrf_token();
+
+                $btn = '<a href="' . route('cafe.edit', ['cafe'=>$row->id]) . '" class="btn btn-sm btn-info"><i class="fa fa-pen"></i> Update</a>';
+
+                return $btn;
+            });
+
+            $table->rawColumns(['action']);
+            return $table->make(true);
+        }
+    }
 
 
 }

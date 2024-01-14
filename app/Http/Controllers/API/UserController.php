@@ -131,9 +131,9 @@ class UserController extends BaseController
         
         // $result = $this->sendHTMLResponse($result, "Data successfully retrieved. "); 
         
-        // return view('staff.admin.index',["data" =>  $result['data']['aaData']]);
+        return view('staff.admin.index');
 
-        return $this->sendResponse($result, "Data successfully retrieved. "); 
+        // return $this->sendResponse($result, "Data successfully retrieved. "); 
     }
 
     public function getUserDatatable(Request $request)

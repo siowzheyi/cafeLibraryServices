@@ -39,7 +39,10 @@ Route::get('login', [AuthController::class, 'index'])->name('login');
 Route::post('post-login', [AuthController::class, 'postLogin'])->name('login.post'); 
 Route::get('dashboard', [AuthController::class, 'dashboard'])->name('dashboard');
 Route::get('cafe/dashboard', [CafeController::class, 'dashboard'])->name('cafe.dashboard');
+Route::get('cafe/dashboard/{cafe_id}', [CafeController::class, 'dashboardCafe'])->name('cafe.dashboard.cafe');
+
 Route::get('library/dashboard', [LibraryController::class, 'dashboard'])->name('library.dashboard');
+Route::get('library/dashboard/{library_id}', [LibraryController::class, 'dashboardLibrary'])->name('library.dashboard.library');
 
 Route::get('logout', [AuthController::class, 'logout'])->name('logout');
 // Route::get('announcement/index', [AnnouncementController::class, 'index'])->name('announcement.index');
@@ -51,6 +54,9 @@ Route::get('room/getRoomDatatable', [RoomController::class, 'getRoomDatatable'])
 Route::get('equipment/getEquipmentDatatable', [EquipmentController::class, 'getEquipmentDatatable'])->name('equipment.getEquipmentDatatable');
 Route::get('book/getBookDatatable', [BookController::class, 'getBookDatatable'])->name('book.getBookDatatable');
 Route::get('beverage/getBeverageDatatable', [BeverageController::class, 'getBeverageDatatable'])->name('beverage.getBeverageDatatable');
+Route::get('announcement/getAnnouncementDatatable', [AnnouncementController::class, 'getAnnouncementDatatable'])->name('announcement.getAnnouncementDatatable');
+Route::get('cafe/getCafeDatatable', [CafeController::class, 'getCafeDatatable'])->name('cafe.getCafeDatatable');
+Route::get('library/getLibraryDatatable', [LibraryController::class, 'getLibraryDatatable'])->name('library.getLibraryDatatable');
 
 Route::resource('user', UserController::class);
 

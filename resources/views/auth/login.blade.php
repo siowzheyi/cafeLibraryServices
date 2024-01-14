@@ -39,15 +39,9 @@
                                     <div class="alert alert-danger">{{ $error }}</div>
                                 @endforeach
 
-                               
-                                {{-- Hello, i'm here: data: {{ $data }}; --}}
-
                                 <form id="loginForm" method="post" action="{{ route('login.post') }}">
                                     @csrf
                                     
-                                    {{-- <label for="email">Email:</label>
-                                    <input type="email" id="email" name="email" required> --}}
-
                                     <div class="input-group mb-3">
                                         <input id="email" type="email" placeholder="E-mail" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email" autofocus>
                                         <div class="input-group-append">

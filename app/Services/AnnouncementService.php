@@ -110,17 +110,17 @@ class AnnouncementService
         return $data;
     }
 
-    public function store($request)
+    public function store($request, $input)
     {
         $raw_request = $request;
-        $request = $request->validated();
+        // $request = $request->validated();
         // dd($request);
 
         $announcement = new Announcement();
-        $announcement->title = $request['title'];
-        $announcement->content = $request['content'];
-        if(isset($request['expired_at']))
-        $announcement->expired_at = $request['expired_at'];
+        $announcement->title = $input['title'];
+        $announcement->content = $input['content'];
+        if(isset($input['expired_at']))
+        $announcement->expired_at = $input['expired_at'];
 
 
         $user = auth()->user();
@@ -130,7 +130,7 @@ class AnnouncementService
         }
         else
         {
-            $announcement->library_id = $request['library_id'];
+            $announcement->library_id = $input['library_id'];
 
         }
         $announcement->save();
@@ -144,24 +144,23 @@ class AnnouncementService
         return $announcement;
     }
 
-    public function update($request, $announcement)
+    public function update($request, $announcement, $input)
     {
         $raw_request = $request;
-        $request = $request->validated();
 
-        if (isset($request['type'])) {
-            if ($request['type'] === 'status') {
+        if (isset($input['type'])) {
+            if ($input['type'] === 'status') {
                 $announcement->status = $announcement->status === 1 ? 0 : 1;
             }
             $announcement->save();
             return;
         }
-        $announcement->title = $request['title'];
-        $announcement->content = $request['content'];
-        $announcement->status = $request['status'];
+        $announcement->title = $input['title'];
+        $announcement->content = $input['content'];
+        $announcement->status = $input['status'];
 
-        if(isset($request['expired_at']))
-        $announcement->expired_at = $request['expired_at'];
+        if(isset($input['expired_at']))
+        $announcement->expired_at = $input['expired_at'];
         else
         $announcement->expired_at = null;
         $announcement->save();

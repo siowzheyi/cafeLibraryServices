@@ -54,6 +54,8 @@
                                 <a class="nav-link" href="{{ route('book.index') }}">Book</a>
                                 <a class="nav-link " href="{{ route('room.index') }}">Room</a>
                                 <a class="nav-link" href="{{ route('equipment.index') }}">Equipment</a>
+                                <a class="nav-link" href="{{ route('announcement.index') }}">Announcement</a>
+
                             </nav>
                         </div>
                     </div>
@@ -71,6 +73,11 @@
                     @foreach ($errors->all() as $error)
                         <div class="alert alert-danger" id="flash-message">{{ $error }}</div>
                     @endforeach
+                    @if (Session::has('message-success'))
+                        <div class="alert alert-success" id="flash-message">
+                            {{ Session::get('message-success') }}
+                        </div>
+                    @endif
                     <div class="row mb-2">
                         <div class="col-12">
                             <a href="{{ route('table.create') }}" class="btn btn-success float-end"><i class="fa fa-plus"></i> Create New Library Table</a>

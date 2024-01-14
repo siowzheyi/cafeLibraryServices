@@ -6,15 +6,16 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="description" content="" />
         <meta name="author" content="" />
+        <!--title-->
         <title>CAFÉ LIBRARY SERVICES</title>
         <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
-        <link href="css/styles.css?v=1.0" rel="stylesheet" />
+        <link href="{{ asset('css/styles.css') }}" rel="stylesheet" />
         <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
     </head>
     <body class="sb-nav-fixed">
         <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark bgtopbar">
             <!-- Navbar Brand-->
-            <a class="navbar-brand ps-3" href="index.html">CAFÉ LIBRARY</a>
+            <a class="navbar-brand ps-3" href="{{ route('dashboard') }}">CAFÉ LIBRARY</a>
             <!-- Sidebar Toggle-->
             <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
             <!-- Navbar Search-->
@@ -32,7 +33,6 @@
                         <li><a class="dropdown-item" href="#!">Admin</a></li>
                         <li><hr class="dropdown-divider" /></li>
                         <li><a class="dropdown-item" href="login.html">Logout</a></li>
-                        
                     </ul>
                 </li>
             </ul>
@@ -43,21 +43,28 @@
                     <div class="sb-sidenav-menu">
                         <div class="nav">
                             <div class="sb-sidenav-menu-heading">MAIN</div>
-                            <a class="nav-link" href="dashboard.html">
+                            <a class="nav-link" href="{{route('dashboard')}}">
                                 <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                                 Dashboard
                             </a>
                             <div class="sb-sidenav-menu-heading">PAGES</div>
-                            <a class="nav-link" href="staff.html">
-                                <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
-                                Staff
-                            </a>
                            
-                            <a class="nav-link" href="announcement.html">
-                                <div class="sb-nav-link-icon"><i class="fas fa-podcast"></i></div>
-                                Announcement
+                            <a class="nav-link collapsed active" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayoutsLib" aria-expanded="false" aria-controls="collapseLayoutsLib">
+                                <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
+                                Library
+                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
                             </a>
-                           
+                            <div class="collapse bgsubmenu show" id="collapseLayoutsLib" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                                <nav class="sb-sidenav-menu-nested nav">
+                                    <a class="nav-link" href="{{ route('table.index') }}">Table</a>
+                                    <a class="nav-link " href="{{ route('book.index') }}">Book</a>
+                                    <a class="nav-link " href="{{ route('room.index') }}">Room</a>
+                                    <a class="nav-link" href="{{ route('equipment.index') }}">Equipment</a>
+                                    <a class="nav-link active" href="{{ route('announcement.index') }}">Announcement</a>
+
+                                </nav>
+                            </div> 
+                            
                         </div>
                     </div>
                 </nav>
@@ -65,42 +72,40 @@
             <div id="layoutSidenav_content">
                 <main>
                     <div class="container-fluid px-4">
-                        <h1 class="mt-4">View Announcement</h1>
+                        <h1 class="mt-4">Edit Announcement</h1>
                         <ol class="breadcrumb mb-4">
-                            <li class="breadcrumb-item"><a href="dashboard.html">Dashboard</a></li>
-                            <li class="breadcrumb-item"><a href="announcement.html">Announcement</a></li>
-                            <li class="breadcrumb-item active">View</li>
+                            <li class="breadcrumb-item"><a href="{{ route('library.dashboard') }}">Dashboard</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('announcement.index') }}">Announcement</a></li>
+                            <li class="breadcrumb-item active">Edit</li>
                         </ol>
-                        <div class="card mb-4">
-                            <div class="card-body">
-                                <h4>Announcement Detail</h4>
-                                <table width="100%">
-                                    <tr>
-                                        <td width="15%">Title</td>
-                                        <td width="5%">:</td>
-                                        <td width="80%">Clean Room & Equipment</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Content</td>
-                                        <td>:</td>
-                                        <td>Please alert.....</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Expired</td>
-                                        <td>:</td>
-                                        <td>1st Jan 2024</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Picture</td>
-                                        <td>:</td>
-                                        <td><img src="images/annoucement.jpeg" width="200"></td>
-                                    </tr>
-ds                                    <tr>
-                                        <td>Status</td>
-                                        <td>:</td>
-                                        <td><span class="badge bg-success">Active</span></td>
-                                    </tr>
-                                </table>
+                        @foreach ($errors->all() as $error)
+                            <div class="alert alert-danger" id="flash-message">{{ $error }}</div>
+                        @endforeach
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <form action="{{ route('announcement.update',['announcement'=>$data['id']]) }}" method="POST" enctype="multipart/form-data">
+                                    @csrf
+                                    @method('PUT')
+                                    <div class="form-group mb-2">
+                                        <label for="exampleFormControlInput1">Title</label>
+                                        <input type="text" class="form-control" id="exampleFormControlInput1" name="title" value="{{ $data['title'] }}">
+                                    </div>
+                                    <div class="form-group mb-2">
+                                        <label for="exampleFormControlInput1">Content</label>
+                                        <input type="text" class="orm-control" id="exampleFormControlInput1" name="content" value="{{ $data['content'] }}">
+                                            
+                                    </div>
+                                    <div class="form-group mb-2">
+                                        <label for="exampleFormControlInput1">Expired</label>
+                                        <input type="datetime-local" class="form-control" id="exampleFormControlInput1" name="expired_at" value="{{ $data['expired_at'] }}">
+                                    </div>
+                                    <div class="form-group mb-2">
+                                        <label for="exampleFormControlInput1">Picture</label>
+                                        <br><img src="{{ $data['picture'] }}" width="200">
+                                        <input type="file" class="form-control mt-2" id="exampleFormControlInput1" name="picture">
+                                    </div>
+                                    <input type="submit" class="btn btn-success mb-2" value="Submit">
+                                </form>
                             </div>
                         </div>
                     </div>

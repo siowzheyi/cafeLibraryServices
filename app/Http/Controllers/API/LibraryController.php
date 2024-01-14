@@ -8,7 +8,7 @@ use App\Services\LibraryService;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\Rule;
-
+use DB;
 use App\Http\Requests\LibraryRequest;
 use App\Models\User;
 use App\Models\Library;
@@ -28,6 +28,15 @@ class LibraryController extends BaseController
     {
         if(Auth::check()){
             return view('dashboard.library');
+        }
+  
+        return redirect("login")->withSuccess('Opps! You do not have access');
+    }
+
+    public function dashboardLibrary()
+    {
+        if(Auth::check()){
+            return view('library.dashboard');
         }
   
         return redirect("login")->withSuccess('Opps! You do not have access');
@@ -61,7 +70,7 @@ class LibraryController extends BaseController
         // return $this->sendResponse($result, "Data successfully retrieved. "); 
         $result = $this->sendHTMLResponse($result, "Data successfully retrieved. "); 
         
-        return view('library.index',["data" =>  $result['data']['aaData']]);
+        return view('library.index');
     }
 
     // This api is for admin user to update certain library
@@ -71,7 +80,33 @@ class LibraryController extends BaseController
 
         return $this->sendResponse("", "Library has been successfully updated. ");
        
-}
+    }
+
+    public function getLibraryDatatable(Request $request)
+    {
+        if (request()->ajax()) {
+            $type = $request->type;
+
+            $user = auth()->user();
+            
+            $data = Library::whereNotNull('status')->orderBy('created_at','desc')
+            ->select('libraries.name','libraries.address','libraries.id',
+            DB::raw('(CASE WHEN libraries.status = 1 THEN "Active" ELSE "Inactive" END) AS status'));
+
+            $table = Datatables::of($data);
+
+            $table->addColumn('action', function ($row) {
+                $token = csrf_token();
+
+                $btn = '<a href="' . route('library.edit', ['library'=>$row->id]) . '" class="btn btn-sm btn-info"><i class="fa fa-pen"></i> Update</a>';
+
+                return $btn;
+            });
+
+            $table->rawColumns(['action']);
+            return $table->make(true);
+        }
+    }
 
 
 }

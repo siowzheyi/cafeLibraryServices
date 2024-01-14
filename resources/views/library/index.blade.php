@@ -7,17 +7,14 @@
         <meta name="description" content="" />
         <meta name="author" content="" />
         <title>CAFÉ LIBRARY SERVICES</title>
-        <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
-        <!-- <link href="./css/styles.css?v=1.0" rel="stylesheet" /> -->
-        <link rel="stylesheet" type="text/css" href="{{ asset('css/styles.css') }}" >
-
-        
+        <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.css" />
+        <link href="{{ asset('css/styles.css') }}" rel="stylesheet" />
         <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
     </head>
     <body class="sb-nav-fixed">
         <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark bgtopbar">
             <!-- Navbar Brand-->
-            <a class="navbar-brand ps-3" href="index.html">CAFÉ LIBRARY</a>
+            <a class="navbar-brand ps-3" href="#">CAFÉ LIBRARY</a>
             <!-- Sidebar Toggle-->
             <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
             <!-- Navbar Search-->
@@ -45,21 +42,20 @@
                     <div class="sb-sidenav-menu">
                         <div class="nav">
                             <div class="sb-sidenav-menu-heading">MAIN</div>
-                            <a class="nav-link" href="dashboard.html">
+                            <a class="nav-link active" href="{{ route('dashboard') }}">
                                 <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                                 Dashboard
                             </a>
                             <div class="sb-sidenav-menu-heading">PAGES</div>
-                            <a class="nav-link" href="staff.html">
+                            <a class="nav-link active" href="{{ route('user.index') }}">
                                 <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
                                 Staff
                             </a>
                             
-                            <a class="nav-link active" href="announcement.html">
-                                <div class="sb-nav-link-icon"><i class="fas fa-podcast"></i></div>
-                                Announcement
+                            <a class="nav-link active" href="{{ route('library.index') }}">
+                                <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
+                                Library
                             </a>
-                            
                         </div>
                     </div>
                 </nav>
@@ -67,41 +63,35 @@
             <div id="layoutSidenav_content">
                 <main>
                     <div class="container-fluid px-4">
-                        <h1 class="mt-4">Announcement</h1>
+                        <h1 class="mt-4">Library</h1>
                         <ol class="breadcrumb mb-4">
-                            <li class="breadcrumb-item"><a href="dashboard.html">Dashboard</a></li>
-                            <li class="breadcrumb-item active">Announcement</li>
+                            <li class="breadcrumb-item"><a href="{{ route('library.dashboard') }}">Dashboard</a></li>
+                            <li class="breadcrumb-item active">Library</li>
                         </ol>
-                        <div class="row mb-2">
-                            <div class="col-12">
-                                <a href="announcement-create.html" class="btn btn-success float-end"><i class="fa fa-plus"></i> Create New Announcement</a>
-                            </div>
-                        </div>
+                        @foreach ($errors->all() as $error)
+                            <div class="alert alert-danger" id="flash-message">{{ $error }}</div>
+                        @endforeach
                         <div class="card mb-4">
                             <div class="card-header">
                                 <i class="fas fa-table me-1"></i>
-                                List of staff
+                                List of Library
                             </div>
                             <div class="card-body">
                                 <table id="datatablesSimple">
                                     <thead>
                                         <tr>
                                             <th>#</th>
-                                            <th>Picture</th>
-                                            <th>Title</th>
-                                            <th>Content</th>
-                                            <th>Expired </th>
+                                            <th>Name</th>
+                                            <th>Address</th>
                                             <th>Status</th>
                                             <th>Action</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
+                                    {{-- <tbody>
                                         <tr>
                                             <td>1</td>
-                                            <td><img src="images/annoucement.jpeg" width="100"></td>
-                                            <td>Clean Room & Equipment</td>
-                                            <td>Please alert.....</td>
-                                            <td>1st Jan 2024</td>
+                                            <td>1</td>
+                                            <td>He and She coffee</td>
                                             <td>
                                                 <div class="form-check form-switch">
                                                     <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" checked>
@@ -109,14 +99,20 @@
                                                 </div>
                                             </td>
                                             <td>
-                                                <a href="announcement-view.html" class="btn btn-sm btn-info"><i class="fa fa-eye"></i> View</a>
-                                                <a href="announcement-edit.html" class="btn btn-sm btn-primary"><i class="fa fa-edit"></i> Edit</a>
+                                                <div class="form-group mb-2">
+                                                    <label for="exampleFormControlInput1">Created at</label>
+                                                    <input type="datetime-local" class="form-control" id="exampleFormControlInput1" value="1st Jan 2024">
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <a href="cafe-view.html" class="btn btn-sm btn-info"><i class="fa fa-eye"></i> View</a>
+                                                <a href="cafe-edit.html" class="btn btn-sm btn-primary"><i class="fa fa-edit"></i> Edit</a>
                                                 <a href="#" class="btn btn-sm btn-danger" onclick="alert('Successfully deleted.')"><i class="fa fa-trash"></i> Delete</a>
                                             </td>
                                         </tr>
                                             
                                         </tr>
-                                    </tbody>
+                                    </tbody> --}}
                                 </table>
                             </div>
                         </div>
@@ -142,7 +138,98 @@
         <script src="assets/demo/chart-area-demo.js"></script>
         <script src="assets/demo/chart-bar-demo.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js" crossorigin="anonymous"></script>
-        <script src="js/datatables-simple-demo.js"></script>
 
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+        <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.js"></script>
     </body>
+
+    <script>
+        $(document).ready(function() {
+    
+            // $.noConflict();
+            fetch_data();
+
+            setTimeout(function() {
+                    $('#flash-message').fadeOut('fast');
+                }, 2000); // 2 seconds
+            var datatable;
+
+            // ajax function to get data from api to display at datatable
+            function fetch_data() {
+                datatable = $('#datatablesSimple').DataTable({
+                    processing: true,
+                    serverSide: true,
+                    ajax: {
+                        url: "{{ route('library.getLibraryDatatable') }}",
+                        data: {
+                            // library_id: library_id,
+                        },
+                        type: 'GET',
+                    },
+                   
+                    'columnDefs': [{
+                        "targets": [0], // your case first column
+                        "className": "text-center",
+                        "width": "2%"
+                    }, {
+                        "targets": [1, 2, 3,4], // your case first column
+                        "className": "text-center",
+                    }, ],
+                    order: [
+                        [1, 'asc']
+                    ],
+                    columns: [{
+                        "data": null,
+                        searchable: false,
+                        "sortable": false,
+                        render: function(data, type, row, meta) {
+                            return meta.row + meta.settings._iDisplayStart + 1;
+                        }
+                    }, {
+                        data: "name",
+                        name: 'name',
+                        render: function(data, type, row, meta) {
+
+                            localStorage.setItem('library_id',row.id);
+                            return '<a href = "/library/dashboard/' + row.id + '">' + data + '</a>';
+                        }
+                    },{
+                        data: "address",
+                        name: 'address',
+                        orderable: false,
+                        searchable: false
+                    },{
+                        data: "status",
+                        name: 'status',
+                        orderable: false,
+                        searchable: false
+                    }, {
+                        data: 'action',
+                        name: 'action',
+                        orderable: false,
+                        searchable: false
+                    }, ]
+                });
+            }
+            // toggle data status
+            $(document).on('change', '.data-status', function() {
+            var dataId = $(this).attr('data-id');
+            var status = $(this).is(':checked') ? 1 : 0;
+    
+                $.ajax({
+                    url: '/staff/library/' + dataId,
+                    type: 'PATCH',
+                    data: { 
+                        type: "status",
+                        _token: "{{ csrf_token() }}",
+                    },
+                    success: function(result) {
+                        // Handle the result of the API call
+                        $('#datatablesSimple').DataTable().destroy();
+                        fetch_data();
+                    }
+                });
+            });
+        });
+    </script>
 </html>

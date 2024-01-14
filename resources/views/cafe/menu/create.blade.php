@@ -8,7 +8,7 @@
     <meta name="author" content="" />
     <title>CAFÉ LIBRARY SERVICES</title>
     <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
-    <link href="{{ asset('css/styles.css?v=1.0') }}" rel="stylesheet" />
+    <link href="{{ asset('css/styles.css') }}" rel="stylesheet" />
     <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
 </head>
 <body class="sb-nav-fixed">
@@ -17,13 +17,13 @@
         <a class="navbar-brand ps-3">CAFÉ LIBRARY</a>
         <!-- Sidebar Toggle-->
         <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
-        
+       
         <!-- Navbar-->
         <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                    <li><a class="dropdown-item">Library Staff</a></li>
+                    <li><a class="dropdown-item">Cafe Staff</a></li>
                     <li><hr class="dropdown-divider" /></li>
                     <li><a class="dropdown-item" href="{{ route('login') }}">Logout</a></li>
                 </ul>
@@ -36,26 +36,38 @@
                 <div class="sb-sidenav-menu">
                     <div class="nav">
                         <div class="sb-sidenav-menu-heading">MAIN</div>
-                        <a class="nav-link" href="{{route('dashboard')}}">
+                        <a class="nav-link" href="staff-cafe-page.html">
                             <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                             Dashboard
                         </a>
                         <div class="sb-sidenav-menu-heading">PAGES</div>
-                        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayoutsLib" aria-expanded="false" aria-controls="collapseLayoutsLib">
-                            <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
-                            Library
+
+                        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayoutsCafe" aria-expanded="false" aria-controls="collapseLayoutsCafe">
+                            <div class="sb-nav-link-icon"><i class="fas fa-cutlery"></i></div>
+                            Cafe
                             <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
                         </a>
-                        <div class="collapse bgsubmenu" id="collapseLayoutsLib" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                        <div class="collapse" id="collapseLayoutsCafe" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                             <nav class="sb-sidenav-menu-nested nav">
-                            <a class="nav-link active" href="{{ route('table.index') }}">Table</a>
-                            <a class="nav-link" href="{{ route('book.index') }}">Book</a>
-                            <a class="nav-link " href="{{ route('room.index') }}">Room</a>
-                            <a class="nav-link" href="{{ route('equipment.index') }}">Equipment</a>
-                            <a class="nav-link" href="{{ route('announcement.index') }}">Announcement</a>
+                                <a class="nav-link" href="{{ route('User.index') }}">Staff Cafe</a>
 
+                                <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayoutsBeverage" aria-expanded="false" aria-controls="collapseLayoutsBeverage">
+                                    <div class="sb-nav-link-icon"><i class="fas fa-plus"></i></div>
+                                    Beverage
+                                    <div class="sb-sidenav-collapse-arrow"><i class=""></i></div>
+                                </a>
+                                <div class="collapse" id="collapseLayoutsBeverage" aria-labelledby="card-header" data-bs-parent="#sidenavAccordion">
+                                    <nav class="sb-sidenav-menu-nested nav">
+                                        <a class="nav-link" href="{{ route('Beverage.index') }}">Hot Coffee</a>
+                                        <a class="nav-link" href="{{ route('Beverage.index') }}">Ice Coffee</a>
+                                        <a class="nav-link" href="{{ route('Beverage.index') }}">Blended Coffee</a>
+                                        <a class="nav-link" href="{{ route('Beverage.index') }}">Smoothies</a>
+                                        <a class="nav-link" href="{{ route('Beverage.index') }}">Cake</a>
+                                        <a class="nav-link" href="{{ route('Beverage.index') }}">Bread</a>
+                                    </nav>
+                                </div> 
                             </nav>
-                        </div>
+                        </div> 
                     </div>
                 </div>
             </nav>
@@ -63,24 +75,30 @@
         <div id="layoutSidenav_content">
             <main>
                 <div class="container-fluid px-4">
-                    <h1 class="mt-4">Create New Library Table</h1>
+                    <h1 class="mt-4">Create New Menu</h1>
                     <ol class="breadcrumb mb-4">
-                        <li class="breadcrumb-item"><a href="{{route('dashboard')}}">Dashboard</a></li>
-                        <li class="breadcrumb-item"><a href="{{ route('table.index') }}">Library Table</a></li>
-                        <li class="breadcrumb-item active">Create new</li>
+                        <li class="breadcrumb-item"><a href="{{ route('cafe.dashboard') }}">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a href="{{ route('beverage.index') }}">Menu</a></li>
+                        <li class="breadcrumb-item active">Create new Menu</li>
                     </ol>
-                    @foreach ($errors->all() as $error)
-                        <div class="alert alert-danger" id="flash-message">{{ $error }}</div>
-                    @endforeach
                     <div class="row mb-4">
                         <div class="col-12">
-                            <form action="{{ route('table.store') }}" method="POST">
-                                @csrf
+                            <form ref="{{ route('beverage.store') }}">
                                 <div class="form-group mb-2">
-                                    <label for="exampleFormControlInput1">Table No.</label>
-                                    <input type="text" class="form-control" id="exampleFormControlInput1" name="table_no">
+                                    <label for="exampleFormControlInput1">Name</label>
+                                    <input type="text" class="form-control" id="exampleFormControlInput1" value="">
                                 </div>
-                                <input type="submit" class="btn btn-success mt-3 mb-2" value="Submit">
+                                <div class="form-group mb-2">
+                                    <label for="exampleFormControlInput1">Price</label>
+                                    <input type="text" class="form-control" id="exampleFormControlInput1" value="">
+                                </div>
+                               
+                                <div class="form-group mb-2">
+                                    <label for="exampleFormControlInput1">Picture</label>
+                                    <input type="file" class="form-control" id="exampleFormControlInput1" value="">
+                                </div>
+                                
+                                <button type="submit" class="btn btn-success mt-3 mb-2">Submit</button>
                             </form>
                         </div>
                     </div>
