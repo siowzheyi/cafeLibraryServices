@@ -161,13 +161,14 @@
 
         // $.noConflict();
         var type = "book";
+        var library_id = localStorage.getItem('library_id');
+
         fetch_data();
 
         setTimeout(function() {
                 $('#flash-message').fadeOut('fast');
             }, 2000); // 2 seconds
         var datatable;
-        var library_id = localStorage.getItem('library_id');
         // destroy datatable and reload again
 
         $('#equipment').click(function() {
@@ -200,6 +201,7 @@
         $('#library_id').val(library_id);
         // ajax function to get data from api to display at datatable
         function fetch_data() {
+            var library_id = localStorage.getItem('library_id');
             datatable = $('#datatablesSimple').DataTable({
                 processing: true,
                 serverSide: true,

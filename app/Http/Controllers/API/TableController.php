@@ -119,7 +119,7 @@ class TableController extends BaseController
         // return $this->sendResponse($result, "Data successfully retrieved. "); 
         $result = $this->sendHTMLResponse($result, "Data successfully retrieved. "); 
         
-        return view('library.table.index',["data" =>  $result['data']['aaData']]);
+        return view('library.table.index');
     }
 
     

@@ -59,6 +59,7 @@ Route::get('cafe/getCafeDatatable', [CafeController::class, 'getCafeDatatable'])
 Route::get('library/getLibraryDatatable', [LibraryController::class, 'getLibraryDatatable'])->name('library.getLibraryDatatable');
 Route::get('library/getBookingDatatable', [BookingController::class, 'getBookingDatatable'])->name('booking.getBookingDatatable');
 Route::get('cafe/getOrderDatatable', [OrderController::class, 'getOrderDatatable'])->name('order.getOrderDatatable');
+Route::get('library/getReportDatatable', [ReportController::class, 'getReportDatatable'])->name('report.getReportDatatable');
 
 Route::resource('user', UserController::class);
 

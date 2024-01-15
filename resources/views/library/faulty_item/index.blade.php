@@ -23,7 +23,7 @@
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                    <li><a class="dropdown-item">Staff Cafe</a></li>
+                    <li><a class="dropdown-item">Staff Library</a></li>
                     <li><hr class="dropdown-divider" /></li>
                     <li><a class="dropdown-item" href="{{ route('login') }}">Logout</a></li>
                 </ul>
@@ -36,41 +36,38 @@
                 <div class="sb-sidenav-menu">
                     <div class="nav">
                         <div class="sb-sidenav-menu-heading">MAIN</div>
-                        <a class="nav-link" href="{{ route('dashboard') }}">
+                        <a class="nav-link" href="{{route('dashboard')}}">
                             <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                             Dashboard
                         </a>
                         <div class="sb-sidenav-menu-heading">PAGES</div>
-                        
-                        <a class="nav-link collapsed active" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayoutsCafe" aria-expanded="false" aria-controls="collapseLayoutsCafe">
-                            <div class="sb-nav-link-icon"><i class="fas fa-cutlery"></i></div>
-                            Cafe
+                       
+                        <a class="nav-link collapsed active" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayoutsLib" aria-expanded="false" aria-controls="collapseLayoutsLib">
+                            <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
+                            Library
                             <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
                         </a>
-                        <div class="collapse show" id="collapseLayoutsCafe" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                        <div class="collapse bgsubmenu show" id="collapseLayoutsLib" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                             <nav class="sb-sidenav-menu-nested nav">
-                                {{-- <a class="nav-link" href="{{ route('User.index') }}">Staff Cafe</a> --}}
-                                <a class="nav-link collapsed " href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayoutsCafe" aria-expanded="false" aria-controls="collapseLayoutsCafe">
-                                    <div class="sb-nav-link-icon"><i class="fas fa-plus"></i></div>
-                                    Menu
-                                    <div class="sb-sidenav-collapse-arrow"><i class=""></i></div>
-                                </a>
-                                <div class="collapse show" id="collapseLayoutsCafe" aria-labelledby="card-header" data-bs-parent="#sidenavAccordion">
-                                    <nav class="sb-sidenav-menu-nested nav">
-                                        <a class="nav-link menu" href="{{ route('beverage.index') }}""  >Hot Coffee</a>
-                                        <a class="nav-link menu" href="{{ route('beverage.index') }}">Ice Coffee</a>
-                                        <a class="nav-link menu" href="{{ route('beverage.index') }}">Blended Coffee</a>
-                                        <a class="nav-link menu" href="{{ route('beverage.index') }}">Smoothies</a>
-                                        <a class="nav-link menu" href="{{ route('beverage.index') }}">Cake</a>
-                                        <a class="nav-link menu" href="{{ route('beverage.index') }}">Bread</a>
-                                    </nav>
-                                </div> 
-                              
+                                <a class="nav-link" href="{{ route('table.index') }}">Table</a>
+                                <a class="nav-link " href="{{ route('book.index') }}">Book</a>
+                                <a class="nav-link " href="{{ route('room.index') }}">Room</a>
+                                <a class="nav-link active" href="{{ route('equipment.index') }}">Equipment</a>
+                                <a class="nav-link " href="{{ route('announcement.index') }}">Announcement</a>
+
                             </nav>
                         </div> 
-                        <a class="nav-link active" href="{{ route('order.index') }}">
+                        <a class="nav-link" href="{{route('booking.index')}}">
                             <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
-                            Order
+                            Booking 
+                        </a>
+                        <a class="nav-link" href="{{route('report.index')}}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                            Reported List
+                        </a>
+                        <a class="nav-link" href="{{route('report.index')}}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                            Penalty Report
                         </a>
                     </div>
                 </div>
@@ -79,10 +76,10 @@
         <div id="layoutSidenav_content">
             <main>
                 <div class="container-fluid px-4">
-                    <h1 class="mt-4">Cafe Beverage</h1>
+                    <h1 class="mt-4">Library</h1>
                     <ol class="breadcrumb mb-4">
-                        <li class="breadcrumb-item"><a href="{{ route('cafe.dashboard') }}">Dashboard</a></li>
-                        <li class="breadcrumb-item active">Order</li>
+                        <li class="breadcrumb-item"><a href="{{ route('library.dashboard') }}">Dashboard</a></li>
+                        <li class="breadcrumb-item active">Faulty Item Reported</li>
                     </ol>
                     @if (Session::has('success'))
                         <div class="alert alert-success" id="flash-message">
@@ -95,17 +92,16 @@
                     <div class="card mb-4">
                         <div class="card-header">
                             <i class="fas fa-table me-1"></i>
-                            List of Order
+                            List of Faulty Item
                         </div>
                         <div class="card-body">
                             <table id="datatablesSimple">
                                 <thead>
                                     <tr>
+                                       
                                         <th>#</th>
-                                        <th>Order No</th>
-                                        <th>Menu</th>
-                                        <th>Quantity</th>
-                                        <th>Table No</th>
+                                        <th>Item Picture</th>
+                                        <th>Item Name</th>
                                         <th>Created At</th>
                                         <th>Status</th>
                                         <th>Action</th>
@@ -160,22 +156,20 @@
                 $('#flash-message').fadeOut('fast');
             }, 2000); // 2 seconds
         var datatable;
-        var cafe_id = localStorage.getItem('cafe_id');
+        var library_id = localStorage.getItem('library_id');
 
         // destroy datatable and reload again
        
-        $('#cafe_id').val(cafe_id);
+        $('#library_id').val(library_id);
         // ajax function to get data from api to display at datatable
         function fetch_data() {
-            var cafe_id = localStorage.getItem('cafe_id');
-
             datatable = $('#datatablesSimple').DataTable({
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: "{{ route('order.getOrderDatatable') }}",
+                    url: "{{ route('report.getReportDatatable') }}",
                     data: {
-                        cafe_id: cafe_id,
+                        library_id: library_id,
                     },
                     type: 'GET',
                 },
@@ -184,13 +178,12 @@
                     "className": "text-center",
                     "width": "2%"
                 }, {
-                    "targets": [1, 2, 3,4,5,6,7], // your case first column
+                    "targets": [1, 2, 3,4,5], // your case first column
                     "className": "text-center",
                 }, ],
                 order: [
                     [1, 'asc']
                 ],
-
                 columns: [{
                     "data": null,
                     searchable: false,
@@ -199,23 +192,17 @@
                         return meta.row + meta.settings._iDisplayStart + 1;
                     }
                 }, {
-                    data: "order_no",
-                    name: 'order_no',
-                    orderable: true,
-                    searchable: true
-                },{
-                    data: "beverage_name",
-                    name: 'beverage_name',
+                    data: "picture",
+                    name: 'picture',
                     orderable: false,
-                    searchable: false
-                }, {
-                    data: "quantity",
-                    name: 'quantity',
-                    orderable: true,
-                    searchable: true
-                },{
-                    data: "table_no",
-                    name: 'table_no',
+                    searchable: false,
+                    render: function(data, type, row, meta) {
+                        return '<img src="' + data + '" width="200">';
+                    }
+                }
+,{
+                    data: "name",
+                    name: 'name',
                     orderable: false,
                     searchable: false
                 },{
@@ -242,7 +229,7 @@
         var status = $(this).is(':checked') ? 1 : 0;
 
             $.ajax({
-                url: '/staff/order/' + dataId,
+                url: '/staff/report/' + dataId,
                 type: 'PATCH',
                 data: { 
                     type: "status",
@@ -260,37 +247,31 @@
         $(document).on('click', '.showData', function() {
             var data_id = $(this).attr('id');
                 $.ajax({
-                    url: '/staff/order/'+data_id+'/edit', // Replace with your API endpoint
+                    url: '/staff/report/'+data_id+'/edit', // Replace with your API endpoint
                     method: 'GET',
                     success: function(data) {
+
                         var modalContent = `
                         <div class="modal-header">
-                            <h5 class="modal-title" id="orderModalLabel">Order Receipt</h5>
+                            <h5 class="modal-title" id="orderModalLabel">Report</h5>
                             <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
                         <div class="modal-body">
-                            <h6><strong>Order No:</strong> ${data.order_no}</h6>
-                            <p><span><strong>Payment Status:</strong> ${data.payment_status}</span><p>
-                            <p><strong>Receipt No:</strong> ${data.receipt_no} 
-                            <span style="float:right"><strong>Table No:</strong> ${data.table_no}</span></p>
+                            <p><img src="${data.picture}" width="200"></p>
                             <p><strong>User Name:</strong> ${data.user_name}
-                            <span style="float:right"><strong> Phone No:</strong> ${data.user_phone_no}</span></p>
+                            </p>
                             <p><strong>Created At:</strong> ${data.created_at}
                             <span style="float:right"><strong>Status:</strong> ${data.status}</span></p>
                             <hr>
 
-                            <p><strong>Menu Name:</strong> ${data.beverage_name}</p>
-                            <p><strong>Unit Price (RM):</strong> ${data.unit_price}
-                            <span style="float:right"><strong>Quantity:</strong> ${data.quantity}</span></p>
+                            <p><strong>Item Name:</strong> ${data.item_name}</p>
+                            <p><strong>Title:</strong> ${data.name}</p>
+                            <p><strong>Description:</strong> ${data.description}</p>
                             <hr>
 
-                            <p><strong>Subtotal (RM):</strong> ${data.subtotal}</p>
-                            <p><strong>SST Amount (RM):</strong> ${data.sst_amount}</p>
-                            <p><strong>Service Charge Amount (RM):</strong> ${data.service_charge_amount}</p>
-                            <hr>
-                            <p><strong>Total Price (RM):</strong> ${data.total_price}</p>
+                            <p><strong>Remark:</strong> ${data.remark}</p>
                            
                         </div>
                         <div class="modal-footer">

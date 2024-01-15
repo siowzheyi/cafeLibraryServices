@@ -71,6 +71,10 @@
                                
                             </nav>
                         </div> 
+                        <a class="nav-link active" href="{{ route('order.index') }}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                            Order
+                        </a>
                     </div>
                 </div>
             </nav>

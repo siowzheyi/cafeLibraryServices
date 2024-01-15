@@ -51,7 +51,7 @@ class OrderController extends BaseController
     // This api is for admin user to view list of Order
     public function index(Request $request)
     {
-        $result = $this->services->index($request);
+        // $result = $this->services->index($request);
 
         // return $this->sendResponse($result, "Data successfully retrieved. "); 
         return view('cafe.order.index');
@@ -154,6 +154,16 @@ class OrderController extends BaseController
             ->select('orders.*','beverages.cafe_id')
             ->orderBy('orders.created_at','asc');
 
+            $data = $data->where(function ($query) {
+                $query->where(function ($query) {
+                    $query->where('orders.status', 1)
+                        ->whereDate('orders.created_at', now()->format('Y-m-d'));
+                })
+                ->orWhere(function ($query) {
+                    $query->where('orders.status', 0);
+                });
+            });
+
             if($user->hasRole('admin'))
                 $data = $data->where('beverages.cafe_id',$request->cafe_id);
             else
@@ -161,7 +171,6 @@ class OrderController extends BaseController
 
             $table = Datatables::of($data);
 
-           
 
             $table->addColumn('status', function ($row) {
                 $checked = $row->status == 1 ? 'checked' : '';
@@ -183,7 +192,7 @@ class OrderController extends BaseController
                 return $btn;
             });
 
-            $table->rawColumns(['availability','status','action']);
+            $table->rawColumns(['status','action']);
             return $table->make(true);
         }
     }

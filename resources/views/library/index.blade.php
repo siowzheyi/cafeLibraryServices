@@ -189,9 +189,8 @@
                         data: "name",
                         name: 'name',
                         render: function(data, type, row, meta) {
-
-                            localStorage.setItem('library_id',row.id);
-                            return '<a href = "/library/dashboard/' + row.id + '">' + data + '</a>';
+                      
+                            return '<a href = "/library/dashboard/' + row.id + '" id="link' + row.id + '">' + data + '</a>';
                         }
                     },{
                         data: "address",
@@ -211,6 +210,11 @@
                     }, ]
                 });
             }
+
+            $(document).on('click', 'a[id^="link"]', function(e) {
+                var id = this.id.replace('link', '');
+                localStorage.setItem('library_id', id);
+            });
             // toggle data status
             $(document).on('change', '.data-status', function() {
             var dataId = $(this).attr('data-id');

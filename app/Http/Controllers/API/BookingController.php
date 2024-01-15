@@ -102,7 +102,8 @@ class BookingController extends BaseController
     // This api is for admin user to view list of Booking
     public function index(Request $request)
     {
-        $result = $this->services->index($request);
+        // $result = $this->services->index($request);
+        // dd($request->library_id);
 
         // return $this->sendResponse($result, "Data successfully retrieved. "); 
         return view('library.booking.index');

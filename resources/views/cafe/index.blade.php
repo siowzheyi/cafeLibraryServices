@@ -189,9 +189,9 @@
                         data: "name",
                         name: 'name',
                         render: function(data, type, row, meta) {
-                            localStorage.setItem('cafe_id',row.id);
-                            console.log(localStorage.getItem('cafe_id'));
-                            return '<a href = "/cafe/dashboard/' + row.id + '">' + data + '</a>';
+                          
+                            return '<a href = "/cafe/dashboard/' + row.id + '" id="link' + row.id + '">' + data + '</a>';
+
                         }
                     },{
                         data: "library_name",
@@ -211,6 +211,11 @@
                     }, ]
                 });
             }
+
+            $(document).on('click', 'a[id^="link"]', function(e) {
+                var id = this.id.replace('link', '');
+                localStorage.setItem('cafe_id', id);
+            });
             // toggle data status
             $(document).on('change', '.data-status', function() {
             var dataId = $(this).attr('data-id');

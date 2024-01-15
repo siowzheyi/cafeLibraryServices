@@ -74,7 +74,7 @@ class RoomController extends BaseController
         
         $result = $this->sendHTMLResponse($result, "Data successfully retrieved. "); 
         
-        return view('library.room.index',["data" =>  $result['data']['aaData']]);
+        return view('library.room.index');
     }
 
     public function edit(Room $room)

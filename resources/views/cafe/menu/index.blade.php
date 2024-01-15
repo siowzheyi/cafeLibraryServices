@@ -216,6 +216,8 @@
         $('#cafe_id').val(cafe_id);
         // ajax function to get data from api to display at datatable
         function fetch_data() {
+            var cafe_id = localStorage.getItem('cafe_id');
+
             datatable = $('#datatablesSimple').DataTable({
                 processing: true,
                 serverSide: true,
