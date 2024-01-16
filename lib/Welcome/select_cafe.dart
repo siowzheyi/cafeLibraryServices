@@ -1,4 +1,5 @@
 import 'package:cafe_library_services/Beverage/beverage_listing.dart';
+import 'package:cafe_library_services/Beverage/choose_table.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cafe_library_services/Welcome/home.dart';
@@ -139,7 +140,7 @@ class _CafeSelectionScreenState extends State<CafeSelectionScreen> {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => BeverageListScreen(cafeId: cafeId, headers: headers),
+          builder: (context) => TableListing(),
         ),
       );
     } else {

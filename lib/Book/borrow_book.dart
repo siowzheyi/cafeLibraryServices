@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../Controller/connection.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 void main() {
   runApp(
@@ -26,6 +30,40 @@ class _ReserveBookPageState extends State<ReserveBookPage> {
   final TextEditingController startDateController = TextEditingController();
   final TextEditingController endDateController = TextEditingController();
 
+  Future<void> postBorrowBook(String type, int quantity, int bookId, String startBookedAt, String endBookedAt) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String token = prefs.getString('token') ?? '';
+    String bookId = prefs.getString('bookId') ?? '';
+    try {
+      var headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      };
+
+      var requestBody = {
+        'type': 'book',
+        'quantity': 1,
+        'book_id': bookId,
+        'start_booked_at': startBookedAt,
+        'end_booked_at': endBookedAt,
+      };
+
+      var response = await http.post(
+        Uri.parse(API.rent),
+        headers: headers,
+        body: json.encode(requestBody),
+      );
+
+      if (response.statusCode == 200) {
+        print(await response.body);
+      } else {
+        print('Error statusCode: ${response.statusCode}, Reason Phrase: ${response.reasonPhrase}');
+      }
+    } catch (error) {
+      print('Error: $error');
+    }
+  }
+
   String _selectedBook = '-Select Book-';
   int _quantity = 1;
   String _startDate = '';
@@ -42,6 +80,7 @@ class _ReserveBookPageState extends State<ReserveBookPage> {
       if (_quantity < 5) {
         _quantity++;
       }
+      quantityController.text = _quantity.toString();
     });
   }
 
@@ -50,6 +89,7 @@ class _ReserveBookPageState extends State<ReserveBookPage> {
       if (_quantity > 1) {
         _quantity--;
       }
+      quantityController.text = _quantity.toString();
     });
   }
 
@@ -167,7 +207,19 @@ class _ReserveBookPageState extends State<ReserveBookPage> {
                   '. Please borrow at least for 1 day.'),
               actions: [
                 TextButton(
-                  onPressed: () {
+                  onPressed: () async {
+                    SharedPreferences prefs = await SharedPreferences.getInstance();
+                    String bookId = prefs.getString('equipmentId') ?? '';
+                    int parsedId = int.tryParse(bookId) ?? 0;
+                    String qty = quantityController.text;
+                    String start = startDateController.text;
+                    String end = endDateController.text;
+                    await postBorrowBook(
+                        'book',
+                        int.tryParse(qty) ?? 0,
+                        parsedId,
+                        start,
+                        end);
                     Navigator.of(context).pop();
                   },
                   child: const Text('OK'),

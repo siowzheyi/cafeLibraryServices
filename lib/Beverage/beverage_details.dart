@@ -1,4 +1,3 @@
-import 'package:cafe_library_services/Beverage/add_to_cart.dart';
 import 'package:flutter/material.dart';
 
 class BeverageDetailsScreen extends StatelessWidget {
@@ -46,18 +45,6 @@ class BeverageDetailsScreen extends StatelessWidget {
             Text(
               '$category',
               style: const TextStyle(fontSize: 18.0),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                // Navigate to the order when the button is pressed
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => BeverageOrderPage(),
-                  ),
-                );
-              },
-              child: const Text('Order'),
             ),
           ],
         ),

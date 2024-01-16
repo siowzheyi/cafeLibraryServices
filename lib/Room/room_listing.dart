@@ -189,6 +189,7 @@ class _RoomListScreenState extends State<RoomListScreen> {
                               context,
                               MaterialPageRoute(
                                 builder: (context) => RoomDetailsScreen(
+                                  id: results[index].id,
                                   roomNo: results[index].roomNo,
                                   picture: results[index].picture,
                                   type: results[index].type,

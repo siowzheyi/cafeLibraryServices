@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
+import '../Controller/connection.dart';
+import 'dart:convert';
 
 void main() {
   runApp(
     MaterialApp(
-      title: 'Equipment Reservation System',
+      title: 'Equipment Reservation',
       theme: ThemeData(
         primarySwatch: Colors.green,
       ),
@@ -22,8 +26,43 @@ class ReserveEquipmentPage extends StatefulWidget {
 }
 
 class _ReserveEquipmentPageState extends State<ReserveEquipmentPage> {
+  final TextEditingController quantityController = TextEditingController();
   final TextEditingController startTimeDateController = TextEditingController();
   final TextEditingController endTimeDateController = TextEditingController();
+
+  Future<void> postRentEquipment(String type, int quantity, int equipmentId, String startBookedAt, String endBookedAt) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String token = prefs.getString('token') ?? '';
+    String equipmentId = prefs.getString('equipmentId') ?? '';
+    try {
+      var headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      };
+
+      var requestBody = {
+        'type': 'equipment',
+        'quantity': 1,
+        'equipment_id': equipmentId,
+        'start_booked_at': startBookedAt,
+        'end_booked_at': endBookedAt,
+      };
+
+      var response = await http.post(
+        Uri.parse(API.rent),
+        headers: headers,
+        body: json.encode(requestBody),
+      );
+
+      if (response.statusCode == 200) {
+        print(await response.body);
+      } else {
+        print('Error statusCode: ${response.statusCode}, Reason Phrase: ${response.reasonPhrase}');
+      }
+    } catch (error) {
+      print('Error: $error');
+    }
+  }
 
   String _selectedEquipment = '-Select Equipment-';
   String _startDate = '';
@@ -97,7 +136,7 @@ class _ReserveEquipmentPageState extends State<ReserveEquipmentPage> {
         builder: (BuildContext context) {
           return AlertDialog(
             title: const Text(
-              'Error',
+              '',
               style: TextStyle(
                 color: Colors.red,
               ),
@@ -151,7 +190,18 @@ class _ReserveEquipmentPageState extends State<ReserveEquipmentPage> {
               content: const Text('Your reservation has been submitted.'),
               actions: [
                 TextButton(
-                  onPressed: () {
+                  onPressed: () async {
+                    SharedPreferences prefs = await SharedPreferences.getInstance();
+                    String equipmentId = prefs.getString('equipmentId') ?? '';
+                    int parsedId = int.tryParse(equipmentId) ?? 0;
+                    String start = startTimeDateController.text;
+                    String end = endTimeDateController.text;
+                    await postRentEquipment(
+                        'equipment',
+                        1,
+                        parsedId,
+                        start,
+                        end);
                     Navigator.of(context).pop();
                   },
                   child: const Text('OK'),
@@ -166,7 +216,7 @@ class _ReserveEquipmentPageState extends State<ReserveEquipmentPage> {
           builder: (BuildContext context) {
             return AlertDialog(
               title: const Text(
-                'Error',
+                'Try again',
                 style: TextStyle(
                   color: Colors.red,
                 ),

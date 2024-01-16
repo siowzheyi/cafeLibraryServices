@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
+import '../Controller/connection.dart';
+import 'dart:convert';
 
 void main() {
   runApp(
-      MaterialApp(
-        title: 'Room Reservation',
-        theme: ThemeData(
-          primarySwatch: Colors.green,
-        ),
-        home: ReserveRoomPage(selectedRoom: '',),
-      )
+    MaterialApp(
+      title: 'Room Reservation',
+      theme: ThemeData(
+        primarySwatch: Colors.green,
+      ),
+      home: ReserveRoomPage(selectedRoom: ''),
+    ),
   );
 }
 
@@ -22,8 +26,43 @@ class ReserveRoomPage extends StatefulWidget {
 }
 
 class _ReserveRoomPageState extends State<ReserveRoomPage> {
+  final TextEditingController quantityController = TextEditingController();
   final TextEditingController startTimeDateController = TextEditingController();
   final TextEditingController endTimeDateController = TextEditingController();
+
+  Future<void> postRentRoom(String type, int quantity, int roomId, String startBookedAt, String endBookedAt) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String token = prefs.getString('token') ?? '';
+    String roomId = prefs.getString('roomId') ?? '';
+    try {
+      var headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      };
+
+      var requestBody = {
+        'type': 'room',
+        'quantity': 1,
+        'room_id': roomId,
+        'start_booked_at': startBookedAt,
+        'end_booked_at': endBookedAt,
+      };
+
+      var response = await http.post(
+        Uri.parse(API.rent),
+        headers: headers,
+        body: json.encode(requestBody),
+      );
+
+      if (response.statusCode == 200) {
+        print(await response.body);
+      } else {
+        print('Error statusCode: ${response.statusCode}, Reason Phrase: ${response.reasonPhrase}');
+      }
+    } catch (error) {
+      print('Error: $error');
+    }
+  }
 
   String _selectedRoom = '-Select Room-';
   String _startDate = '';
@@ -53,8 +92,7 @@ class _ReserveRoomPageState extends State<ReserveRoomPage> {
 
       if (pickedTime != null) {
         setState(() {
-          _startDate = "${pickedDate.year}-${pickedDate.month}-${pickedDate
-              .day}";
+          _startDate = "${pickedDate.year}-${pickedDate.month}-${pickedDate.day}";
           _startTime = "${pickedTime.hour}:${pickedTime.minute}";
           startTimeDateController.text = "$_startDate $_startTime";
         });
@@ -96,10 +134,12 @@ class _ReserveRoomPageState extends State<ReserveRoomPage> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: const Text('Error',
-            style: TextStyle(
-              color: Colors.red,
-            ),),
+            title: const Text(
+              '',
+              style: TextStyle(
+                color: Colors.red,
+              ),
+            ),
             content: const Text('Please fill in all the fields.'),
             actions: [
               TextButton(
@@ -134,20 +174,32 @@ class _ReserveRoomPageState extends State<ReserveRoomPage> {
 
       // check if the duration is exactly for 1 hour
       if (difference.inHours == 1 && difference.inMinutes == 60) {
-        print('Room: $_selectedRoom, From: $_startDate, $_startTime, To: '
-            '$_endDate, $_endTime');
+        print('Room: $_selectedRoom, From: $_startDate, $_startTime, To: $_endDate, $_endTime');
         showDialog(
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: const Text('Success',
-              style: TextStyle(
-                color: Colors.green,
-              ),),
+              title: const Text(
+                'Success',
+                style: TextStyle(
+                  color: Colors.green,
+                ),
+              ),
               content: const Text('Your reservation has been submitted.'),
               actions: [
                 TextButton(
-                  onPressed: () {
+                  onPressed: () async {
+                    SharedPreferences prefs = await SharedPreferences.getInstance();
+                    String roomId = prefs.getString('roomId') ?? '';
+                    int parsedId = int.tryParse(roomId) ?? 0;
+                    String start = startTimeDateController.text;
+                    String end = endTimeDateController.text;
+                    await postRentRoom(
+                        'room',
+                        1,
+                        parsedId,
+                        start,
+                        end);
                     Navigator.of(context).pop();
                   },
                   child: const Text('OK'),
@@ -161,10 +213,12 @@ class _ReserveRoomPageState extends State<ReserveRoomPage> {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: const Text('Error',
-              style: TextStyle(
-                color: Colors.red,
-              ),),
+              title: const Text(
+                'Try again',
+                style: TextStyle(
+                  color: Colors.red,
+                ),
+              ),
               content: const Text('Please select exactly a 1-hour time slot.'),
               actions: [
                 TextButton(
@@ -185,7 +239,7 @@ class _ReserveRoomPageState extends State<ReserveRoomPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Library Room Reservation'),
+        title: const Text('Room Reservation'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
@@ -199,11 +253,13 @@ class _ReserveRoomPageState extends State<ReserveRoomPage> {
           children: <Widget>[
             Padding(
               padding: const EdgeInsets.all(16.0),
-              child: Text(_selectedRoom,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 20.0,
-              ),),
+              child: Text(
+                _selectedRoom,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20.0,
+                ),
+              ),
             ),
             Padding(
               padding: const EdgeInsets.all(16.0),
@@ -226,11 +282,13 @@ class _ReserveRoomPageState extends State<ReserveRoomPage> {
               ),
             ),
             const SizedBox(height: 20),
-            const Text('Selection time for 1 hour only.',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 16.0,
-            ),),
+            const Text(
+              'Selection time for 1 hour only.',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16.0,
+              ),
+            ),
             const SizedBox(height: 20),
             Row(
               children: [

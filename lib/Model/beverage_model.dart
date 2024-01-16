@@ -1,4 +1,5 @@
 class BeverageModel {
+  int id;
   String name;
   String category;
   String price;
@@ -6,6 +7,7 @@ class BeverageModel {
 
   // constructor
   BeverageModel({
+    required this.id,
     required this.name,
     required this.category,
     required this.price,
@@ -15,6 +17,7 @@ class BeverageModel {
   // factory method to create a beverage from a map
   factory BeverageModel.fromJson(Map<String, dynamic> json) {
     return BeverageModel(
+        id: json['id'] ?? '',
         name: json['name'] ?? '',
         category: json['category'] ?? '',
         price: json['price'] ?? '',
@@ -25,6 +28,7 @@ class BeverageModel {
   // convert the beverage instance to a map
   Map<String, dynamic> toJson() {
     return {
+      'id': id,
       'name': name,
       'category': category,
       'price': price,

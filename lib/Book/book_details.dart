@@ -1,23 +1,21 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cafe_library_services/Book/borrow_book.dart';
-import 'package:cafe_library_services/Report/report.dart';
+import 'package:cafe_library_services/Report/book_report.dart';
 import 'package:flutter/material.dart';
 
 class BookDetailsScreen extends StatelessWidget {
+  final int id;
   final String name;
   final String genre;
   final String picture;
   final String author;
-  // final int remainder;
-  // final int availability;
 
   BookDetailsScreen({
+    required this.id,
     required this.name,
     required this.genre,
     required this.picture,
     required this.author,
-    // required this.remainder,
-    // required this.availability,
   });
 
   @override
@@ -26,16 +24,14 @@ class BookDetailsScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(name),
         actions: [
-          // Add a Report button in the app bar
           IconButton(
             icon: const Icon(Icons.report),
-            tooltip: 'Report this item',
+            tooltip: 'Report this book',
             onPressed: () {
-              // Navigate to the ReportPage when the button is pressed
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => ReportPage(),
+                  builder: (context) => BookReportPage(bookId: ''),
                 ),
               );
             },
@@ -68,12 +64,11 @@ class BookDetailsScreen extends StatelessWidget {
             // Add more details as needed
             ElevatedButton(
               onPressed: () {
-                // Navigate to the ReserveRoom when the button is pressed
                 Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) => ReserveBookPage(selectedBook:
-                    name,),
+                    name,)
                   ),
                 );
               },

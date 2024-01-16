@@ -1,20 +1,32 @@
+import 'package:cafe_library_services/Report/room_report.dart';
 import 'package:flutter/material.dart';
 import 'package:cafe_library_services/Room/reserve_room.dart';
-import '../Report/report.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../Report/room_report.dart';
 
 class RoomDetailsScreen extends StatelessWidget {
+  final int id;
   final String roomNo;
   final String picture;
   final String type;
 
-  // Add more properties as needed for room details
-
   RoomDetailsScreen({
+    required this.id,
     required this.roomNo,
     required this.picture,
     required this.type,
-    // Add more constructor parameters as needed
   });
+
+  Future<void> setRoomId(int roomId) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('roomId', roomId.toString());
+  }
+
+  Future<String> getRoomId() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('roomId') ??
+        ''; // Default to an empty string if not found
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,13 +37,12 @@ class RoomDetailsScreen extends StatelessWidget {
           // Add a Report button in the app bar
           IconButton(
             icon: const Icon(Icons.report),
-            tooltip: 'Report this item',
+            tooltip: 'Report this room',
             onPressed: () {
-              // Navigate to the ReportPage when the button is pressed
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => ReportPage(),
+                  builder: (context) => RoomReportPage(roomId: ''),
                 ),
               );
             },
@@ -43,12 +54,15 @@ class RoomDetailsScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Replace this with your room image
             Image.network(
               picture,
               width: double.infinity,
               height: 500.0,
               fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                // Handle image loading error
+                return const Icon(Icons.error);
+              },
             ),
             const SizedBox(height: 16.0),
             Text(

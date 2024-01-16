@@ -161,7 +161,7 @@ class _EquipmentListScreenState extends State<EquipmentListScreen> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => EquipmentDetailsScreen(
+                                builder: (context) => EquipmentDetailsScreen(id: results[index].id,
                                   name: results[index].name,
                                   picture: results[index].picture,
                                 ),

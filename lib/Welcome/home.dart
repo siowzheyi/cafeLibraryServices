@@ -1,8 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cafe_library_services/Beverage/beverage_listing.dart';
-import 'package:cafe_library_services/Record/booking_record.dart';
-import 'package:cafe_library_services/Record/order_record.dart';
+import 'package:cafe_library_services/Booking/booking_listing.dart';
 import 'package:cafe_library_services/Room/room_listing.dart';
+import 'package:cafe_library_services/Welcome/select_cafe.dart' as cafe;
 import 'package:flutter/material.dart';
 import 'package:cafe_library_services/Book/book_listing.dart';
 import 'package:cafe_library_services/Equipment/equipment_listing.dart';
@@ -10,7 +9,7 @@ import 'package:cafe_library_services/Welcome/login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../Controller/connection.dart';
 import '../Model/announcement_model.dart';
-import '../Record/penalty_record.dart';
+import '../Order/order_listing.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'select_library.dart';
@@ -194,7 +193,7 @@ class _HomePageState extends State<HomePage> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const BookingRecordPage(),
+                              builder: (context) => BookingListing(),
                             ),
                           );
                         },
@@ -218,12 +217,12 @@ class _HomePageState extends State<HomePage> {
                       height: 60.0,
                       child: ElevatedButton(
                         onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => PenaltyPage(),
-                            ),
-                          );
+                          // Navigator.push(
+                          //   context,
+                          //   MaterialPageRoute(
+                          //     builder: (context) => PenaltyPage(),
+                          //   ),
+                          // );
                         },
                         child: const Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -248,7 +247,7 @@ class _HomePageState extends State<HomePage> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => BeverageListing(),
+                              builder: (context) => cafe.CafeSelectionScreen(),
                             ),
                           );
                         },
@@ -278,7 +277,7 @@ class _HomePageState extends State<HomePage> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => OrderRecordListing(),
+                              builder: (context) => OrderListing(),
                             ),
                           );
                         },

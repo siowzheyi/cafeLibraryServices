@@ -6,6 +6,7 @@ import 'dart:convert';
 import '../Controller/connection.dart';
 import '../Model/beverage_model.dart';
 import '../Welcome/select_library.dart';
+import 'checkout.dart';
 
 void main() {
   runApp(BeverageListing());
@@ -183,6 +184,8 @@ class _BeverageListScreenState extends State<BeverageListScreen> {
 
   late Future<List<BeverageModel>> beverageList;
   late Future<List<String>> categoryList;
+  late List<int> quantity;
+  late List<BeverageModel> results;
 
   @override
   void initState() {
@@ -192,6 +195,25 @@ class _BeverageListScreenState extends State<BeverageListScreen> {
   Future<void> fetchData() async {
     beverageList = FetchBeverage().getBeverageList();
     categoryList = FetchBeverage().getCategoryList();
+    quantity = List<int>.filled(100, 0);
+  }
+
+  void increaseQuantity(int index) {
+    setState(() {
+      quantity[index]++;
+      print('Quantity increased for item $index: ${quantity[index]}');
+    });
+  }
+
+  void decreaseQuantity(int index) {
+    if (quantity[index] > 0) {
+      setState(() {
+        quantity[index]--;
+        print('Quantity decreased for item $index: ${quantity[index]}');
+      });
+    } else {
+      print('Quantity cannot be less than 0');
+    }
   }
 
   @override
@@ -239,11 +261,11 @@ class _BeverageListScreenState extends State<BeverageListScreen> {
                   return Row(
                     children: categories
                         .map(
-                          (genre) => Row(
+                          (category) => Row(
                         children: [
                           ElevatedButton(
                             onPressed: () {
-                              print('Pressed $genre');
+                              print('Pressed $category');
                               // Navigator.push(
                               //   context,
                               //   MaterialPageRoute(
@@ -251,7 +273,7 @@ class _BeverageListScreenState extends State<BeverageListScreen> {
                               //   ),
                               // );
                             },
-                            child: Text(genre),
+                            child: Text(category),
                           ),
                           SizedBox(width: 16.0),
                         ],
@@ -273,8 +295,8 @@ class _BeverageListScreenState extends State<BeverageListScreen> {
                       child: Text('Error: ${snapshot.error}'),
                     );
                   } else {
-                    List<BeverageModel> results = snapshot.data!;
-                    results.shuffle();
+                    results = snapshot.data!;
+                    //results.shuffle();
                     return ListView.builder(
                       itemCount: results.length,
                       itemBuilder: (context, index) {
@@ -287,10 +309,12 @@ class _BeverageListScreenState extends State<BeverageListScreen> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => BeverageDetailsScreen(name: results[index].name,
+                                    builder: (context) => BeverageDetailsScreen(
+                                      name: results[index].name,
                                       category: results[index].category,
-                                       price: results[index].price,
-                                      picture: results[index].picture,),
+                                      price: results[index].price,
+                                      picture: results[index].picture,
+                                    ),
                                   ),
                                 );
                               },
@@ -335,6 +359,28 @@ class _BeverageListScreenState extends State<BeverageListScreen> {
                                       ),
                                     ],
                                   ),
+                                  Spacer(),
+                                  Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      IconButton(
+                                        icon: Icon(Icons.add),
+                                        onPressed: () {
+                                          increaseQuantity(index);
+                                        },
+                                      ),
+                                      Text(
+                                        '${quantity[index]}',
+                                        style: TextStyle(fontSize: 18),
+                                      ),
+                                      IconButton(
+                                        icon: Icon(Icons.remove),
+                                        onPressed: () {
+                                          decreaseQuantity(index);
+                                        },
+                                      ),
+                                    ],
+                                  ),
                                 ],
                               ),
                             ),
@@ -347,6 +393,38 @@ class _BeverageListScreenState extends State<BeverageListScreen> {
               ),
             ),
           ],
+        ),
+        bottomNavigationBar: BottomAppBar(
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            child: ElevatedButton(
+              onPressed: () {
+                List<BeverageModel> selectedItems = [];
+                List<int> selectedQuantities = [];
+                double totalPrice = 0.0;
+
+                for (int i = 0; i < results.length; i++) {
+                  if (quantity[i] > 0) {
+                    selectedItems.add(results[i]);
+                    selectedQuantities.add(quantity[i]);
+                    totalPrice += double.parse(results[i].price) * quantity[i];
+                  }
+                }
+
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => CheckoutScreen(
+                      selectedItems: selectedItems,
+                      quantity: selectedQuantities,
+                      totalPrice: totalPrice,
+                    ),
+                  ),
+                );
+              },
+              child: Text('Proceed to Checkout'),
+            ),
+          ),
         ),
       ),
     );

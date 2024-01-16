@@ -1,18 +1,29 @@
 import 'package:cafe_library_services/Equipment/rent_equipment.dart';
 import 'package:flutter/material.dart';
-import '../Report/report.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../Report/equipment_report.dart';
 
 class EquipmentDetailsScreen extends StatelessWidget {
+  final int id;
   final String name;
   final String picture;
 
-  // Add more properties as needed for equipment details
-
   EquipmentDetailsScreen({
+    required this.id,
     required this.name,
     required this.picture,
-    // Add more constructor parameters as needed
   });
+
+  Future<void> setEquipmentId(int equipmentId) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('equipmentId', equipmentId.toString());
+  }
+
+  Future<String> getEquipmentId() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('equipmentId') ??
+        ''; // Default to an empty string if not found
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,13 +34,13 @@ class EquipmentDetailsScreen extends StatelessWidget {
           // Add a Report button in the app bar
           IconButton(
             icon: const Icon(Icons.report),
-            tooltip: 'Report this item',
-            onPressed: () {
-              // Navigate to the ReportPage when the button is pressed
+            tooltip: 'Report this equipment',
+            onPressed: () async {
+              await setEquipmentId(id);
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => ReportPage(),
+                  builder: (context) => EquipmentReportPage(equipmentId: '',),
                 ),
               );
             },

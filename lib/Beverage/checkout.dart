@@ -1,118 +1,98 @@
-import 'package:cafe_library_services/Beverage/order_summary.dart';
 import 'package:flutter/material.dart';
-import 'add_to_cart.dart';
+import '../Model/beverage_model.dart';
 
-class CheckoutPage extends StatefulWidget {
-  final List<Beverage> selectedBeverages;
+class CheckoutScreen extends StatelessWidget {
+  final List<BeverageModel> selectedItems;
+  final List<int> quantity;
+  final double totalPrice; // Add totalPrice as a parameter
 
-  CheckoutPage({required this.selectedBeverages});
+  const CheckoutScreen({
+    Key? key,
+    required this.selectedItems,
+    required this.quantity,
+    required this.totalPrice,
+  }) : super(key: key);
 
-  @override
-  _CheckoutPageState createState() => _CheckoutPageState();
-}
-
-class _CheckoutPageState extends State<CheckoutPage> {
   @override
   Widget build(BuildContext context) {
-    // Calculate total price
-    double totalPrice = 0.0;
-    for (Beverage beverage in widget.selectedBeverages) {
-      totalPrice += beverage.price * beverage.quantity;
-    }
-
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Checkout'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (context) => OrderSummaryPage(selectedBeverages:
-                widget.selectedBeverages),
+        title: Text('Checkout'),
+      ),
+      body: ListView.builder(
+        itemCount: selectedItems.length,
+        itemBuilder: (context, index) {
+          double itemTotal = double.parse(selectedItems[index].price) * quantity[index];
+          return SingleChildScrollView(
+            child: SizedBox(
+              height: 80.0,
+              child: Card(
+                child: ListTile(
+                  title: Text(selectedItems[index].name),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Quantity: ${quantity[index]}'),
+                      Text('Total Price: RM${itemTotal.toStringAsFixed(2)}'),
+                    ],
+                  ),
+                ),
               ),
-            );
-          },
+            ),
+          );
+        },
+      ),
+      bottomNavigationBar: BottomAppBar(
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Display total price for all items
+              Text('Grand Total Price: RM${totalPrice.toStringAsFixed(2)}'),
+              SizedBox(height: 50.0),
+              ElevatedButton(
+                onPressed: () {
+                  // Perform the payment logic here
+                  // You can show a loading screen or perform any necessary actions
+                  // after the user clicks the "Pay" button
+                  _handlePayment(context);
+                },
+                child: Text('Pay'),
+              ),
+            ],
+          ),
         ),
       ),
-      body: Column(
-        children: [
-          Container(
-            color: Colors.grey.shade200,
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Receipt',
-                  style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 8.0),
-                ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: widget.selectedBeverages.length,
-                  itemBuilder: (context, index) {
-                    Beverage beverage = widget.selectedBeverages[index];
-                    return ListTile(
-                      title: Text(beverage.name),
-                      subtitle: Text('RM${beverage.price}'),
-                      trailing: Text('Quantity: ${beverage.quantity}'),
-                    );
-                  },
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 16.0),
-          Card(
-            color: Colors.green,
-            elevation: 4.0,
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Text(
-                'Total Price: RM${totalPrice.toStringAsFixed(2)}',
-                style: const TextStyle(fontSize: 18.0, color: Colors.white),
-              ),
-            ),
-          ),
-          const SizedBox(height: 16.0),
-          ElevatedButton(
-            onPressed: () {
-              // Show an AlertDialog with the message
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: const Text('Order Accepted'),
-                    content: const Text('Your order is accepted and will be '
-                        'processed!'),
-                    actions: <Widget>[
-                      TextButton(
-                        onPressed: () {
-                          Navigator.of(context).pop(); // Close the dialog
-                          // Perform any additional actions if needed
-
-                          // Example: Navigate to another page
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => BeverageOrderPage(),
-                            ),
-                          );
-                        },
-                        child: const Text('OK'),
-                      ),
-                    ],
-
-                  );
-                },
-              );
-            },
-            child: const Text('Proceed to Checkout'),
-          ),
-        ],
-      ),
     );
+  }
+
+  void _handlePayment(BuildContext context) {
+    // Show a loading screen or perform payment logic here
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CircularProgressIndicator(),
+              SizedBox(height: 16.0),
+              Text('Processing payment...'),
+            ],
+          ),
+        );
+      },
+    );
+
+    // Simulate a delay for demonstration purposes
+    Future.delayed(Duration(seconds: 2), () {
+      // Close the loading screen
+      Navigator.of(context).pop();
+
+      // You can navigate to a success page or perform any other action
+      // after the payment is complete
+      // Example: Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => PaymentSuccessScreen()));
+    });
   }
 }

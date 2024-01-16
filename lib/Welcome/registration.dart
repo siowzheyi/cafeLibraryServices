@@ -150,7 +150,7 @@ class _SignupPageState extends State<SignupPage> {
                             decoration: const InputDecoration(labelText: 'Name'),
                             controller: nameController,
                             validator: (value) {
-                              if (value == null) {
+                              if (value == null || value.isEmpty) {
                                 return 'Please enter your name';
                               } else if (value.length < 8) {
                                 return 'Name is too short';
@@ -160,9 +160,9 @@ class _SignupPageState extends State<SignupPage> {
                           ),
                           TextFormField(
                             decoration: const InputDecoration(labelText: 'Phone number'),
-                            controller: nameController,
+                            controller: phoneNumController,
                             validator: (value) {
-                              if (value == null) {
+                              if (value == null || value.isEmpty) {
                                 return 'Please enter your phone number';
                               }
                               return null;
@@ -172,7 +172,7 @@ class _SignupPageState extends State<SignupPage> {
                             decoration: const InputDecoration(labelText: 'Email'),
                             controller: emailController,
                             validator: (value) {
-                              if (value == null) {
+                              if (value == null || value.isEmpty) {
                                 return 'Please enter your email';
                               } else if (!RegExp(r'^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$').hasMatch(value)) {
                                 return 'Please enter a valid email address';
@@ -185,7 +185,7 @@ class _SignupPageState extends State<SignupPage> {
                             obscureText: true,
                             controller: passwordController,
                             validator: (value) {
-                              if (value == null) {
+                              if (value == null || value.isEmpty) {
                                 return 'Please enter a password';
                               } else if (value.length < 8 || value.length > 16) {
                                 return 'Password must be between 8 and 16 characters';
@@ -198,7 +198,7 @@ class _SignupPageState extends State<SignupPage> {
                             obscureText: true,
                             controller: confirmPasswordController,
                             validator: (value) {
-                              if (value == null) {
+                              if (value == null || value.isEmpty) {
                                 return 'Please confirm your password';
                               } else if (value != passwordController.text) {
                                 return 'Passwords do not match';

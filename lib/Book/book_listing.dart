@@ -290,6 +290,7 @@ class _BookListScreenState extends State<BookListScreen> {
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) => BookDetailsScreen(
+                                      id: results[index].id,
                                       name: results[index].name,
                                       genre: results[index].genre,
                                       picture: results[index].picture,

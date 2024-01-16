@@ -1,3 +1,4 @@
+import 'package:cafe_library_services/Beverage/beverage_listing.dart';
 import 'package:cafe_library_services/Welcome/home.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -30,8 +31,8 @@ class TableListing extends StatelessWidget {
                 ),
               );
             } else {
-              String libraryId = snapshot.data ?? '';
-              return TableListScreen(libraryId: libraryId);
+              String cafeId = snapshot.data ?? '';
+              return TableListScreen(cafeId: cafeId);
             }
           } else {
             // While waiting for the Future to complete, show a loading indicator
@@ -48,10 +49,10 @@ class TableListing extends StatelessWidget {
 }
 
 class TableListScreen extends StatefulWidget {
-  final String libraryId;
+  final String cafeId;
   final Map<String, String>? headers;
 
-  const TableListScreen({Key? key, required this.libraryId, this.headers}) : super(key: key);
+  const TableListScreen({Key? key, required this.cafeId, this.headers}) : super(key: key);
 
   @override
   _TableListScreenState createState() => _TableListScreenState();
@@ -157,15 +158,12 @@ class _TableListScreenState extends State<TableListScreen> {
                         height: 100.0,
                         child: ListTile(
                           onTap: () {
-                            // Navigator.push(
-                            //   context,
-                            //   MaterialPageRoute(
-                            //     builder: (context) => EquipmentDetailsScreen(
-                            //       name: results[index].name,
-                            //       picture: results[index].picture,
-                            //     ),
-                            //   ),
-                            // );
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => BeverageListScreen(cafeId: ''),
+                              ),
+                            );
                           },
                           title: Row(
                             children: [
