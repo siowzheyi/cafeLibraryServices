@@ -60,6 +60,7 @@ Route::get('library/getLibraryDatatable', [LibraryController::class, 'getLibrary
 Route::get('library/getBookingDatatable', [BookingController::class, 'getBookingDatatable'])->name('booking.getBookingDatatable');
 Route::get('cafe/getOrderDatatable', [OrderController::class, 'getOrderDatatable'])->name('order.getOrderDatatable');
 Route::get('library/getReportDatatable', [ReportController::class, 'getReportDatatable'])->name('report.getReportDatatable');
+Route::get('library/getPenaltyDatatable', [UserController::class, 'getPenaltyDatatable'])->name('penalty.getPenaltyDatatable');
 
 Route::resource('user', UserController::class);
 
@@ -88,6 +89,8 @@ Route::middleware(['staffauthentication'])->group(function () {
             Route::prefix('report')->group(function () {
                 Route::get('detail_sales_report', [OrderController::class, 'detailSalesReport'])->name('detail_sales_report');
                 Route::get('daily_sales_report', [OrderController::class, 'dailySalesReport'])->name('daily_sales_report');
+                Route::get('penalty_report/index', [UserController::class, 'penaltyReportIndex'])->name('penalty_report.index');
+                Route::get('penalty_report/detail/{booking_id}', [UserController::class, 'penaltyReportDetail'])->name('penalty_report.detail');
 
             });
 

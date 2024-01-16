@@ -10,6 +10,12 @@ use App\Models\User;
 use Illuminate\Support\Facades\Session;
 use Yajra\DataTables\DataTables;
 use Illuminate\Validation\Rule;
+use App\Services\Service;
+use App\Models\Booking;
+use App\Models\Payment;
+use App\Models\Book;
+use App\Models\Room;
+use App\Models\Equipment;
 
 use DB;
 use Auth;
@@ -187,6 +193,13 @@ class UserController extends BaseController
         return view('staff.admin.create');
     }
 
+    public function penaltyReportDetail(Request $request, $id)
+    {
+        $result = $this->services->penaltyReportItem($request, $id);
+
+        return $result['aaData'];
+    }
+
     // This api is for admin user to update certain user
     public function update(Request $request, User $user)
     {
@@ -229,6 +242,94 @@ class UserController extends BaseController
         return $data;
 
         // return $this->sendResponse("", "User has been successfully updated. ");   
+    }
+
+    public function penaltyReportIndex()
+    {
+        return view('library.penalty.index');
+    }
+
+    public function getPenaltyDatatable(Request $request)
+    {
+        if (request()->ajax()) {
+            $type = $request->type;
+
+            $user = auth()->user();
+            
+            $service = new Service();
+            
+            $user = auth()->user();
+
+            $library_id = $request->library_id;
+
+            if($library_id != null || $user->library_id != null)
+            {
+                if($user->library_id != null)
+                    $library_id = $user->library_id;
+
+                $data =  Booking::join('users','users.id','=','bookings.user_id')
+                ->leftjoin('books', function ($join) use ($library_id) {
+                    $join->on('books.id', '=', 'bookings.book_id')
+                    ->where('books.library_id',$library_id);
+                })
+                ->leftjoin('equipments', function ($join) use ($library_id) {
+                    $join->on('equipments.id', '=', 'bookings.equipment_id')
+                    ->where('equipments.library_id',$library_id);
+                })
+                ->leftjoin('rooms', function ($join) use ($library_id) {
+                    $join->on('rooms.id', '=', 'bookings.room_id')
+                    ->where('rooms.library_id',$library_id);
+                })
+                ->where('bookings.penalty_status',1);
+            }
+            else
+            {
+                $data =  Booking::join('users','users.id','=','bookings.user_id')
+                ->leftjoin('books', function ($join) {
+                    $join->on('books.id', '=', 'bookings.book_id');
+                })
+                ->leftjoin('equipments', function ($join) {
+                    $join->on('equipments.id', '=', 'bookings.equipment_id');
+                })
+                ->leftjoin('rooms', function ($join) {
+                    $join->on('rooms.id', '=', 'bookings.room_id');
+                })
+                ->where('bookings.penalty_status',1);
+            }
+          
+            $data = $data->select(
+                'bookings.*',
+                'users.name as user_name'
+            )
+            ->orderBy('bookings.penalty_paid_status', 'asc')
+            ->orderBy('bookings.created_at', 'desc')
+
+            ->get();
+
+            $table = Datatables::of($data);           
+
+            $table->addColumn('status', function ($row) {
+                $btn = '<div class="d-flex justify-content-center">';
+                if ($row->penalty_paid_status == 0) {
+                    $btn = $btn . '<span class="badge bg-danger"> Not Paid </span></div>';
+                } elseif ($row->penalty_paid_status == 1) {
+                    $btn = $btn . '<span class="badge bg-success"> Paid </span></div>';
+                }
+
+                return $btn;
+            });
+            
+
+            $table->addColumn('action', function ($row) {
+                $token = csrf_token();
+
+                $btn ='<button id="'.$row->id.'" data_id="' . $row->id . '" data-token="' . $token . '" class="btn btn-primary m-1 showData" data-bs-toggle="modal" data-bs-target="#orderModal">View</button>';
+                return $btn;
+            });
+
+            $table->rawColumns(['status','action']);
+            return $table->make(true);
+        }
     }
 
     public function penaltyReport(Request $request)

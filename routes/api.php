@@ -43,8 +43,7 @@ Route::middleware('auth:api')->group(function () {
     Route::get('order_listing', [OrderController::class, 'orderListing'])->name('order_listing');
     Route::get('booking_listing', [BookingController::class, 'bookingListing'])->name('booking_listing');
     Route::get('report_listing', [ReportController::class, 'reportListing'])->name('report_listing');
-    Route::get('penalty_report', [UserController::class, 'penaltyReport'])->name('penalty_report');
-    Route::get('penalty_report_item/{booking_id}', [UserController::class, 'penaltyReportItem'])->name('penalty_report_item');
+  
 
     Route::get('order/{order}', [OrderController::class, 'show'])->name('api.order.show');
     Route::post('order', [OrderController::class, 'store'])->name('api.order.store');
@@ -56,8 +55,9 @@ Route::middleware('auth:api')->group(function () {
     Route::post('report', [ReportController::class, 'store'])->name('api.report.store');
     
     Route::resource('payment', PaymentController::class, array("as" => "api"));
+    Route::get('penalty_report', [UserController::class, 'penaltyReport'])->name('penalty_report');
+    Route::get('penalty_report_item/{booking_id}', [UserController::class, 'penaltyReportItem'])->name('penalty_report_item');
 
-   
 
 });
 

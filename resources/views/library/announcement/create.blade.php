@@ -71,7 +71,7 @@
                                 <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                                 Reported List
                             </a>
-                            <a class="nav-link" href="{{route('report.index')}}">
+                            <a class="nav-link" href="{{route('penalty_report.index')}}">
                                 <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                                 Penalty Report
                             </a>

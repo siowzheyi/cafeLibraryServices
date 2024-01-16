@@ -52,7 +52,7 @@
                                 <a class="nav-link" href="{{ route('table.index') }}">Table</a>
                                 <a class="nav-link " href="{{ route('book.index') }}">Book</a>
                                 <a class="nav-link " href="{{ route('room.index') }}">Room</a>
-                                <a class="nav-link active" href="{{ route('equipment.index') }}">Equipment</a>
+                                <a class="nav-link" href="{{ route('equipment.index') }}">Equipment</a>
                                 <a class="nav-link " href="{{ route('announcement.index') }}">Announcement</a>
 
                             </nav>
@@ -61,11 +61,11 @@
                             <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                             Booking 
                         </a>
-                        <a class="nav-link" href="{{route('report.index')}}">
+                        <a class="nav-link active" href="{{route('report.index')}}">
                             <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                             Reported List
                         </a>
-                        <a class="nav-link" href="{{route('report.index')}}">
+                        <a class="nav-link" href="{{route('penalty_report.index')}}">
                             <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                             Penalty Report
                         </a>

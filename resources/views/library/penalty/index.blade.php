@@ -7,9 +7,7 @@
     <meta name="description" content="" />
     <meta name="author" content="" />
     <title>CAFÉ LIBRARY SERVICES</title>
-    <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.css" />
-
     <link href="{{ asset('css/styles.css') }}" rel="stylesheet" />
     <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
 </head>
@@ -25,7 +23,7 @@
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                    <li><a class="dropdown-item">Library Staff</a></li>
+                    <li><a class="dropdown-item">Staff Library</a></li>
                     <li><hr class="dropdown-divider" /></li>
                     <li><a class="dropdown-item" href="{{ route('login') }}">Logout</a></li>
                 </ul>
@@ -54,7 +52,7 @@
                                 <a class="nav-link" href="{{ route('table.index') }}">Table</a>
                                 <a class="nav-link " href="{{ route('book.index') }}">Book</a>
                                 <a class="nav-link " href="{{ route('room.index') }}">Room</a>
-                                <a class="nav-link active" href="{{ route('equipment.index') }}">Equipment</a>
+                                <a class="nav-link " href="{{ route('equipment.index') }}">Equipment</a>
                                 <a class="nav-link " href="{{ route('announcement.index') }}">Announcement</a>
 
                             </nav>
@@ -78,39 +76,33 @@
         <div id="layoutSidenav_content">
             <main>
                 <div class="container-fluid px-4">
-                    <h1 class="mt-4">Library Equipment</h1>
+                    <h1 class="mt-4">Library</h1>
                     <ol class="breadcrumb mb-4">
-                        <li class="breadcrumb-item"><a href="dashboard">Dashboard</a></li>
-                        <li class="breadcrumb-item active">Library Equipment</li>
+                        <li class="breadcrumb-item"><a href="{{ route('library.dashboard') }}">Dashboard</a></li>
+                        <li class="breadcrumb-item active">Penalty Report</li>
                     </ol>
-                 
-                    @if (Session::has('message-error'))
-                        {{-- @foreach ($errors->all() as $error) --}}
-                            <div class="alert alert-danger" id="flash-message">{{ Session::get('message-error') }}</div>
-                        {{-- @endforeach --}}
-                    @endif
-                    @if (Session::has('message-success'))
+                    @if (Session::has('success'))
                         <div class="alert alert-success" id="flash-message">
-                            {{ Session::get('message-success') }}
+                            {{ Session::get('success') }}
                         </div>
                     @endif
-                    <div class="row mb-2">
-                        <div class="col-12">
-                            <a href="{{ route('equipment.create') }}" class="btn btn-success float-end"><i class="fa fa-plus"></i> Create New Equipment</a>
-                        </div>
-                    </div>
+                    @foreach ($errors->all() as $error)
+                        <div class="alert alert-danger" id="flash-message">{{ $error }}</div>
+                    @endforeach
                     <div class="card mb-4">
                         <div class="card-header">
                             <i class="fas fa-table me-1"></i>
-                            List of Library Equipment
+                            List of Penalty Customer
                         </div>
                         <div class="card-body">
-                            <table id="datatablesSimple" >
+                            <table id="datatablesSimple">
                                 <thead>
                                     <tr>
                                         <th>#</th>
-                                        <th>Equipment Name</th>
-                                        <th>Status</th>
+                                        <th>User Name</th>
+                                        <th>Amount (RM)</th>
+                                        <th>Pay Status</th>
+                                        <th>Created At</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
@@ -119,6 +111,15 @@
                     </div>
                 </div>
             </main>
+
+            <!-- Modal -->
+            <div class="modal fade" id="orderModal" tabindex="-1" role="dialog" aria-labelledby="orderModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                  <div class="modal-content">
+                    <!-- Modal content goes here -->
+                  </div>
+                </div>
+              </div>
             <footer class="py-4 bg-light mt-auto">
                 <div class="container-fluid px-4">
                     <div class="d-flex align-items-center justify-content-between small">
@@ -133,14 +134,17 @@
             </footer>
         </div>
     </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-    <script src="{{ asset('js/scripts.js') }}"></script>
+    <script src="js/scripts.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
-    <script src="{{ asset('assets/demo/chart-area-demo.js') }}"></script>
-    <script src="{{ asset('assets/demo/chart-bar-demo.js') }}"></script>
+    <script src="assets/demo/chart-area-demo.js"></script>
+    <script src="assets/demo/chart-bar-demo.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.js"></script>
+
 </body>
+
 <script>
     $(document).ready(function() {
 
@@ -151,33 +155,34 @@
                 $('#flash-message').fadeOut('fast');
             }, 2000); // 2 seconds
         var datatable;
-        
+        var library_id = localStorage.getItem('library_id');
+
+        // destroy datatable and reload again
+       
+        $('#library_id').val(library_id);
         // ajax function to get data from api to display at datatable
         function fetch_data() {
-            var library_id = localStorage.getItem('library_id');
             datatable = $('#datatablesSimple').DataTable({
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: "{{ route('equipment.getEquipmentDatatable') }}",
+                    url: "{{ route('penalty.getPenaltyDatatable') }}",
                     data: {
                         library_id: library_id,
                     },
                     type: 'GET',
                 },
-               
                 'columnDefs': [{
                     "targets": [0], // your case first column
                     "className": "text-center",
                     "width": "2%"
                 }, {
-                    "targets": [1, 2, 3], // your case first column
+                    "targets": [1, 2, 3,4,5], // your case first column
                     "className": "text-center",
                 }, ],
                 order: [
                     [1, 'asc']
                 ],
-
                 columns: [{
                     "data": null,
                     searchable: false,
@@ -186,13 +191,24 @@
                         return meta.row + meta.settings._iDisplayStart + 1;
                     }
                 }, {
-                    data: "name",
-                    name: 'name',
-                    orderable: true,
-                    searchable: true
+                    data: "user_name",
+                    name: 'user_name',
+                    orderable: false,
+                    searchable: true,
+                   
+                },{
+                    data: "penalty_amount",
+                    name: 'penalty_amount',
+                    orderable: false,
+                    searchable: false
                 },{
                     data: "status",
                     name: 'status',
+                    orderable: false,
+                    searchable: false
+                },{
+                    data: "created_at",
+                    name: 'created_at',
                     orderable: false,
                     searchable: false
                 }, {
@@ -202,27 +218,50 @@
                     searchable: false
                 }, ]
             });
-
         }
+        // show data details
+        $(document).on('click', '.showData', function() {
+            var data_id = $(this).attr('id');
+                $.ajax({
+                    url: '/staff/report/penalty_report/detail/'+data_id, // Replace with your API endpoint
+                    method: 'GET',
+                    success: function(data) {
+                        data = data[0];
+                        var modalContent = `
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="orderModalLabel">Report</h5>
+                            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <p><strong>Library Name:</strong> ${data.library_name}</p>
 
-        // toggle data status
-        $(document).on('change', '.data-status', function() {
-        var dataId = $(this).attr('data-id');
-        var status = $(this).is(':checked') ? 1 : 0;
+                            <p><strong>User Name:</strong> ${data.user_name}</p>
+                            <p><strong>User Phone Number:</strong> ${data.user_phone_no}</p>
 
-            $.ajax({
-                url: '/staff/equipment/' + dataId,
-                type: 'PATCH',
-                data: { 
-                    type: "status",
-                    _token: "{{ csrf_token() }}",
-                },
-                success: function(result) {
-                    // Handle the result of the API call
-                    $('#datatablesSimple').DataTable().destroy();
-                    fetch_data();
-                }
-            });
+                            <p><strong>Created At:</strong> ${data.created_at}
+                            <span style="float:right"><strong>Pay Status:</strong> ${data.penalty_paid_status}</span></p>
+                            <hr>
+
+                            <p><strong>Item Name:</strong> ${data.item_name}</p>
+
+                            <p><strong>Subtotal (RM):</strong> ${data.subtotal}</p>
+                            <p><strong>SST Amount (RM):</strong> ${data.sst_amount}</p>
+                            <p><strong>Service Charge Amount (RM):</strong> ${data.service_charge_amount}</p>
+                            <hr>
+                            <p><strong>Total Price (RM):</strong> ${data.total_price}</p>
+                           
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        </div>
+                        `;
+
+                        $('#orderModal .modal-content').html(modalContent);
+                        $('#orderModal').modal('show');
+                    }
+                });
         });
     });
 </script>
