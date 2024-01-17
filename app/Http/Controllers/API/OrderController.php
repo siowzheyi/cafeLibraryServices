@@ -164,6 +164,16 @@ class OrderController extends BaseController
         return view('cafe.report.detailSalesReport');
     }
 
+    public function cafeDailySalesReportIndex()
+    {
+        return view('dashboard.report.dailySalesReport');
+    }
+
+    public function cafeDetailSalesReportIndex()
+    {
+        return view('dashboard.report.detailSalesReport');
+    }
+
     public function getOrderDatatable(Request $request)
     {
         if (request()->ajax()) {

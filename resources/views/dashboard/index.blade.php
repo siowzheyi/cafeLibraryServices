@@ -71,6 +71,22 @@ if (!$link) {
                             <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
                             Library
                         </a>
+                        <div class="collapse show" id="collapseLayoutsCafe" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                            <nav class="sb-sidenav-menu-nested nav">
+                                {{-- <a class="nav-link" href="{{ route('User.index') }}">Staff Cafe</a> --}}
+                                <a class="nav-link collapsed " href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayoutsCafe" aria-expanded="false" aria-controls="collapseLayoutsCafe">
+                                    <div class="sb-nav-link-icon"><i class="fas fa-plus"></i></div>
+                                    Report
+                                    <div class="sb-sidenav-collapse-arrow"><i class=""></i></div>
+                                </a>
+                                <div class="collapse show" id="collapseLayoutsCafe" aria-labelledby="card-header" data-bs-parent="#sidenavAccordion">
+                                    <nav class="sb-sidenav-menu-nested nav">
+                                        <a class="nav-link menu" href="{{ route('cafe_daily_sales_report.index') }}" >Daily Sales Cafe</a>
+                                        <a class="nav-link menu" href="{{ route('cafe_detail_sales_report.index') }}">Detail Sales Cafe</a>
+                                    </nav>
+                                </div> 
+                            </nav>
+                        </div>
                     </div>
                 </div>
             </nav>
@@ -96,84 +112,6 @@ if (!$link) {
                             <li class="breadcrumb-item active">Cafe Report</li>
                         </ol>
 
-                        <div class="row">
-                            <div class="col-xl-6">
-                                <div class="card mb-4">
-                                    <div class="card-header">
-                                        <i class="fas fa-chart-area me-1"></i>
-                                        Daily Sales Report
-                                    </div> 
-                                    <!--id graph-->
-                                    <div class="card-body"><canvas id="myAreaChart" width="100%" height="40"></canvas></div>
-                                </div>
-                            </div>
-                            <div class="col-xl-6">
-                                <div class="card mb-4">
-                                    <div class="card-header">
-                                        <i class="fas fa-chart-bar me-1"></i>
-                                        Every Transaction Sales Report
-                                    </div>
-                                    <div class="card-body"><canvas id="myBarChart" width="100%" height="40"></canvas></div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="card mb-4">
-                            <div class="card-header">
-                                <i class="fas fa-table me-1"></i>
-                                List of Order
-                            </div>
-                            <div class="card-body">
-                                <table id="datatablesSimple">
-                                    <thead>
-                                        <tr>
-                                            <th>#</th>
-                                            <th>Customer Name</th>
-                                            <th>Beverage Name</th>
-                                            <th>Quantity</th>
-                                            <th>Total</th>
-                                            <th>Status</th>
-                                            <th>Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>1</td>
-                                            <td>Ahmad Albab</td>
-                                            <td>Hot Hazelnut Latte</td>
-                                            <td>2</td>
-                                            <td>RM11.20</td>
-                                            <td>
-                                                <div class="form-check form-switch">
-                                                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" checked>
-                                                    <label class="form-check-label" for="flexSwitchCheckChecked">Delivered</label>
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <a href="cafe-order-view.php" class="btn btn-sm btn-info"><i class="fa fa-eye"></i> View</a>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>2</td>
-                                            <td>Siti Nurhaliza</td>
-                                            <td>Chocolate Cake</td>
-                                            <td>1</td>
-                                            <td>RM7.30</td>
-                                            <td>
-                                                <div class="form-check form-switch">
-                                                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked">
-                                                    <label class="form-check-label" for="flexSwitchCheckChecked">Pending</label>
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <a href="cafe-order-view.php" class="btn btn-sm btn-info"><i class="fa fa-eye"></i> View</a>
-                                            </td>
-                                        </tr>
-                                       
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
                     </div>
 
                     <!--Listing -->
@@ -184,107 +122,7 @@ if (!$link) {
                             <li class="breadcrumb-item"><a href="{{ route('library.index') }}">Dashboard Library</a></li>
                             <li class="breadcrumb-item active">Library Staff</li>
                         </ol>
-                        <div class="card mb-4">
-                            <div class="card-header">
-                                <i class="fas fa-table me-1"></i>
-                                List of Penalty Report
-                            </div>
-                            <div class="card-body">
-                                <table id="datatablesSimple1">
-                                    <thead>
-                                        <tr>
-                                            <th>#</th>
-                                            <th>Name</th>
-                                            <th>Date</th>
-                                            <th>Charge(RM)</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>1</td>
-                                            <td>Amirul</td>
-                                            <td>12/12/2023</td>
-                                            <td>2.00</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <hr>
-                            <div class="card-header">
-                                <i class="fas fa-table me-1"></i>
-                                List of Rent Equipment
-                            </div>
-                            <div class="card-body">
-                                <table id="datatablesSimple2">
-                                    <thead>
-                                        <tr>
-                                            <th>#</th>
-                                            <th>Customer Name</th>
-                                            <th>Equipment Name</th>
-                                            <th>Quantity</th>
-                                            <th>Date</th>
-                                            <th>Time</th>
-                                            <th>Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>1</td>
-                                            <td>Maira Bidin</td>
-                                            <td>Projector</td>
-                                            <td>1</td>
-                                            <td>25/12/2023</td>
-                                            <td>1.00 pm</td>
-                                            <td>
-                                                <div class="form-check form-switch">
-                                                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" checked>
-                                                    <label class="form-check-label" for="flexSwitchCheckChecked">Handled</label>
-                                                </div>
-                                            </td>
-                                           
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <hr>
-                            <div class="card-header">
-                                <i class="fas fa-table me-1"></i>
-                                List of Booking Room
-                            </div>
-                            <div class="card-body">
-                                <table id="datatablesSimple3">
-                                    <thead>
-                                        <tr>
-                                            <th>#</th>
-                                            <th>Customer Name</th>
-                                            <th>Room Type</th>
-                                            <th>Room Number</th>
-                                            <th>Date</th>
-                                            <th>Time</th>
-                                            <th>Status</th>
-                                            
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>1</td>
-                                            <td>Mohamad Hasan</td>
-                                            <td>Discussion Room</td>
-                                            <td>R3002</td>
-                                            <td>12/12/2023</td>
-                                            <td>10.20 am</td>
-                                            <td>
-                                                <div class="form-check form-switch">
-                                                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" checked>
-                                                    <label class="form-check-label" for="flexSwitchCheckChecked">Approved</label>
-                                                </div>
-                                            </td>
-                                            
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
+                        
                     </div>
                     
                 </main>

@@ -137,6 +137,7 @@ class ReportController extends BaseController
 
     public function getReportDatatable(Request $request)
     {
+        $service = new Service();
         if (request()->ajax()) {
             $type = $request->type;
 
@@ -154,6 +155,7 @@ class ReportController extends BaseController
                     ELSE NULL END AS item_name')
             )
             ->orderBy('reports.created_at','asc');
+
 
 
             $data = $data->where(function ($query) {
@@ -174,6 +176,15 @@ class ReportController extends BaseController
                 $data = $data->where('rooms.library_id', $user->library_id)
                              ->orWhere('equipments.library_id', $user->library_id)
                              ->orWhere('books.library_id', $user->library_id);
+            }
+
+            $data = $data->get();
+
+            
+            foreach ($data as $item) {
+                // dd($item);
+                $item->picture = $item->picture ? $service->getImage('report', $item->id) : null;
+                
             }
             
 

@@ -39,12 +39,12 @@
                     <div class="sb-sidenav-menu">
                         <div class="nav">
                             <div class="sb-sidenav-menu-heading">MAIN</div>
-                            <a class="nav-link" href="{{ route('dashboard') }}">
+                            <a class="nav-link" href="{{route('dashboard')}}">
                                 <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                                 Dashboard
                             </a>
                             <div class="sb-sidenav-menu-heading">PAGES</div>
-                            
+                           
                             <a class="nav-link collapsed active" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayoutsLib" aria-expanded="false" aria-controls="collapseLayoutsLib">
                                 <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
                                 Library
@@ -52,13 +52,26 @@
                             </a>
                             <div class="collapse bgsubmenu show" id="collapseLayoutsLib" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                                 <nav class="sb-sidenav-menu-nested nav">
-                                 <a class="nav-link" href="{{ route('table.index') }}">Table</a>
-                                 <a class="nav-link" href="{{ route('book.index') }}">Book</a>
-                                 <a class="nav-link" href="{{ route('room.index') }}">Room</a>
-                                 <a class="nav-link" href="{{ route('equipment.index') }}">Equipment</a>
+                                    <a class="nav-link" href="{{ route('table.index') }}">Table</a>
+                                    <a class="nav-link " href="{{ route('book.index') }}">Book</a>
+                                    <a class="nav-link active" href="{{ route('room.index') }}">Room</a>
+                                    <a class="nav-link" href="{{ route('equipment.index') }}">Equipment</a>
+                                    <a class="nav-link " href="{{ route('announcement.index') }}">Announcement</a>
+        
                                 </nav>
                             </div> 
-                           
+                            <a class="nav-link" href="{{route('booking.index')}}">
+                                <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                                Booking 
+                            </a>
+                            <a class="nav-link" href="{{route('report.index')}}">
+                                <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                                Reported List
+                            </a>
+                            <a class="nav-link" href="{{route('penalty_report.index')}}">
+                                <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                                Penalty Report
+                            </a>
                         </div>
                     </div>
                 </nav>
@@ -72,107 +85,7 @@
                             <li class="breadcrumb-item active">Library Staff</li>
                         </ol>
                         {{-- modify to get a report from db --}}
-                        <div class="card mb-4">
-                            <div class="card-header">
-                                <i class="fas fa-table me-1"></i>
-                                List of Penalty Report
-                            </div>
-                            <div class="card-body">
-                                <table id="datatablesSimple">
-                                    <thead>
-                                        <tr>
-                                            <th>#</th>
-                                            <th>Name</th>
-                                            <th>Date</th>
-                                            <th>Charge(RM)</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>1</td>
-                                            <td>Amirul</td>
-                                            <td>12/12/2023</td>
-                                            <td>2.00</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <hr>
-                            <div class="card-header">
-                                <i class="fas fa-table me-1"></i>
-                                List of Rent Equipment
-                            </div>
-                            <div class="card-body">
-                                <table id="datatablesSimple2">
-                                    <thead>
-                                        <tr>
-                                            <th>#</th>
-                                            <th>Customer Name</th>
-                                            <th>Equipment Name</th>
-                                            <th>Quantity</th>
-                                            <th>Date</th>
-                                            <th>Time</th>
-                                            <th>Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>1</td>
-                                            <td>Maira Bidin</td>
-                                            <td>Projector</td>
-                                            <td>1</td>
-                                            <td>25/12/2023</td>
-                                            <td>1.00 pm</td>
-                                            <td>
-                                                <div class="form-check form-switch">
-                                                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" checked>
-                                                    <label class="form-check-label" for="flexSwitchCheckChecked">Handled</label>
-                                                </div>
-                                            </td>
-                                           
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <hr>
-                            <div class="card-header">
-                                <i class="fas fa-table me-1"></i>
-                                List of Booking Room
-                            </div>
-                            <div class="card-body">
-                                <table id="datatablesSimple3">
-                                    <thead>
-                                        <tr>
-                                            <th>#</th>
-                                            <th>Customer Name</th>
-                                            <th>Room Type</th>
-                                            <th>Room Number</th>
-                                            <th>Date</th>
-                                            <th>Time</th>
-                                            <th>Status</th>
-                                            
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>1</td>
-                                            <td>Mohamad Hasan</td>
-                                            <td>Discussion Room</td>
-                                            <td>R3002</td>
-                                            <td>12/12/2023</td>
-                                            <td>10.20 am</td>
-                                            <td>
-                                                <div class="form-check form-switch">
-                                                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" checked>
-                                                    <label class="form-check-label" for="flexSwitchCheckChecked">Approved</label>
-                                                </div>
-                                            </td>
-                                            
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
+                       
                     </div>
                 </main>
                 <footer class="py-4 bg-light mt-auto">

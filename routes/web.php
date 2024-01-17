@@ -95,6 +95,9 @@ Route::middleware(['staffauthentication'])->group(function () {
                 Route::get('daily_sales_report', [OrderController::class, 'dailySalesReport'])->name('daily_sales_report');
                 Route::get('detail_sales_report_index', [OrderController::class, 'detailSalesReportIndex'])->name('detail_sales_report.index');
                 Route::get('daily_sales_report_index', [OrderController::class, 'dailySalesReportIndex'])->name('daily_sales_report.index');
+
+                Route::get('cafe_detail_sales_report_index', [OrderController::class, 'cafeDetailSalesReportIndex'])->name('cafe_detail_sales_report.index');
+                Route::get('cafe_daily_sales_report_index', [OrderController::class, 'cafeDailySalesReportIndex'])->name('cafe_daily_sales_report.index');
             });
 
 

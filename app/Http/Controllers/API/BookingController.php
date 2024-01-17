@@ -79,7 +79,7 @@ class BookingController extends BaseController
                "user_name" => $booking->user_name,
                "item_id" => $item_id,
                "item_name" => $item_name,
-               "item_picture" => $item_picture,
+               "picture" => $item_picture,
 
             //    "item"   =>  $item,
                "quantity" => $booking->quantity,
@@ -186,7 +186,7 @@ class BookingController extends BaseController
                 }
                 elseif($type == "equipment")
                 {
-                    $data = Booking::join('equipments','equipments.id','=','bookings.room_id')
+                    $data = Booking::join('equipments','equipments.id','=','bookings.equipment_id')
                     ->join('libraries','libraries.id','=','equipments.library_id')
                     ->join('users','users.id','=','bookings.user_id')->select(
                         'bookings.*',
@@ -202,7 +202,7 @@ class BookingController extends BaseController
                 }
                 elseif($type == "book")
                 {
-                    $data = Booking::join('books','books.id','=','bookings.room_id')
+                    $data = Booking::join('books','books.id','=','bookings.book_id')
                     ->join('libraries','libraries.id','=','books.library_id')
                     ->join('users','users.id','=','bookings.user_id')->select(
                         'bookings.*',
@@ -215,8 +215,10 @@ class BookingController extends BaseController
                             $data = $data->where('books.library_id',$request->library_id);
                         else
                             $data = $data->where('books.library_id',$user->library_id);
+
+                    }
                 }
-            }
+                // dd($data->get());
             $data = $data->where(function ($query) {
                 $query->where(function ($query) {
                     $query->whereIn('is_handled', ['approved', 'rejected'])
@@ -226,14 +228,14 @@ class BookingController extends BaseController
                     $query->where('is_handled', 'pending');
                 });
             });
-
+            // dd($data->get());
             $table = Datatables::of($data);
 
            
 
             $table->addColumn('status', function ($row) {
-                $checked = $row->is_handled == 1 ? 'checked' : '';
-                $status = $row->is_handled == 1 ? 'Completed' : 'Pending';
+                $checked = $row->is_handled == "approved" ? 'checked' : '';
+                $status = $row->is_handled == "approved" ? 'Completed' : 'Pending';
             
                 $btn = '<div class="form-check form-switch">';
                 $btn .= '<input class="form-check-input data-status" type="checkbox" data-id="'.$row->id.'" '.$checked.'>';

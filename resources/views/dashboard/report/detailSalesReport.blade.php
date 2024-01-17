@@ -23,7 +23,7 @@
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                    <li><a class="dropdown-item">Staff Library</a></li>
+                    <li><a class="dropdown-item">Staff Cafe</a></li>
                     <li><hr class="dropdown-divider" /></li>
                     <li><a class="dropdown-item" href="{{ route('login') }}">Logout</a></li>
                 </ul>
@@ -36,47 +36,36 @@
                 <div class="sb-sidenav-menu">
                     <div class="nav">
                         <div class="sb-sidenav-menu-heading">MAIN</div>
-                        <a class="nav-link" href="{{route('dashboard')}}">
+                        <a class="nav-link active" href="{{ route('dashboard') }}">
                             <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                             Dashboard
                         </a>
                         <div class="sb-sidenav-menu-heading">PAGES</div>
-                       
-                        <a class="nav-link collapsed active" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayoutsLib" aria-expanded="false" aria-controls="collapseLayoutsLib">
-                            <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
+                        <a class="nav-link active" href="{{ route('user.index') }}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
+                            Staff
+                        </a>
+                        
+                        <a class="nav-link active" href="{{ route('library.index') }}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
                             Library
-                            <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
                         </a>
-                        <div class="collapse bgsubmenu show" id="collapseLayoutsLib" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                        <div class="collapse show" id="collapseLayoutsCafe" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                             <nav class="sb-sidenav-menu-nested nav">
-                                <a class="nav-link" href="{{ route('table.index') }}">Table</a>
-                                <a class="nav-link " href="{{ route('book.index') }}">Book</a>
-                                <a class="nav-link " href="{{ route('room.index') }}">Room</a>
-                                <a class="nav-link" href="{{ route('equipment.index') }}">Equipment</a>
-                                <a class="nav-link" href="{{ route('announcement.index') }}">Announcement</a>
-
+                                {{-- <a class="nav-link" href="{{ route('User.index') }}">Staff Cafe</a> --}}
+                                <a class="nav-link collapsed " href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayoutsCafe" aria-expanded="false" aria-controls="collapseLayoutsCafe">
+                                    <div class="sb-nav-link-icon"><i class="fas fa-plus"></i></div>
+                                    Report
+                                    <div class="sb-sidenav-collapse-arrow"><i class=""></i></div>
+                                </a>
+                                <div class="collapse show" id="collapseLayoutsCafe" aria-labelledby="card-header" data-bs-parent="#sidenavAccordion">
+                                    <nav class="sb-sidenav-menu-nested nav">
+                                        <a class="nav-link menu" href="{{ route('cafe_daily_sales_report.index') }}" >Daily Sales Cafe</a>
+                                        <a class="nav-link menu" href="{{ route('cafe_detail_sales_report.index') }}">Detail Sales Cafe</a>
+                                    </nav>
+                                </div> 
                             </nav>
-                        </div> 
-                        <a class="nav-link collapsed active" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayoutsLib" aria-expanded="false" aria-controls="collapseLayoutsLib">
-                            <div class="sb-nav-link-icon"><i class="fas fa-plus"></i></div>
-                            Booking
-                            <div class="sb-sidenav-collapse-arrow"><i class=""></i></div>
-                        </a>
-                        <div class="collapse show" id="collapseLayoutsLib" aria-labelledby="card-header" data-bs-parent="#sidenavAccordion">
-                            <nav class="sb-sidenav-menu-nested nav">
-                                <a class="nav-link menu active" id="book" >Book</a>
-                                <a class="nav-link menu" id="room">Room</a>
-                                <a class="nav-link menu" id="equipment">Equipment</a>
-                            </nav>
-                        </div> 
-                        <a class="nav-link" href="{{route('report.index')}}">
-                            <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
-                            Reported List
-                        </a>
-                        <a class="nav-link" href="{{route('penalty_report.index')}}">
-                            <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
-                            Penalty Report
-                        </a>
+                        </div>
                     </div>
                 </div>
             </nav>
@@ -84,10 +73,10 @@
         <div id="layoutSidenav_content">
             <main>
                 <div class="container-fluid px-4">
-                    <h1 class="mt-4">Library Booking</h1>
+                    <h1 class="mt-4">Cafe Beverage</h1>
                     <ol class="breadcrumb mb-4">
                         <li class="breadcrumb-item"><a href="{{ route('cafe.dashboard') }}">Dashboard</a></li>
-                        <li class="breadcrumb-item active">Booking</li>
+                        <li class="breadcrumb-item active">Report</li>
                     </ol>
                     @if (Session::has('success'))
                         <div class="alert alert-success" id="flash-message">
@@ -100,20 +89,20 @@
                     <div class="card mb-4">
                         <div class="card-header">
                             <i class="fas fa-table me-1"></i>
-                            List of Booking
+                            Detail Sales Report
                         </div>
                         <div class="card-body">
                             <table id="datatablesSimple">
                                 <thead>
                                     <tr>
-                                        <th>#</th>
-                                        <th>User Name</th>
-                                        <th>Name</th>
-                                        <th>Quantity</th>
-                                        <th>Start Booked At</th>
-                                        <th>End Booked At</th>
                                         <th>Created At</th>
-                                        <th>Status</th>
+                                        <th>Cafe Name</th>
+                                        <th>Receipt No</th>
+                                        <th>User Name</th>
+                                        <th>Subtotal</th>
+                                        <th>Sst Amount</th>
+                                        <th>Service Charge Amount</th>
+                                        <th>Total Price</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
@@ -160,56 +149,28 @@
     $(document).ready(function() {
 
         // $.noConflict();
-        var type = "book";
-        var library_id = localStorage.getItem('library_id');
-
         fetch_data();
 
         setTimeout(function() {
                 $('#flash-message').fadeOut('fast');
             }, 2000); // 2 seconds
         var datatable;
+        var cafe_id = localStorage.getItem('cafe_id');
+
         // destroy datatable and reload again
-
-        $('#equipment').click(function() {
-            type = "equipment";
-            // $('#title').html("Hot Coffee");
-            $('.menu').removeClass('active');
-            $(this).addClass('active');
-            $('#datatablesSimple').DataTable().destroy();
-            fetch_data();
-        });
-        $('#book').click(function() {
-            type = "book";
-            // $('#title').html("Ice Coffee");
-            $('.menu').removeClass('active');
-            $(this).addClass('active');
-
-            $('#datatablesSimple').DataTable().destroy();
-            fetch_data();
-        });
-        $('#room').click(function() {
-            type = "room";
-            // $('#title').html("Blended Coffee");
-            $('.menu').removeClass('active');
-            $(this).addClass('active');
-
-            $('#datatablesSimple').DataTable().destroy();
-            fetch_data();
-        });
        
-        $('#library_id').val(library_id);
+        $('#cafe_id').val(cafe_id);
         // ajax function to get data from api to display at datatable
         function fetch_data() {
-            var library_id = localStorage.getItem('library_id');
+            var cafe_id = localStorage.getItem('cafe_id');
+
             datatable = $('#datatablesSimple').DataTable({
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: "{{ route('booking.getBookingDatatable') }}",
+                    url: "{{ route('detail_sales_report') }}",
                     data: {
-                        library_id: library_id,
-                        type: type
+                        // cafe_id: cafe_id,
                     },
                     type: 'GET',
                 },
@@ -224,46 +185,45 @@
                 order: [
                     [1, 'asc']
                 ],
-                columns: [{
-                    "data": null,
-                    searchable: false,
-                    "sortable": false,
-                    render: function(data, type, row, meta) {
-                        return meta.row + meta.settings._iDisplayStart + 1;
-                    }
-                }, {
-                    data: "user_name",
-                    name: 'user_name',
-                    orderable: true,
-                    searchable: true
-                },{
-                    data: "name",
-                    name: 'name',
-                    orderable: false,
-                    searchable: false
-                }, {
-                    data: "quantity",
-                    name: 'quantity',
-                    orderable: true,
-                    searchable: true
-                },{
-                    data: "start_booked_at",
-                    name: 'start_booked_at',
-                    orderable: false,
-                    searchable: false
-                },{
-                    data: "end_booked_at",
-                    name: 'end_booked_at',
-                    orderable: false,
-                    searchable: false
-                },{
+
+                columns: [ {
                     data: "created_at",
                     name: 'created_at',
+                    orderable: true,
+                    searchable: true
+                },{
+                    data: "cafe_name",
+                    name: 'cafe_name',
+                    orderable: false,
+                    searchable: false
+                }, {
+                    data: "receipt_no",
+                    name: 'receipt_no',
+                    orderable: true,
+                    searchable: true
+                },{
+                    data: "user_name",
+                    name: 'user_name',
                     orderable: false,
                     searchable: false
                 },{
-                    data: "status",
-                    name: 'status',
+                    data: "subtotal",
+                    name: 'subtotal',
+                    orderable: false,
+                    searchable: false
+                },{
+                    data: "sst_amount",
+                    name: 'sst_amount',
+                    orderable: false,
+                    searchable: false
+                },{
+                    data: "service_charge_amount",
+                    name: 'service_charge_amount',
+                    orderable: false,
+                    searchable: false
+                },{
+                    data: "total_price",
+                    name: 'total_price',
                     orderable: false,
                     searchable: false
                 }, {
@@ -278,18 +238,16 @@
         $(document).on('change', '.data-status', function() {
         var dataId = $(this).attr('data-id');
         var status = $(this).is(':checked') ? 1 : 0;
-            
+
             $.ajax({
-                url: '/staff/booking/' + dataId,
+                url: '/staff/order/' + dataId,
                 type: 'PATCH',
                 data: { 
                     type: "status",
                     _token: "{{ csrf_token() }}",
-                    action: status == 1 ? "approved" : "rejected"
                 },
                 success: function(result) {
                     // Handle the result of the API call
-                    // console.log("success");
                     $('#datatablesSimple').DataTable().destroy();
                     fetch_data();
                 }
@@ -300,29 +258,38 @@
         $(document).on('click', '.showData', function() {
             var data_id = $(this).attr('id');
                 $.ajax({
-                    url: '/staff/booking/' + data_id + '/edit', // Replace with your API endpoint
+                    url: '/staff/order/'+data_id+'/edit', // Replace with your API endpoint
                     method: 'GET',
                     success: function(data) {
                         var modalContent = `
                         <div class="modal-header">
-                            <h5 class="modal-title" id="orderModalLabel">Booking Details</h5>
+                            <h5 class="modal-title" id="orderModalLabel">Order Receipt</h5>
                             <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
                         <div class="modal-body">
-                            <h6><strong>User Name:</strong> ${data.user_name}</h6>
-                            <p><strong>Penalty Status:</strong> ${data.penalty_status}<p>
-                            <p><strong>Start Booked At:</strong> ${data.start_booked_at} 
-                            <span style="float:right"><strong>End Booked At:</strong> ${data.end_booked_at}</span></p>
-                            
+                            <h6><strong>Order No:</strong> ${data.order_no}</h6>
+                            <p><span><strong>Payment Status:</strong> ${data.payment_status}</span><p>
+                            <p><strong>Receipt No:</strong> ${data.receipt_no} 
+                            <span style="float:right"><strong>Table No:</strong> ${data.table_no}</span></p>
+                            <p><strong>User Name:</strong> ${data.user_name}
+                            <span style="float:right"><strong> Phone No:</strong> ${data.user_phone_no}</span></p>
                             <p><strong>Created At:</strong> ${data.created_at}
-                            <span style="float:right"><strong>Status:</strong> ${data.is_handled}</span></p>
+                            <span style="float:right"><strong>Status:</strong> ${data.status}</span></p>
                             <hr>
-                            <p><img src="${data.picture}" width="200"></p>
-                            <p><strong>Name:</strong> ${data.item_name}</p>
-                            <p><strong>Quantity:</strong> ${data.quantity}</strong></p>
+
+                            <p><strong>Menu Name:</strong> ${data.beverage_name}</p>
+                            <p><strong>Unit Price (RM):</strong> ${data.unit_price}
+                            <span style="float:right"><strong>Quantity:</strong> ${data.quantity}</span></p>
                             <hr>
+
+                            <p><strong>Subtotal (RM):</strong> ${data.subtotal}</p>
+                            <p><strong>SST Amount (RM):</strong> ${data.sst_amount}</p>
+                            <p><strong>Service Charge Amount (RM):</strong> ${data.service_charge_amount}</p>
+                            <hr>
+                            <p><strong>Total Price (RM):</strong> ${data.total_price}</p>
+                           
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
