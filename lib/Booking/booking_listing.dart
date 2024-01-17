@@ -1,7 +1,10 @@
 import 'package:cafe_library_services/Controller/connection.dart';
+import 'package:cafe_library_services/Penalty/penalty_listing.dart';
 import 'package:cafe_library_services/Welcome/home.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import '../Model/booking_model.dart';
 import 'booking_record.dart';
@@ -58,44 +61,49 @@ class BookingListScreen extends StatefulWidget {
 }
 
 class FetchBooking {
-  late List<BookingModel> beverages;
 
   Future<List<BookingModel>> fetchBookingRecords() async {
-    // Replace the URL with your actual API endpoint
     final String libraryId = await getLibraryIdFromSharedPreferences();
     final String? token = await getToken();
 
     try {
       var header = {
         "Content-Type": "application/json",
-        "Authorization": "Bearer ${token}"
+        "Authorization": "Bearer $token"
       };
       var response = await http.get(Uri.parse('${API.booking}?library_id=$libraryId'),
-      headers: header);
+          headers: header);
 
       if (response.statusCode == 200) {
-        Map<String, dynamic> result = jsonDecode(response.body);
+        try {
+          Map<String, dynamic> result = jsonDecode(response.body);
 
-        // Check if 'data' is a Map and contains 'aaData' key
-        if (result['status'] == 'success' &&
-            result['data'] is Map &&
-            result['data']['aaData'] is List) {
-          List<dynamic> aaDataList = result['data']['aaData'];
-          List<BookingModel> bookingRecords = [];
+          if (result['status'] == 'success' &&
+              result['data'] is Map &&
+              result['data']['aaData'] is List) {
+            List<dynamic> aaDataList = result['data']['aaData'];
+            List<BookingModel> bookingRecords = [];
 
-          // Iterate through the 'aaData' list
-          for (var bookingData in aaDataList) {
-            // Create a BookingModel instance from each booking data and add it to the list
-            bookingRecords.add(BookingModel.fromJson(bookingData));
+            for (var bookingData in aaDataList) {
+              BookingModel booking = BookingModel.fromJson(bookingData);
+
+              bookingRecords.add(booking);
+            }
+
+            return bookingRecords;
+          } else {
+            print('Error: "status" is not "success" or "aaData" is not a List');
+            print('Response body: ${response.body}');
+            return [];
           }
-
-          return bookingRecords;
-        } else {
-          print('Error: "status" is not "success" or "aaData" is not a List');
+        } catch (e) {
+          print('Error decoding JSON: $e');
+          print('Response body: ${response.body}');
           return [];
         }
       } else {
         print('Error statusCode: ${response.statusCode}, Reason: ${response.reasonPhrase}');
+        print('Response body: ${response.body}');
         return [];
       }
     } catch (error) {
@@ -103,11 +111,45 @@ class FetchBooking {
       return [];
     }
   }
+
+  void saveBookingIdToSharedPreferences(int bookingId) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setInt('bookingId', bookingId);
+  }
+
+  Future<bool> toggleReturn(int bookingId) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = await getToken();
+
+    try {
+      var response = await http.patch(
+        Uri.parse('${API.returnBooking}/$bookingId'),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $token"
+        },
+        body: jsonEncode({"type": "return"}),
+      );
+
+      if (response.statusCode == 200) {
+        print('Return toggled successfully for bookingId: $bookingId');
+        Fluttertoast.showToast(msg: 'Return successfully');
+        return true;
+      } else {
+        print('Error toggling return - StatusCode: ${response.statusCode}');
+        return false;
+      }
+    } catch (error) {
+      print('Error toggling return: $error');
+      return false;
+    }
+  }
 }
 
 class _BookingListScreenState extends State<BookingListScreen> {
   late Future<List<BookingModel>> bookingList;
   late List<BookingModel> results;
+  Map<int, bool> isPaymentRequiredMap = {};
 
   @override
   void initState() {
@@ -168,15 +210,71 @@ class _BookingListScreenState extends State<BookingListScreen> {
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          '${booking.itemName}',
+                                          'Item: ${booking.itemName}',
                                           style: TextStyle(
                                             fontWeight: FontWeight.bold,
                                           ),
                                         ),
                                         Text(
-                                          '${booking.status}',
+                                          'Status: ${booking.status}',
                                         ),
                                       ],
+                                    ),
+                                    Spacer(),
+                                    Padding(
+                                      padding: const EdgeInsets.all(16.0),
+                                      child: Visibility(
+                                        visible: booking.status == 'approved',
+                                        child: ElevatedButton(
+                                          onPressed: () async {
+                                            if (booking.end != true) {
+                                              bool success = await FetchBooking().toggleReturn(booking.bookingId);
+                                              if (success && booking.penaltyStatus == 1) {
+                                                setState(() {
+                                                  isPaymentRequiredMap[booking.bookingId] = true;
+                                                });
+
+                                                // Wait for user to click "Pay" button before navigating to PenaltyListing
+                                                await showDialog(
+                                                  context: context,
+                                                  builder: (BuildContext context) {
+                                                    return AlertDialog(
+                                                      title: Text('Payment Confirmation'),
+                                                      content: Text('Do you want to proceed with the payment?'),
+                                                      actions: <Widget>[
+                                                        TextButton(
+                                                          onPressed: () {
+                                                            Navigator.of(context).pop();
+                                                          },
+                                                          child: Text('Cancel'),
+                                                        ),
+                                                        TextButton(
+                                                          onPressed: () {
+                                                            Navigator.of(context).pop();
+                                                            Navigator.push(
+                                                              context,
+                                                              MaterialPageRoute(
+                                                                builder: (context) => PenaltyListing(),
+                                                              ),
+                                                            );
+                                                          },
+                                                          child: Text('Pay'),
+                                                        ),
+                                                      ],
+                                                    );
+                                                  },
+                                                );
+                                              }
+                                            }
+                                          },
+                                          child: IgnorePointer(
+                                            ignoring: isPaymentRequiredMap[booking.bookingId] == true,
+                                            child: Text(
+                                              isPaymentRequiredMap[booking.bookingId] == true ? 'Pay' : (booking.end == true ? 'Penalty' : 'Return'),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
                                     ),
                                   ],
                                 ),

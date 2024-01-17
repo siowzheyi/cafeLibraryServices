@@ -1,10 +1,12 @@
 class AnnouncementModel {
+  int id;
   String title;
   String content;
   String picture;
 
   // constructor
   AnnouncementModel({
+    required this.id,
     required this.title,
     required this.content,
     required this.picture
@@ -13,20 +15,17 @@ class AnnouncementModel {
   // factory method to create an announcement from a map
   factory AnnouncementModel.fromJson(Map<String, dynamic> json) {
     return AnnouncementModel(
-        title: json['title'] ?? 'Unloaded',
-        content: json['content'] ?? 'Unloaded',
-        picture: json['picture'] ?? 'Image is not loaded'
+        id: json['id'] ?? '',
+        title: json['title'] ?? '',
+        content: json['content'] ?? '',
+        picture: json['picture'] ?? ''
     );
-  }
-
-  // Method to convert the picture value into a Uri
-  Uri getPictureUri() {
-    return Uri.parse(picture ?? '');
   }
 
   // convert the announcement instance to a map
   Map<String, dynamic> toJson() {
     return {
+      'id': id,
       'title': title,
       'content': content,
       'picture': picture,

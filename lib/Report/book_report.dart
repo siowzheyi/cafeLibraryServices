@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:cafe_library_services/Controller/connection.dart';
 import 'package:cafe_library_services/Report/book_report_listing.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -95,13 +96,25 @@ class _BookReportPageState extends State<BookReportPage> {
           scrollDirection: Axis.vertical,
           child: Column(
             children: [
-              TextField(
+              TextFormField(
                 controller: nameController,
                 decoration: InputDecoration(labelText: 'Book name'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter book name';
+                  }
+                  return null;
+                },
               ),
-              TextField(
+              TextFormField(
                 controller: descriptionController,
                 decoration: InputDecoration(labelText: 'Description'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter description';
+                  }
+                  return null;
+                },
               ),
               SizedBox(height: 10),
               _image == null
@@ -148,7 +161,9 @@ class _BookReportPageState extends State<BookReportPage> {
                     );
                   } else {
                     // Handle the case where no image is selected
-                    print('Please select an image before submitting the report.');
+                    Fluttertoast.showToast(
+                      msg: 'Please select an image before submitting the report.'
+                    );
                   }
                 },
                 child: Text('Submit Report'),

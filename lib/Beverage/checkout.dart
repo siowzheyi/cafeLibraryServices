@@ -1,10 +1,16 @@
+import 'package:cafe_library_services/Beverage/beverage_listing.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../Controller/connection.dart';
 import '../Model/beverage_model.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import '../Welcome/select_cafe.dart';
 
 class CheckoutScreen extends StatelessWidget {
   final List<BeverageModel> selectedItems;
   final List<int> quantity;
-  final double totalPrice; // Add totalPrice as a parameter
+  final double totalPrice;
 
   const CheckoutScreen({
     Key? key,
@@ -13,11 +19,44 @@ class CheckoutScreen extends StatelessWidget {
     required this.totalPrice,
   }) : super(key: key);
 
+  Future<void> postOrderBeverage(List<BeverageModel> selectedItems, List<int> quantity, int tableId) async {
+    try {
+      final String? token = await getToken();
+
+      for (int i = 0; i < selectedItems.length; i++) {
+        var headers = {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        };
+
+        var requestBody = {
+          'beverage_id': selectedItems[i].id,
+          'quantity': quantity[i],
+          'table_id': tableId,
+        };
+
+        var response = await http.post(
+          Uri.parse(API.order),
+          headers: headers,
+          body: json.encode(requestBody),
+        );
+
+        if (response.statusCode == 200) {
+          print('Order placed successfully for beverage ${selectedItems[i].id}');
+        } else {
+          print('Error: ${response.statusCode}, Reason Phrase: ${response.reasonPhrase}');
+        }
+      }
+    } catch (error) {
+      print('Error: $error');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Checkout'),
+        title: const Text('Checkout'),
       ),
       body: ListView.builder(
         itemCount: selectedItems.length,
@@ -44,21 +83,18 @@ class CheckoutScreen extends StatelessWidget {
       ),
       bottomNavigationBar: BottomAppBar(
         child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               // Display total price for all items
               Text('Grand Total Price: RM${totalPrice.toStringAsFixed(2)}'),
-              SizedBox(height: 50.0),
+              const SizedBox(height: 50.0),
               ElevatedButton(
                 onPressed: () {
-                  // Perform the payment logic here
-                  // You can show a loading screen or perform any necessary actions
-                  // after the user clicks the "Pay" button
                   _handlePayment(context);
                 },
-                child: Text('Pay'),
+                child: const Text('Pay'),
               ),
             ],
           ),
@@ -72,7 +108,7 @@ class CheckoutScreen extends StatelessWidget {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
+        return const AlertDialog(
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -86,13 +122,46 @@ class CheckoutScreen extends StatelessWidget {
     );
 
     // Simulate a delay for demonstration purposes
-    Future.delayed(Duration(seconds: 2), () {
+    Future.delayed(const Duration(seconds: 2), () async {
       // Close the loading screen
       Navigator.of(context).pop();
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      int? tableId = prefs.getInt('tableId');
 
-      // You can navigate to a success page or perform any other action
-      // after the payment is complete
-      // Example: Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => PaymentSuccessScreen()));
+      // Check if tableId is not null before calling postOrderBeverage
+      if (tableId != null) {
+        await postOrderBeverage(selectedItems, quantity, tableId);
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.check_circle, color: Colors.green, size: 40.0),
+                  SizedBox(height: 16.0),
+                  Text('Order successfully sent!'),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(
+                        builder: (context) => BeverageListing(),
+                      ),
+                    );
+                  },
+                  child: const Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+      } else {
+        print('Error: tableId is null');
+      }
     });
   }
 }

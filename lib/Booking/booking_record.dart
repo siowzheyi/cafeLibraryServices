@@ -22,7 +22,7 @@ class BookingDetailPage extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Booking No: ${booking.itemName}', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                Text('Item: ${booking.itemName}', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                 SizedBox(height: 10),
                 Text('Booking: ${booking.itemId}'),
                 SizedBox(height: 10),

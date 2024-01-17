@@ -278,7 +278,7 @@ class _BookListScreenState extends State<BookListScreen> {
                     List<BookModel> results = snapshot.data!;
                     results.shuffle();
                     return ListView.builder(
-                      itemCount: 20,
+                      itemCount: results.length,
                       itemBuilder: (context, index) {
                         var book = results[index];
                         return Card(

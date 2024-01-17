@@ -2,6 +2,7 @@ import 'package:cafe_library_services/Beverage/beverage_details.dart';
 import 'package:cafe_library_services/Welcome/home.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import '../Controller/connection.dart';
 import '../Model/beverage_model.dart';
@@ -178,6 +179,16 @@ class FetchBeverage {
       return [];
     }
   }
+
+  // Future<String> setBeverageId() async {
+  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   return prefs.setString('beverageId', );
+  // }
+  //
+  // Future<String> getBeverageId() async {
+  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   return prefs.getString('beverageId') ?? '';
+  // }
 }
 
 class _BeverageListScreenState extends State<BeverageListScreen> {
@@ -189,6 +200,7 @@ class _BeverageListScreenState extends State<BeverageListScreen> {
 
   @override
   void initState() {
+    super.initState();
     fetchData();
   }
 
@@ -266,12 +278,6 @@ class _BeverageListScreenState extends State<BeverageListScreen> {
                           ElevatedButton(
                             onPressed: () {
                               print('Pressed $category');
-                              // Navigator.push(
-                              //   context,
-                              //   MaterialPageRoute(
-                              //     builder: (context) => GenreSpecificBeverageListScreen(genre: genre),
-                              //   ),
-                              // );
                             },
                             child: Text(category),
                           ),

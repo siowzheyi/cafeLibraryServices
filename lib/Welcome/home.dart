@@ -42,8 +42,9 @@ class CafeLibraryServicesApp extends StatelessWidget {
               return HomePage(libraryId: libraryId);
             }
           } else {
-            // While waiting for the Future to complete, show a loading indicator
-            return Scaffold(
+            // While waiting for the Future to complete, show a loading
+            // indicator
+            return const Scaffold(
               body: Center(
                 child: CircularProgressIndicator(),
               ),
@@ -57,24 +58,28 @@ class CafeLibraryServicesApp extends StatelessWidget {
 
 Future<String> getLibraryIdFromSharedPreferences() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  return prefs.getString('libraryId') ?? ''; // Default to an empty string if not found
+  return prefs.getString('libraryId') ?? ''; // Default to an empty string if
+  // not found
 }
 
 Future<String> getCafeIdFromSharedPreferences() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  return prefs.getString('cafeId') ?? ''; // Default to an empty string if not found
+  return prefs.getString('cafeId') ?? ''; // Default to an empty string if
+  // not found
 }
 
 Future<String> getUserIdFromSharedPreferences() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  return prefs.getString('userId') ?? ''; // Default to an empty string if not found
+  return prefs.getString('userId') ?? ''; // Default to an empty string if
+  // not found
 }
 
 class HomePage extends StatefulWidget {
   final String libraryId;
   final Map<String, String>? headers;
 
-  const HomePage({Key? key, required this.libraryId, this.headers}) : super(key: key);
+  const HomePage({Key? key, required this.libraryId, this.headers})
+      : super(key: key);
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -99,7 +104,7 @@ class _HomePageState extends State<HomePage> {
                   fontSize: 32.0,
                 ),
               ),
-              ViewAnnouncement(),
+              const ViewAnnouncement(),
               SizedBox(
                 height: MediaQuery.of(context).size.height,
                 child: ListView(
@@ -252,7 +257,8 @@ class _HomePageState extends State<HomePage> {
                           );
                         },
                         style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all<Color>(Colors.brown),
+                          backgroundColor: MaterialStateProperty.all<Color>
+                            (Colors.brown),
                         ),
                         child: const Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -282,7 +288,8 @@ class _HomePageState extends State<HomePage> {
                           );
                         },
                         style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all<Color>(Colors.brown),
+                          backgroundColor: MaterialStateProperty.all<Color>
+                            (Colors.brown),
                         ),
                         child: const Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -356,7 +363,7 @@ class _ViewAnnouncementState extends State<ViewAnnouncement> {
       var url = Uri.parse('${API.announcement}?library_id=$libraryId');
       var header = {
         "Content-Type": "application/json",
-        "Authorization": "Bearer ${token}"
+        "Authorization": "Bearer $token"
       };
       var response = await http.get(
           url,
@@ -402,7 +409,8 @@ class _ViewAnnouncementState extends State<ViewAnnouncement> {
           future: announcements,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return CircularProgressIndicator(); // Show a loading indicator while data is being fetched
+              return const CircularProgressIndicator();
+              // while data is being fetched
             } else if (snapshot.hasError) {
               return Text('Error: ${snapshot.error}');
             } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
@@ -430,10 +438,13 @@ class _ViewAnnouncementState extends State<ViewAnnouncement> {
                               height: 250.0,
                               width: 200.0,
                               child: CachedNetworkImage(
-                                imageUrl: announcementList[index].getPictureUri().toString(),
+                                imageUrl: announcementList[index]
+                                    .picture,
                                 fit: BoxFit.contain,
-                                placeholder: (context, url) => CircularProgressIndicator(),
-                                errorWidget: (context, url, error) => Icon(Icons.error),
+                                placeholder: (context, url) =>
+                                    const CircularProgressIndicator(),
+                                errorWidget: (context, url, error) =>
+                                    const Icon(Icons.error),
                               ),
                             ),
                           ],

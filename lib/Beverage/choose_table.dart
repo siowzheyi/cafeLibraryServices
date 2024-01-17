@@ -2,6 +2,7 @@ import 'package:cafe_library_services/Beverage/beverage_listing.dart';
 import 'package:cafe_library_services/Welcome/home.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import '../Controller/connection.dart';
 import '../Model/table_model.dart';
@@ -60,6 +61,11 @@ class TableListScreen extends StatefulWidget {
 
 class _TableListScreenState extends State<TableListScreen> {
   late Future<List<TableModel>> tables;
+
+  Future<void> saveTableIdToSharedPreferences(int tableId) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('tableId', tableId);
+  }
 
   Future<List<TableModel>> getTableList() async {
     try {
@@ -158,6 +164,7 @@ class _TableListScreenState extends State<TableListScreen> {
                         height: 100.0,
                         child: ListTile(
                           onTap: () {
+                            saveTableIdToSharedPreferences(results[index].id);
                             Navigator.push(
                               context,
                               MaterialPageRoute(
