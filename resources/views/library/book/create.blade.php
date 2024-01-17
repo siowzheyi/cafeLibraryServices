@@ -122,7 +122,7 @@
                                         <label for="exampleFormControlInput1">Stock</label>
                                         <input type="number" class="form-control" id="exampleFormControlInput1" name="stock_count">
                                     </div>
-                                    <input type="number" class="form-control library_id" id="exampleFormControlInput1" name="library_id">
+                                    <input type="number" class="form-control library_id" id="exampleFormControlInput1" name="library_id" hidden>
                                     <input type="submit" class="btn btn-success mb-2" value="Submit">
                                 </form>
                             </div>

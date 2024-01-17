@@ -13,6 +13,7 @@ use Illuminate\Validation\Rule;
 use App\Http\Requests\BookRequest;
 use App\Models\User;
 use App\Models\Book;
+use App\Models\Library;
 
 use Auth;
 use App;

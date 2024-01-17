@@ -101,7 +101,7 @@ class ReportController extends BaseController
                "description" => $report->description,
                "remark" => $report->remark,
                "picture" => $report->picture ? $service->getImage('report',$report->id) : null,
-               "status" => $report->status,
+               "status" => $report->status == 1 ? "Handled" : "Not Handled",
                "created_at" => $report->created_at != null ? date('Y-m-d H:i:s',strtotime($report->created_at)) : null,
 
         ];

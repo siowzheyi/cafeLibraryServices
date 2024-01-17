@@ -251,7 +251,7 @@ class BookService
         $service = new Service();
 
                         
-        
+        // dd($request['library_id']);
         $records = Book::where('library_id',$request['library_id'])
                             ->where('status',1)
                             ->where('remainder_count','>=',1)
@@ -288,6 +288,7 @@ class BookService
         foreach ($records as $key => $record) {
             
             $book_related = Book::where('genre',$record->genre)->where('status',1)
+            ->where('books.library_id',$request['library_id'])
             ->where('remainder_count','>=',1)
             ->where('availability',1);
                             // ->get();
