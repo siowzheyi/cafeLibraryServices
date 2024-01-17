@@ -53,6 +53,7 @@ Route::middleware('auth:api')->group(function () {
 
     Route::get('booking/{booking}', [BookingController::class, 'show'])->name('api.booking.show');
     Route::post('booking',[ BookingController::class, 'store'])->name('api.booking.store');
+    Route::patch('booking/return/{booking}', [BookingController::class, 'returnBooking'])->name('api.booking.return_booking');
 
     Route::get('report/{report}', [ReportController::class, 'show'])->name('api.report.show');
     Route::post('report', [ReportController::class, 'store'])->name('api.report.store');

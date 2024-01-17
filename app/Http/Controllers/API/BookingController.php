@@ -138,6 +138,34 @@ class BookingController extends BaseController
         return $this->sendResponse($result['data'], $result['message']);     
     }
 
+    public function returnBooking(Request $request, Booking $booking)
+    {
+        $input = $request->all();
+        $input['booking_id'] = $booking->id;
+
+        App::setLocale($request->header('language'));
+
+        $validator = Validator::make($input, [
+            'booking_id' => array('required','exists:bookings,id',function ($attribute, $value, $fail) use($request){
+                if($request['type'] == "return")
+                {
+                    $booking = Booking::find($value);
+                    if($booking->is_handled == "pending")
+                    $fail("Cannot return book before staff approved to borrow");
+                }
+            }),
+        ]);
+
+        if ($validator->fails()) {
+            return $this->sendCustomValidationError($validator->errors());
+        }
+
+
+        $result = $this->services->update($request, $booking);
+
+        return $this->sendResponse($result['data'], $result['message']);   
+    }
+
     // This api is for admin user to view list of Booking listing
     public function bookingListing(Request $request)
     {
