@@ -65,7 +65,7 @@
                     <div class="container-fluid px-4">
                         <h1 class="mt-4">Cafe</h1>
                         <ol class="breadcrumb mb-4">
-                            <li class="breadcrumb-item"><a href="{{ route('cafe.dashboard') }}">Dashboard</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
                             <li class="breadcrumb-item active">Cafe</li>
                         </ol>
                         <div class="row mb-2">

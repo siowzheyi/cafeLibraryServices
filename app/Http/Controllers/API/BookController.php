@@ -255,5 +255,25 @@ class BookController extends BaseController
         }
     }
 
+    //bookController
+    public function getGenreBook()
+    {
+        // Fetch genre-wise book count data from the database
+        $genreBookData = Book::selectRaw('genre, COUNT(*) as total_books')
+            ->groupBy('genre')
+            ->get();
+
+        if(auth()->user()->library_id != null)
+        {
+            $library = library::find(auth()->user()->library_id);
+            $genreBookData = Book::selectRaw('genre, COUNT(*) as total_books')
+                            ->where('books.library_id',$library->id)
+                            ->groupBy('genre')
+                            ->get();
+        }
+
+        return response()->json($genreBookData);
+    }
+
 
 }

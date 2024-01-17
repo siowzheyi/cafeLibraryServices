@@ -74,6 +74,20 @@
                             <li class="breadcrumb-item active">Library Staff</li>
                         </ol>
                         {{-- modify to get a report from db --}}
+                        <div class="row justify-content-center">
+                            <div class="col-xl-6">
+                                <div class="card mb-4">
+                                    <div class="card-header">
+                                        <i class="fas fa-chart-pie me-1"></i>
+                                            Total book by genre
+                                    </div>
+                                    <div class="card-body">
+                                        <canvas id="PieChart" width="80%" height="200"></canvas>
+                                    </div>
+                                    <div class="card-footer small text-muted">Updated at @php  echo date('F j, Y', time() ) @endphp</div>
+                                </div>
+                            </div>
+                        </div>
                         
                     </div>
                 </main>
@@ -91,13 +105,90 @@
                 </footer>
             </div>
         </div>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-        <script src="js/scripts.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
-        <script src="assets/demo/chart-area-demo.js"></script>
-        <script src="assets/demo/chart-bar-demo.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js" crossorigin="anonymous"></script>
-        <script src="js/datatables-simple-demo.js?v=1"></script>
-
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min"></script>
+        <script src="{{ asset('js/scripts.js') }}"></script>
+     <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js" crossorigin="anonymous"></script>
+     <script src="{{url('public/vendor/create-charts.js')}}"></script>
+     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@2.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script>
+    
+            // // Call the updateCharts function when the page loads
+            $(document).ready(function () {
+                    // Make AJAX requests to get data and update charts
+                function updateCharts() {
+            
+    
+                    // Book Chart
+                    $.ajax({
+                        url: "{{ route('book.getGenreBook') }}",
+                        data: {
+                                // library_id: library_id,
+                            },
+                        type: 'GET',
+                        success: function (data) {
+                            console.log(data);
+                            updateBookPieChart('PieChart', data);
+                        },
+                        error: function (error) {
+                            console.error('Error fetching genre book data:', error);
+                        }
+                    });
+    
+                   
+                }
+    
+             
+    
+                function updateBookPieChart(chartId, data) {
+                    var ctx = document.getElementById(chartId).getContext('2d');
+    
+                    // Extract 'genre' and 'total_books' properties from the array of objects
+                    var labels = data.map(item => item.genre);
+                    var totalBooksData = data.map(item => item.total_books);
+    
+                    console.log("inside update pie chart, get total books data:" + totalBooksData);
+                    console.log("inside update pie chart, get genre data:" + labels);
+    
+                    new Chart(ctx, {
+                        type: 'pie',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'Total Books',
+                                data: totalBooksData,
+                                backgroundColor: [
+                                    'rgba(255, 99, 132, 0.2)',
+                                    'rgba(54, 162, 235, 0.2)',
+                                    'rgba(255, 206, 86, 0.2)',
+                                    'rgba(75, 192, 192, 0.2)',
+                                    'rgba(153, 102, 255, 0.2)',
+                                    'rgba(255, 159, 64, 0.2)'
+                                ],
+                                borderColor: [
+                                    'rgba(255, 99, 132, 1)',
+                                    'rgba(54, 162, 235, 1)',
+                                    'rgba(255, 206, 86, 1)',
+                                    'rgba(75, 192, 192, 1)',
+                                    'rgba(153, 102, 255, 1)',
+                                    'rgba(255, 159, 64, 1)'
+                                ],
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            legend: {
+                                position: 'right'
+                            }
+                        }
+                    });
+                }
+    
+                updateCharts();
+            });
+        </script>
     </body>
 </html>

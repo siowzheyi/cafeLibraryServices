@@ -15,6 +15,7 @@ use App\Http\Requests\OrderRequest;
 use App\Models\User;
 use App\Models\Order;
 use App\Models\Beverage;
+use App\Models\Cafe;
 
 use Auth;
 use App;
@@ -226,6 +227,53 @@ class OrderController extends BaseController
             $table->rawColumns(['status','action']);
             return $table->make(true);
         }
+    }
+
+    //orderController
+    //for graph
+    public function getDailySales()
+    {
+        // dd( now()->toDateString());
+        // Fetch daily sales data from the database
+        $dailySalesData = Order::selectRaw('DATE(created_at) as date, SUM(total_price) as total_price')
+        ->groupBy('date');
+
+        if(auth()->user()->cafe_id != null)
+        {
+            $cafe = Cafe::find(auth()->user()->cafe_id);
+            $dailySalesData = Order::join('beverages','beverages.id','=','orders.beverage_id')
+                            ->join('cafes','cafes.id','=','beverages.cafe_id')
+                            ->selectRaw('DATE(orders.created_at) as date, SUM(orders.total_price) as total_price')
+                            ->groupBy('date');
+        }
+
+
+            $dailySalesData = $dailySalesData->get();
+        // dd($dailySalesData[0]);
+        return response()->json($dailySalesData);
+    }
+
+    public function getMonthlySales()
+    {
+        // Fetch monthly sales data from the database
+        $monthlySalesData = Order::selectRaw('MONTH(created_at) as month, SUM(total_price) as total_sales') 
+            ->whereYear('created_at', now()->year) // Adjust 'date_column' to your actual date column
+            ->groupByRaw('MONTH(created_at)')
+            ->get();
+
+        if(auth()->user()->cafe_id != null)
+        {
+            $cafe = Cafe::find(auth()->user()->cafe_id);
+            $monthlySalesData = Order::selectRaw('MONTH(orders.created_at) as month, SUM(orders.total_price) as total_sales') 
+            ->join('beverages','beverages.id','=','orders.beverage_id')
+            ->where('beverages.cafe_id',$cafe->id)
+            ->whereYear('orders.created_at', now()->year) // Adjust 'date_column' to your actual date column
+            ->groupByRaw('MONTH(orders.created_at)')
+            ->get();
+                            
+        }
+        // dd($monthlySalesData);
+        return response()->json($monthlySalesData);
     }
 
 

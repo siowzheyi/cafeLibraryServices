@@ -26,7 +26,7 @@
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                    <li><a class="dropdown-item" href="#!">Staff Cafe</a></li>
+                    <li><a class="dropdown-item">Staff Cafe</a></li>
                     <li><hr class="dropdown-divider" /></li>
                     <li><a class="dropdown-item" href="{{ route('login') }}">Logout</a></li>
                 </ul>
@@ -104,23 +104,29 @@
                         <li class="breadcrumb-item active">Cafe Report</li>
                     </ol>
 
-                    <div class="column">
+                    <div class="row">
                         <div class="col-xl-6">
                             <div class="card mb-4">
                                 <div class="card-header">
-                                    <i class="fas fa-chart-area me-1"></i>
+                                    <i class="fas fa-chart-bar me-1"></i>
                                     Daily Sales Report
                                 </div>
-                                <div class="card-body"><canvas id="myAreaChart" width="100%" height="40"></canvas></div>
+                                <div class="card-body">
+                                    <canvas id="myAreaChart" width="100%" height="40"></canvas>
+                                </div>
+                                <div class="card-footer small text-muted">Updated at @php  echo date('F j, Y', time() ) @endphp</div>
                             </div>
                         </div>
                         <div class="col-xl-6">
                             <div class="card mb-4">
                                 <div class="card-header">
                                     <i class="fas fa-chart-bar me-1"></i>
-                                    Every Transaction Sales Report
+                                    Monthly Sales Report
                                 </div>
-                                <div class="card-body"><canvas id="myBarChart" width="100%" height="40"></canvas></div>
+                                <div class="card-body">
+                                    <canvas id="myBarChart" width="100%" height="40"></canvas>
+                                </div>
+                                <div class="card-footer small text-muted">Updated at @php  echo date('F j, Y', time() ) @endphp</div>
                             </div>
                         </div>
                     </div>
@@ -142,12 +148,133 @@
             </footer>
         </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min"></script>
     <script src="{{ asset('js/scripts.js') }}"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
-    <script src="{{ asset('demo/chart-area-demo.js') }}"></script>
-    <script src="{{ asset('demo/chart-bar-demo.js') }}"></script>
-    <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js" crossorigin="anonymous"></script>
-    <script src="{{ asset('js/datatables-simple-demo.js') }}"></script>
+ <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js" crossorigin="anonymous"></script>
+ <script src="{{url('public/vendor/create-charts.js')}}"></script>
+ <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@2.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    
+    // // Call the updateCharts function when the page loads
+    $(document).ready(function () {
+            // Make AJAX requests to get data and update charts
+        function updateCharts() {
+            // Daily Sales Chart
+            $.ajax({
+                url: "{{ route('order.getDailySales') }}",
+                data: {
+                        // cafe_id: cafe_id,
+                    },
+                type: 'GET',
+                success: function (data) {
+                    updateAreaChart('myAreaChart', data);
+                },
+                error: function (error) {
+                    console.error('Error fetching daily sales data:', error);
+                }
+            });
+
+            // Monthly Sales Chart
+            $.ajax({
+                url: "{{ route('order.getMonthlySales') }}",
+                data: {
+                        // cafe_id: cafe_id,
+                    },
+                type: 'GET',
+                success: function (data) {
+                    console.log(data);
+                    updateBarChart('myBarChart', data);
+                },
+                error: function (error) {
+                    console.error('Error fetching monthly sales data:', error);
+                }
+            });
+
+          
+           
+        }
+
+        // Function to update the area chart
+        function updateAreaChart(chartId, data) {
+            var ctx = document.getElementById(chartId).getContext('2d');
+            // Extracting date and total_price from JSON data
+            var labels = data.map(item => item.date);
+            var totalPriceData = data.map(item => item.total_price);
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Total Sales',
+                        data: totalPriceData,
+                        fill: true, // Set to true to fill the area under the line
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        x: {
+                            type: 'time', // Assuming 'date' represents a time value
+                            time: {
+                                unit: 'day',
+                                tooltipFormat: 'yyyy-MM-dd', // Adjust tooltip format as needed
+                                displayFormats: {
+                                    day: 'yyyy-MM-dd'
+                                }
+                            }
+                        },
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+
+        // Helper function to update bar chart
+        function updateBarChart(chartId, data) {
+            var ctx = document.getElementById(chartId).getContext('2d');
+
+            // Extract 'month' and 'total_sales' properties from the array of objects
+            var labels = data.map(item => item.month);
+            var salesData = data.map(item => item.total_sales);
+            console.log("inside update bar chart, get total price data:" + salesData);
+            console.log("inside update bar chart, get tdate data:" + labels);
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Total Sales',
+                        data: salesData,
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        x: {
+                            type: 'category'
+                        },
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        
+
+        updateCharts();
+    });
+</script>
 </body>
 </html>
