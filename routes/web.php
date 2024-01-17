@@ -87,11 +87,14 @@ Route::middleware(['staffauthentication'])->group(function () {
             Route::resource('report', ReportController::class)->except(['show','store']);
             
             Route::prefix('report')->group(function () {
-                Route::get('detail_sales_report', [OrderController::class, 'detailSalesReport'])->name('detail_sales_report');
-                Route::get('daily_sales_report', [OrderController::class, 'dailySalesReport'])->name('daily_sales_report');
+               
                 Route::get('penalty_report/index', [UserController::class, 'penaltyReportIndex'])->name('penalty_report.index');
                 Route::get('penalty_report/detail/{booking_id}', [UserController::class, 'penaltyReportDetail'])->name('penalty_report.detail');
 
+                Route::get('detail_sales_report', [OrderController::class, 'detailSalesReport'])->name('detail_sales_report');
+                Route::get('daily_sales_report', [OrderController::class, 'dailySalesReport'])->name('daily_sales_report');
+                Route::get('detail_sales_report_index', [OrderController::class, 'detailSalesReportIndex'])->name('detail_sales_report.index');
+                Route::get('daily_sales_report_index', [OrderController::class, 'dailySalesReportIndex'])->name('daily_sales_report.index');
             });
 
 

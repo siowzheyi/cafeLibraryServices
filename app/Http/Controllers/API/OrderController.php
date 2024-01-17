@@ -132,7 +132,17 @@ class OrderController extends BaseController
     {
         $result = $this->services->detailSalesReport($request);
 
-        return $this->sendResponse($result, "Data successfully retrieved. "); 
+        $table = Datatables::of($result['aaData']);
+
+        $table->addColumn('action', function ($row) {
+            $token = csrf_token();
+
+            $btn ='<button id="'.$row['id'].'" data_id="' . $row['id'] . '" data-token="' . $token . '" class="btn btn-primary m-1 showData" data-bs-toggle="modal" data-bs-target="#orderModal">View</button>';
+            return $btn;
+        });
+
+        $table->rawColumns(['status','action']);
+        return $table->make(true);
     }
 
     // This api is for admin user to view daily transaction report
@@ -140,7 +150,18 @@ class OrderController extends BaseController
     {
         $result = $this->services->dailySalesReport($request);
 
-        return $this->sendResponse($result, "Data successfully retrieved. "); 
+        // return $this->sendResponse($result, "Data successfully retrieved. "); 
+        return $result;
+    }
+
+    public function dailySalesReportIndex()
+    {
+        return view('cafe.report.dailySalesReport');
+    }
+
+    public function detailSalesReportIndex()
+    {
+        return view('cafe.report.detailSalesReport');
     }
 
     public function getOrderDatatable(Request $request)

@@ -57,7 +57,7 @@
                                 </a>
                                 <div class="collapse show" id="collapseLayoutsCafe" aria-labelledby="card-header" data-bs-parent="#sidenavAccordion">
                                     <nav class="sb-sidenav-menu-nested nav">
-                                        <a class="nav-link menu" href="{{ route('beverage.index') }}" >Hot Coffee</a>
+                                        <a class="nav-link menu" href="{{ route('beverage.index') }}">Hot Coffee</a>
                                         <a class="nav-link menu" href="{{ route('beverage.index') }}">Ice Coffee</a>
                                         <a class="nav-link menu" href="{{ route('beverage.index') }}">Blended Coffee</a>
                                         <a class="nav-link menu" href="{{ route('beverage.index') }}">Smoothies</a>
@@ -98,7 +98,7 @@
                     <h1 class="mt-4">Cafe Beverage</h1>
                     <ol class="breadcrumb mb-4">
                         <li class="breadcrumb-item"><a href="{{ route('cafe.dashboard') }}">Dashboard</a></li>
-                        <li class="breadcrumb-item active" id="title">Hot Coffee</li>
+                        <li class="breadcrumb-item active">Report</li>
                     </ol>
                     @if (Session::has('success'))
                         <div class="alert alert-success" id="flash-message">
@@ -108,27 +108,20 @@
                     @foreach ($errors->all() as $error)
                         <div class="alert alert-danger" id="flash-message">{{ $error }}</div>
                     @endforeach
-                    <div class="row mb-2">
-                        <div class="col-12">
-                            <a href="{{ route('beverage.create') }}" class="btn btn-success float-end"><i class="fa fa-plus"></i> Create New Menu</a>
-                        </div>
-                    </div>
                     <div class="card mb-4">
                         <div class="card-header">
                             <i class="fas fa-table me-1"></i>
-                            List of Menu
+                            Daily Sales Report
                         </div>
                         <div class="card-body">
                             <table id="datatablesSimple">
                                 <thead>
                                     <tr>
-                                        <th>#</th>
-                                        {{-- <th>Picture</th> --}}
-                                      
-                                        <th>Name</th>
-                                        <th>Price</th>
-                                        <th>Status</th>
-                                        <th>Action</th>
+                                        <th>Created At</th>
+                                        <th>Cafe Name</th>
+                                        <th>Total Transaction</th>
+                                        <th>Total Subtotal</th>
+                                        <th>Grand Total</th>
                                     </tr>
                                 </thead>
                             </table>
@@ -136,6 +129,15 @@
                     </div>
                 </div>
             </main>
+
+            <!-- Modal -->
+            <div class="modal fade" id="orderModal" tabindex="-1" role="dialog" aria-labelledby="orderModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                  <div class="modal-content">
+                    <!-- Modal content goes here -->
+                  </div>
+                </div>
+              </div>
             <footer class="py-4 bg-light mt-auto">
                 <div class="container-fluid px-4">
                     <div class="d-flex align-items-center justify-content-between small">
@@ -165,7 +167,6 @@
     $(document).ready(function() {
 
         // $.noConflict();
-        var type = "hot coffee";
         fetch_data();
 
         setTimeout(function() {
@@ -175,59 +176,7 @@
         var cafe_id = localStorage.getItem('cafe_id');
 
         // destroy datatable and reload again
-        $('#hotCoffee').click(function() {
-            type = "hot coffee";
-            $('#title').html("Hot Coffee");
-            $('.menu').removeClass('active');
-            $(this).addClass('active');
-            $('#datatablesSimple').DataTable().destroy();
-            fetch_data();
-        });
-        $('#iceCoffee').click(function() {
-            type = "ice coffee";
-            $('#title').html("Ice Coffee");
-            $('.menu').removeClass('active');
-            $(this).addClass('active');
-
-            $('#datatablesSimple').DataTable().destroy();
-            fetch_data();
-        });
-        $('#blendedCoffee').click(function() {
-            type = "blended coffee";
-            $('#title').html("Blended Coffee");
-            $('.menu').removeClass('active');
-            $(this).addClass('active');
-
-            $('#datatablesSimple').DataTable().destroy();
-            fetch_data();
-        });
-        $('#smoothies').click(function() {
-            type = "smoothies";
-            $('#title').html("Smoothies");
-            $('.menu').removeClass('active');
-            $(this).addClass('active');
-
-            $('#datatablesSimple').DataTable().destroy();
-            fetch_data();
-        });
-        $('#cake').click(function() {
-            type = "cake";
-            $('#title').html("Cake");
-            $('.menu').removeClass('active');
-            $(this).addClass('active');
-
-            $('#datatablesSimple').DataTable().destroy();
-            fetch_data();
-        });
-        $('#bread').click(function() {
-            type = "bread";
-            $('#title').html("Bread");
-            $('.menu').removeClass('active');
-            $(this).addClass('active');
-
-            $('#datatablesSimple').DataTable().destroy();
-            fetch_data();
-        });
+        
         $('#cafe_id').val(cafe_id);
         // ajax function to get data from api to display at datatable
         function fetch_data() {
@@ -237,10 +186,9 @@
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: "{{ route('beverage.getBeverageDatatable') }}",
+                    url: "{{ route('daily_sales_report') }}",
                     data: {
                         cafe_id: cafe_id,
-                        type:type
                     },
                     type: 'GET',
                 },
@@ -255,35 +203,32 @@
                 order: [
                     [1, 'asc']
                 ],
-
-                columns: [{
-                    "data": null,
-                    searchable: false,
-                    "sortable": false,
-                    render: function(data, type, row, meta) {
-                        return meta.row + meta.settings._iDisplayStart + 1;
-                    }
+                columns: [ {
+                    data: "date",
+                    name: 'date',
+                    orderable: true,
+                    searchable: false
+                },{
+                    data: "cafe_name",
+                    name: 'cafe_name',
+                    orderable: true,
+                    searchable: true
                 }, {
-                    data: "name",
-                    name: 'name',
+                    data: "total_transaction",
+                    name: 'total_transaction',
                     orderable: true,
                     searchable: true
                 },{
-                    data: "price",
-                    name: 'price',
+                    data: "subtotal",
+                    name: 'subtotal',
                     orderable: false,
                     searchable: false
                 },{
-                    data: "status",
-                    name: 'status',
+                    data: "total_price",
+                    name: 'total_price',
                     orderable: false,
                     searchable: false
-                }, {
-                    data: 'action',
-                    name: 'action',
-                    orderable: false,
-                    searchable: false
-                }, ]
+                } ]
             });
         }
         // toggle data status
@@ -292,7 +237,7 @@
         var status = $(this).is(':checked') ? 1 : 0;
 
             $.ajax({
-                url: '/staff/beverage/' + dataId,
+                url: '/staff/order/' + dataId,
                 type: 'PATCH',
                 data: { 
                     type: "status",
@@ -305,6 +250,7 @@
                 }
             });
         });
+
     });
 </script>
 </html>

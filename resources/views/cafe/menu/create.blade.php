@@ -41,32 +41,53 @@
                             Dashboard
                         </a>
                         <div class="sb-sidenav-menu-heading">PAGES</div>
-
-                        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayoutsCafe" aria-expanded="false" aria-controls="collapseLayoutsCafe">
+                        
+                        <a class="nav-link collapsed active" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayoutsCafe" aria-expanded="false" aria-controls="collapseLayoutsCafe">
                             <div class="sb-nav-link-icon"><i class="fas fa-cutlery"></i></div>
                             Cafe
                             <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
                         </a>
-                        <div class="collapse" id="collapseLayoutsCafe" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                        <div class="collapse show" id="collapseLayoutsCafe" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                             <nav class="sb-sidenav-menu-nested nav">
-
-                                <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayoutsBeverage" aria-expanded="false" aria-controls="collapseLayoutsBeverage">
+                                {{-- <a class="nav-link" href="{{ route('User.index') }}">Staff Cafe</a> --}}
+                                <a class="nav-link collapsed " href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayoutsCafe" aria-expanded="false" aria-controls="collapseLayoutsCafe">
                                     <div class="sb-nav-link-icon"><i class="fas fa-plus"></i></div>
-                                    Beverage
+                                    Menu
                                     <div class="sb-sidenav-collapse-arrow"><i class=""></i></div>
                                 </a>
-                                <div class="collapse" id="collapseLayoutsBeverage" aria-labelledby="card-header" data-bs-parent="#sidenavAccordion">
+                                <div class="collapse show" id="collapseLayoutsCafe" aria-labelledby="card-header" data-bs-parent="#sidenavAccordion">
                                     <nav class="sb-sidenav-menu-nested nav">
-                                        <a class="nav-link" href="{{ route('beverage.index') }}">Hot Coffee</a>
-                                        <a class="nav-link" href="{{ route('beverage.index') }}">Ice Coffee</a>
-                                        <a class="nav-link" href="{{ route('beverage.index') }}">Blended Coffee</a>
-                                        <a class="nav-link" href="{{ route('beverage.index') }}">Smoothies</a>
-                                        <a class="nav-link" href="{{ route('beverage.index') }}">Cake</a>
-                                        <a class="nav-link" href="{{ route('beverage.index') }}">Bread</a>
+                                        <a class="nav-link menu" href="{{ route('beverage.index') }}" >Hot Coffee</a>
+                                        <a class="nav-link menu" href="{{ route('beverage.index') }}">Ice Coffee</a>
+                                        <a class="nav-link menu" href="{{ route('beverage.index') }}">Blended Coffee</a>
+                                        <a class="nav-link menu" href="{{ route('beverage.index') }}">Smoothies</a>
+                                        <a class="nav-link menu" href="{{ route('beverage.index') }}">Cake</a>
+                                        <a class="nav-link menu" href="{{ route('beverage.index') }}">Bread</a>
+                                    </nav>
+                                </div> 
+                              
+                            </nav>
+                        </div> 
+                        <a class="nav-link active" href="{{ route('order.index') }}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                            Order
+                        </a>
+                        <div class="collapse show" id="collapseLayoutsCafe" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                            <nav class="sb-sidenav-menu-nested nav">
+                                {{-- <a class="nav-link" href="{{ route('User.index') }}">Staff Cafe</a> --}}
+                                <a class="nav-link collapsed " href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayoutsCafe" aria-expanded="false" aria-controls="collapseLayoutsCafe">
+                                    <div class="sb-nav-link-icon"><i class="fas fa-plus"></i></div>
+                                    Report
+                                    <div class="sb-sidenav-collapse-arrow"><i class=""></i></div>
+                                </a>
+                                <div class="collapse show" id="collapseLayoutsCafe" aria-labelledby="card-header" data-bs-parent="#sidenavAccordion">
+                                    <nav class="sb-sidenav-menu-nested nav">
+                                        <a class="nav-link menu" href="{{ route('daily_sales_report.index') }}" >Daily Sales</a>
+                                        <a class="nav-link menu" href="{{ route('detail_sales_report.index') }}">Detail Sales</a>
                                     </nav>
                                 </div> 
                             </nav>
-                        </div> 
+                        </div>
                     </div>
                 </div>
             </nav>

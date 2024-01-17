@@ -275,12 +275,14 @@ class OrderService
         $searchValue = isset($search_arr) ? $search_arr : '';
         
         $order_arr = $request->input('order');
+        $cafe_id = $request->input('cafe_id');
+
         $columnSortOrder = isset($order_arr) ? $order_arr : 'desc';
         // $library_id = $request->input('library_id');
         
         $user = auth()->user();
         // dd($user);
-        $cafe = Cafe::find($user->cafe_id);
+        // $cafe = Cafe::find($user->cafe_id);
         $service = new Service();
         // $records = Order::join('beverages','beverages.id','=','orders.beverage_id')
         //                 ->join('cafes','cafes.id','=','beverages.cafe_id')
@@ -288,20 +290,35 @@ class OrderService
         // $records = $cafe->through('beverage')->has('order')->join('tables','tables.id','=','orders.table_id');
         // $orders = $cafe->beverage()->with('order')->get()->pluck('order')->collapse();
         // $records = $cafe->through('beverage')->has('order');
-        $records = $cafe->order()->join('tables','tables.id','=','orders.table_id')
+        $records = Order::join('tables','tables.id','=','orders.table_id')
                     ->join('payments','payments.order_id','=','orders.id')
-                    ->join('users','users.id','=','orders.user_id');
-        // dd($records->get(), $record2->get());
-        // dd($records->get(), $orders);
+                    ->join('users','users.id','=','orders.user_id')
+                    ->join('beverages','beverages.id','=','orders.beverage_id')
+                    ->join('cafes','cafes.id','=','beverages.cafe_id');
+        
+        if(auth()->user()->hasRole('staff'))
+            $cafe = Cafe::find($user->cafe_id);
+        else
+        {
+            if($cafe_id != null)
+                $cafe = Cafe::find($cafe_id);
+        }
+
+        if(isset($cafe) && $cafe != null)
+                $records = $records->where('cafes.id',$cafe->id);
         
         $totalRecords = $records->count();
 
-        $records = $records->where(function ($query) use ($searchValue) {
-            $query->orWhere('users.name', 'like', '%' . $searchValue . '%')
-            ->orWhere('orders.order_no', 'like', '%' . $searchValue . '%')
-            ->orWhere('payments.receipt_no', 'like', '%' . $searchValue . '%');
+        // if($searchValue != null && $searchValue != "")
+        // {
 
-        });
+        //     $records = $records->where(function ($query) use ($searchValue) {
+        //         $query->orWhere('users.name', 'like', '%' . $searchValue . '%')
+        //         ->orWhere('orders.order_no', 'like', '%' . $searchValue . '%')
+        //         ->orWhere('payments.receipt_no', 'like', '%' . $searchValue . '%');
+    
+        //     });
+        // }
 
         if ($request->input('startDate') != null && $request->input('endDate') != null) {
             $startDate = date('Y-m-d H:i:s', strtotime($request->input('startDate')));
@@ -320,7 +337,9 @@ class OrderService
             'payments.sst_amount',
             'payments.service_charge_amount',
             'payments.total_price',
-            'payments.receipt_no'
+            'payments.receipt_no',
+            'cafes.id as cafe_id',
+            'cafes.name as cafe_name'
         )
             ->orderBy('orders.created_at', 'desc')
             ->get();
@@ -334,6 +353,9 @@ class OrderService
             $data_arr[] = array(
                "id" => $record->id,
                "order_no" => $record->order_no,
+               "cafe_id" => $record->cafe_id,
+               "cafe_name" => $record->cafe_name,
+
                "user_name" => $record->user_name,
 
                "payment_status" => $record->payment_status,
@@ -370,18 +392,40 @@ class OrderService
         $searchValue = isset($search_arr) ? $search_arr : '';
         
         $order_arr = $request->input('order');
+        $cafe_id = $request->input('cafe_id');
+
         $columnSortOrder = isset($order_arr) ? $order_arr : 'desc';
         // $library_id = $request->input('library_id');
         
         $user = auth()->user();
         // dd($user);
-        $cafe = Cafe::find($user->cafe_id);
         $service = new Service();
 
         $records = Order::join('beverages','beverages.id','=','orders.beverage_id')
                         ->join('cafes','cafes.id','=','beverages.cafe_id')
-                        ->join('payments','payments.order_id','=','orders.id')
-                        ->where('cafes.id',$cafe->id);
+                        ->join('payments','payments.order_id','=','orders.id');
+
+        $total_records = Order::join('beverages','beverages.id','=','orders.beverage_id')
+        ->join('cafes','cafes.id','=','beverages.cafe_id')
+        ->join('payments','payments.order_id','=','orders.id')
+        ->selectRaw('COUNT(orders.id) AS total_transaction, 
+        SUM(payments.subtotal) AS subtotal, 
+        SUM(payments.sst_amount) AS sst, 
+        SUM(payments.service_charge_amount) AS service,
+        SUM(payments.total_price) AS total_price')->first();
+
+        if(auth()->user()->hasRole('staff'))
+            $cafe = Cafe::find($user->cafe_id);
+        else
+        {
+            if($cafe_id != null)
+                $cafe = Cafe::find($cafe_id);
+        }
+
+        if(isset($cafe) && $cafe != null)
+                $records = $records->where('cafes.id',$cafe->id);
+       
+
         $totalRecords = $records->count();
 
 
@@ -399,10 +443,12 @@ class OrderService
             SUM(payments.subtotal) AS subtotal, 
             SUM(payments.sst_amount) AS sst, 
             SUM(payments.service_charge_amount) AS service,
-            SUM(payments.total_price) AS total_price '
+            SUM(payments.total_price) AS total_price,
+            cafes.name as cafe_name,
+            cafes.id as cafe_id '
 
         )
-            ->groupBy('date')
+            ->groupBy('date','cafe_id','cafe_name')
             ->orderBy('date', 'desc')
             ->get();
 
@@ -411,6 +457,8 @@ class OrderService
           
             $data_arr[] = array(
                "date" => date('Y-m-d',strtotime($record->date)),
+                "cafe_id"    => $record->cafe_id,
+                "cafe_name" =>  $record->cafe_name,
                "total_transaction" => $record->total_transaction,
                "subtotal" => $record->subtotal,
                "sst" => $record->sst,
@@ -420,6 +468,9 @@ class OrderService
            );
         }
 
+        $result['total_transaction'] =  $total_records->total_transaction;
+        $result['total_subtotal'] =  $total_records->subtotal;
+        $result['total_grand_total'] =  $total_records->total_price;
         $result['iTotalRecords']  = $totalRecords;
         $result["iTotalDisplayRecords"] = intval($totalRecordswithFilter);
         $result['aaData'] =  $data_arr;
