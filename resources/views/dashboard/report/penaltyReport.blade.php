@@ -36,39 +36,37 @@
                 <div class="sb-sidenav-menu">
                     <div class="nav">
                         <div class="sb-sidenav-menu-heading">MAIN</div>
-                        <a class="nav-link" href="{{route('dashboard')}}">
+                        <a class="nav-link active" href="{{ route('dashboard') }}">
                             <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                             Dashboard
                         </a>
                         <div class="sb-sidenav-menu-heading">PAGES</div>
-                       
-                        <a class="nav-link collapsed active" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayoutsLib" aria-expanded="false" aria-controls="collapseLayoutsLib">
-                            <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
+                        <a class="nav-link active" href="{{ route('user.index') }}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
+                            Staff
+                        </a>
+                        
+                        <a class="nav-link active" href="{{ route('library.index') }}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
                             Library
-                            <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
                         </a>
-                        <div class="collapse bgsubmenu show" id="collapseLayoutsLib" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                        <div class="collapse show" id="collapseLayoutsCafe" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                             <nav class="sb-sidenav-menu-nested nav">
-                                <a class="nav-link" href="{{ route('table.index') }}">Table</a>
-                                <a class="nav-link " href="{{ route('book.index') }}">Book</a>
-                                <a class="nav-link " href="{{ route('room.index') }}">Room</a>
-                                <a class="nav-link " href="{{ route('equipment.index') }}">Equipment</a>
-                                <a class="nav-link " href="{{ route('announcement.index') }}">Announcement</a>
-
+                                {{-- <a class="nav-link" href="{{ route('User.index') }}">Staff Cafe</a> --}}
+                                <a class="nav-link collapsed " href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayoutsCafe" aria-expanded="false" aria-controls="collapseLayoutsCafe">
+                                    <div class="sb-nav-link-icon"><i class="fas fa-plus"></i></div>
+                                    Report
+                                    <div class="sb-sidenav-collapse-arrow"><i class=""></i></div>
+                                </a>
+                                <div class="collapse show" id="collapseLayoutsCafe" aria-labelledby="card-header" data-bs-parent="#sidenavAccordion">
+                                    <nav class="sb-sidenav-menu-nested nav">
+                                        <a class="nav-link menu" href="{{ route('cafe_daily_sales_report.index') }}" >Daily Sales Cafe</a>
+                                        <a class="nav-link menu " href="{{ route('cafe_detail_sales_report.index') }}">Detail Sales Cafe</a>
+                                        <a class="nav-link menu active" href="{{ route('library_penalty_report.index') }}">Penalty Report Library</a>
+                                    </nav>
+                                </div> 
                             </nav>
-                        </div> 
-                        <a class="nav-link" href="{{route('booking.index')}}">
-                            <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
-                            Booking 
-                        </a>
-                        <a class="nav-link" href="{{route('report.index')}}">
-                            <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
-                            Reported List
-                        </a>
-                        <a class="nav-link" href="{{route('penalty_report.index')}}">
-                            <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
-                            Penalty Report
-                        </a>
+                        </div>
                     </div>
                 </div>
             </nav>
@@ -78,7 +76,7 @@
                 <div class="container-fluid px-4">
                     <h1 class="mt-4">Library</h1>
                     <ol class="breadcrumb mb-4">
-                        <li class="breadcrumb-item"><a href="{{ route('library.dashboard') }}">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
                         <li class="breadcrumb-item active">Penalty Report</li>
                     </ol>
                     @if (Session::has('success'))
@@ -99,6 +97,7 @@
                                 <thead>
                                     <tr>
                                         <th>#</th>
+                                        <th>Library Name</th>
                                         <th>User Name</th>
                                         <th>Amount (RM)</th>
                                         <th>Pay Status</th>
@@ -162,14 +161,14 @@
         $('#library_id').val(library_id);
         // ajax function to get data from api to display at datatable
         function fetch_data() {
-            var library_id = localStorage.getItem('library_id');
+            // var library_id = localStorage.getItem('library_id');
             datatable = $('#datatablesSimple').DataTable({
                 processing: true,
                 serverSide: true,
                 ajax: {
                     url: "{{ route('penalty.getPenaltyDatatable') }}",
                     data: {
-                        library_id: library_id,
+                        // library_id: library_id,
                     },
                     type: 'GET',
                 },
@@ -191,6 +190,12 @@
                     render: function(data, type, row, meta) {
                         return meta.row + meta.settings._iDisplayStart + 1;
                     }
+                }, {
+                    data: "library_name",
+                    name: 'library_name',
+                    orderable: false,
+                    searchable: true,
+                   
                 }, {
                     data: "user_name",
                     name: 'user_name',

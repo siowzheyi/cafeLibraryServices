@@ -83,6 +83,8 @@ if (!$link) {
                                     <nav class="sb-sidenav-menu-nested nav">
                                         <a class="nav-link menu" href="{{ route('cafe_daily_sales_report.index') }}" >Daily Sales Cafe</a>
                                         <a class="nav-link menu" href="{{ route('cafe_detail_sales_report.index') }}">Detail Sales Cafe</a>
+                                        <a class="nav-link menu" href="{{ route('library_penalty_report.index') }}">Penalty Report Library</a>
+
                                     </nav>
                                 </div> 
                             </nav>

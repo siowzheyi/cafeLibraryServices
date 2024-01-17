@@ -52,6 +52,24 @@
                             <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
                             Library
                         </a>
+                        <div class="collapse show" id="collapseLayoutsCafe" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                            <nav class="sb-sidenav-menu-nested nav">
+                                {{-- <a class="nav-link" href="{{ route('User.index') }}">Staff Cafe</a> --}}
+                                <a class="nav-link collapsed " href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayoutsCafe" aria-expanded="false" aria-controls="collapseLayoutsCafe">
+                                    <div class="sb-nav-link-icon"><i class="fas fa-plus"></i></div>
+                                    Report
+                                    <div class="sb-sidenav-collapse-arrow"><i class=""></i></div>
+                                </a>
+                                <div class="collapse show" id="collapseLayoutsCafe" aria-labelledby="card-header" data-bs-parent="#sidenavAccordion">
+                                    <nav class="sb-sidenav-menu-nested nav">
+                                        <a class="nav-link menu" href="{{ route('cafe_daily_sales_report.index') }}" >Daily Sales Cafe</a>
+                                        <a class="nav-link menu" href="{{ route('cafe_detail_sales_report.index') }}">Detail Sales Cafe</a>
+                                        <a class="nav-link menu" href="{{ route('library_penalty_report.index') }}">Penalty Report Library</a>
+
+                                    </nav>
+                                </div> 
+                            </nav>
+                        </div>
                     </div>
                 </div>
             </nav>

@@ -249,70 +249,25 @@ class UserController extends BaseController
         return view('library.penalty.index');
     }
 
+    public function libraryPenaltyReportIndex()
+    {
+        return view('dashboard.report.penaltyReport');
+    }
+
+
     public function getPenaltyDatatable(Request $request)
     {
         if (request()->ajax()) {
-            $type = $request->type;
-
-            $user = auth()->user();
             
-            $service = new Service();
-            
-            $user = auth()->user();
+            $data = $this->services->penaltyReport($request);
 
-            $library_id = $request->library_id;
-
-            if($library_id != null || $user->library_id != null)
-            {
-                if($user->library_id != null)
-                    $library_id = $user->library_id;
-
-                $data =  Booking::join('users','users.id','=','bookings.user_id')
-                ->leftjoin('books', function ($join) use ($library_id) {
-                    $join->on('books.id', '=', 'bookings.book_id')
-                    ->where('books.library_id',$library_id);
-                })
-                ->leftjoin('equipments', function ($join) use ($library_id) {
-                    $join->on('equipments.id', '=', 'bookings.equipment_id')
-                    ->where('equipments.library_id',$library_id);
-                })
-                ->leftjoin('rooms', function ($join) use ($library_id) {
-                    $join->on('rooms.id', '=', 'bookings.room_id')
-                    ->where('rooms.library_id',$library_id);
-                })
-                ->where('bookings.penalty_status',1);
-            }
-            else
-            {
-                $data =  Booking::join('users','users.id','=','bookings.user_id')
-                ->leftjoin('books', function ($join) {
-                    $join->on('books.id', '=', 'bookings.book_id');
-                })
-                ->leftjoin('equipments', function ($join) {
-                    $join->on('equipments.id', '=', 'bookings.equipment_id');
-                })
-                ->leftjoin('rooms', function ($join) {
-                    $join->on('rooms.id', '=', 'bookings.room_id');
-                })
-                ->where('bookings.penalty_status',1);
-            }
-          
-            $data = $data->select(
-                'bookings.*',
-                'users.name as user_name'
-            )
-            ->orderBy('bookings.penalty_paid_status', 'asc')
-            ->orderBy('bookings.created_at', 'desc')
-
-            ->get();
-
-            $table = Datatables::of($data);           
+            $table = Datatables::of($data['aaData']);           
 
             $table->addColumn('status', function ($row) {
                 $btn = '<div class="d-flex justify-content-center">';
-                if ($row->penalty_paid_status == 0) {
+                if ($row['penalty_paid_status'] == 0) {
                     $btn = $btn . '<span class="badge bg-danger"> Not Paid </span></div>';
-                } elseif ($row->penalty_paid_status == 1) {
+                } elseif ($row['penalty_paid_status'] == 1) {
                     $btn = $btn . '<span class="badge bg-success"> Paid </span></div>';
                 }
 
@@ -323,7 +278,7 @@ class UserController extends BaseController
             $table->addColumn('action', function ($row) {
                 $token = csrf_token();
 
-                $btn ='<button id="'.$row->id.'" data_id="' . $row->id . '" data-token="' . $token . '" class="btn btn-primary m-1 showData" data-bs-toggle="modal" data-bs-target="#orderModal">View</button>';
+                $btn ='<button id="'.$row['id'].'" data_id="' . $row['id'] . '" data-token="' . $token . '" class="btn btn-primary m-1 showData" data-bs-toggle="modal" data-bs-target="#orderModal">View</button>';
                 return $btn;
             });
 
@@ -334,6 +289,8 @@ class UserController extends BaseController
 
     public function penaltyReport(Request $request)
     {
+
+        
         $input = $request->all();
 
         App::setLocale($request->header('language'));

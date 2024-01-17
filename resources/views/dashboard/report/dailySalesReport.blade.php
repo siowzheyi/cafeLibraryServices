@@ -60,8 +60,10 @@
                                 </a>
                                 <div class="collapse show" id="collapseLayoutsCafe" aria-labelledby="card-header" data-bs-parent="#sidenavAccordion">
                                     <nav class="sb-sidenav-menu-nested nav">
-                                        <a class="nav-link menu" href="{{ route('cafe_daily_sales_report.index') }}" >Daily Sales Cafe</a>
+                                        <a class="nav-link menu active" href="{{ route('cafe_daily_sales_report.index') }}" >Daily Sales Cafe</a>
                                         <a class="nav-link menu" href="{{ route('cafe_detail_sales_report.index') }}">Detail Sales Cafe</a>
+                                        <a class="nav-link menu" href="{{ route('library_penalty_report.index') }}">Penalty Report Library</a>
+
                                     </nav>
                                 </div> 
                             </nav>
@@ -75,7 +77,7 @@
                 <div class="container-fluid px-4">
                     <h1 class="mt-4">Cafe Beverage</h1>
                     <ol class="breadcrumb mb-4">
-                        <li class="breadcrumb-item"><a href="{{ route('cafe.dashboard') }}">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
                         <li class="breadcrumb-item active">Report</li>
                     </ol>
                     @if (Session::has('success'))
