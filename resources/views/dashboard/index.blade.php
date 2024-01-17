@@ -1,17 +1,4 @@
-<?php
-$servername = "localhost"; // Update with your Laragon MySQL server hostname
-$username = "root"; // Update with your Laragon MySQL username
-$password = ""; // Update with your Laragon MySQL password
-$database = "cafe_library_services"; // Update with your Laragon MySQL database name
 
-// Create connection
-$link = mysqli_connect($servername, $username, $password, $database);
-
-// Check connection
-if (!$link) {
-    die("Connection failed: " . mysqli_connect_error());
-}
-?>
 
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
