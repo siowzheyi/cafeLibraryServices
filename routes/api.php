@@ -44,6 +44,9 @@ Route::middleware('auth:api')->group(function () {
     Route::get('booking_listing', [BookingController::class, 'bookingListing'])->name('booking_listing');
     Route::get('report_listing', [ReportController::class, 'reportListing'])->name('report_listing');
   
+    Route::post('library', [LibraryController::class, 'store'])->name('api.library.store');
+    Route::post('cafe', [CafeController::class, 'store'])->name('api.cafe.store');
+
 
     Route::get('order/{order}', [OrderController::class, 'show'])->name('api.order.show');
     Route::post('order', [OrderController::class, 'store'])->name('api.order.store');

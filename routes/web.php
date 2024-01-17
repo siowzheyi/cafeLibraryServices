@@ -68,8 +68,8 @@ Route::middleware(['staffauthentication'])->group(function () {
 
     Route::prefix('staff')->group(function () {
         
-        Route::resource('library', LibraryController::class);
-        Route::resource('cafe', CafeController::class);
+        Route::resource('library', LibraryController::class)->except(['store']);
+        Route::resource('cafe', CafeController::class)->except(['store']);
         
         Route::middleware(['ensurestaffhaslibrarycafeid'])->group(function () {
             
