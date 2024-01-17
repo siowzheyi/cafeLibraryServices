@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Models;
-use App\Models\Order;
 use App\Models\Cafe;
 
 use Illuminate\Database\Eloquent\Model as Eloquent;

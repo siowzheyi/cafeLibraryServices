@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Models;
-use App\Models\Booking;
 use App\Models\Library;
 
 use Illuminate\Database\Eloquent\Model as Eloquent;

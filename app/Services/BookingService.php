@@ -307,9 +307,10 @@ class BookingService
         return $booking;
     }
 
-    public function update($request, $booking)
+    public function update($request, $booking, $return = null)
     {
         $raw_request = $request;
+        if($return == null)
         $request = $request->validated();
         $now = date('Y-m-d H:i:s',strtotime(now()));
 
