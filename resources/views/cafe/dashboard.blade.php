@@ -75,7 +75,7 @@
                             <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                             Order
                         </a>
-                        <a class="nav-link active" href="{{ route('aily_sales_report.index') }}">
+                        <a class="nav-link active" href="{{ route('daily_sales_report.index') }}">
                             <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
                             Report
                         </a>
