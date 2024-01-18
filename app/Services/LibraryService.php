@@ -101,7 +101,7 @@ class LibraryService
 
     public function update($request, $library)
     {
-        $request = $request->validated();
+        // $request = $request->validated();
 
         if (isset($request['type'])) {
             if ($request['type'] === 'status') {
@@ -111,7 +111,7 @@ class LibraryService
             return;
         }
         $library->name = $request['name'];
-        $library->status = $request['status'];
+        // $library->status = $request['status'];
         $library->address = $request['address'];
 
         $library->save();
