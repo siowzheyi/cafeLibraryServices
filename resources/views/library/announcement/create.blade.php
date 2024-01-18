@@ -112,7 +112,8 @@
                                         <label for="exampleFormControlInput1">Expired</label>
                                         <input type="datetime-local" class="form-control" id="exampleFormControlInput1" name="expired_at">
                                     </div>
-                                   
+                                    <input type="text" id="library_id" name="library_id" hidden>
+
                                     <input type="submit" class="btn btn-success mb-2" value="Submit">
                                 </form>
                             </div>
@@ -139,7 +140,16 @@
         <script src="assets/demo/chart-area-demo.js"></script>
         <script src="assets/demo/chart-bar-demo.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js" crossorigin="anonymous"></script>
-        <script src="js/datatables-simple-demo.js"></script>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+        <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.js"></script>
 
     </body>
+    <script>
+        $(document).ready(function(){
+            var library_id = localStorage.getItem('library_id');
+             $('#library_id').val(library_id)
+    
+        });
+    </script>
 </html>
