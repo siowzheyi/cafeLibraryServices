@@ -103,7 +103,7 @@
                                     </div>
                                     <div class="form-group mb-2">
                                         <label for="exampleFormControlInput1">Content</label>
-                                        <input type="text" class="orm-control" id="exampleFormControlInput1" name="content" value="{{ $data['content'] }}">
+                                        <input type="text" class="form-control" id="exampleFormControlInput1" name="content" value="{{ $data['content'] }}">
                                             
                                     </div>
                                     <div class="form-group mb-2">
