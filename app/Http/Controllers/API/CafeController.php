@@ -50,7 +50,16 @@ class CafeController extends BaseController
             return $this->sendResponse("", "Cafe has been successfully registered. ");
         else
             return $this->sendCustomValidationError(['Error'=>'Failed to register account. ']);
+    }
 
+    public function edit(Cafe $cafe)
+    {
+        $data = [
+            "name"  =>  $cafe->name,
+            "id"    =>  $cafe->id
+        ];
+
+        return view('cafe.edit',compact('data'));
     }
 
     // This api is for admin user to view certain cafe
@@ -73,11 +82,21 @@ class CafeController extends BaseController
     }
 
     // This api is for admin user to update certain cafe
-    public function update(CafeRequest $request, Cafe $cafe)
+    public function update(Request $request, Cafe $cafe)
     {
-        $result = $this->services->update($request, $cafe);
+        $input = $request->all();
+        $validator = Validator::make($input, [
+            'name' => ['required'],
+        ]);
+        if ($validator->fails()) {
+            Session::flash('message-error', $validator->errors());
+            return redirect()->back()->withErrors($validator->errors());
+        }
 
-        return $this->sendResponse("", "Cafe has been successfully updated. ");
+        $result = $this->services->update($input, $cafe);
+
+        // return $this->sendResponse("", "Cafe has been successfully updated. ");
+        return view('cafe.index');
     }
 
     public function getCafeDatatable(Request $request)
