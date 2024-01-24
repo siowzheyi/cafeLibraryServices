@@ -2,15 +2,10 @@
 
 Workshop 2
 
-## Getting Started
+## Mobile side using Flutter developed by Asyiqin
 
-This project is a starting point for a Flutter application.
+This is the mobile side for user of Cafe Library System. The development of mobile is fully using Flutter on Android Studio.
 
-A few resources to get you started if this is your first Flutter project:
+All the dart files in 'lib' folder are my work, except for main.dart, login.dart, and registration.dart, which are from Raszreen 
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+and Shafiqha but have been modified by me.
