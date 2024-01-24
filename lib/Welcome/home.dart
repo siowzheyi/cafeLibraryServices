@@ -1,5 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cafe_library_services/Booking/booking_listing.dart';
+import 'package:cafe_library_services/Penalty/penalty_listing.dart';
+import 'package:cafe_library_services/Report/report_listing.dart';
 import 'package:cafe_library_services/Room/room_listing.dart';
 import 'package:cafe_library_services/Welcome/select_cafe.dart' as cafe;
 import 'package:flutter/material.dart';
@@ -12,6 +14,7 @@ import '../Model/announcement_model.dart';
 import '../Order/order_listing.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import '../Payment/payment_beverage_listing.dart';
 import 'select_library.dart';
 
 void main() {
@@ -222,19 +225,46 @@ class _HomePageState extends State<HomePage> {
                       height: 60.0,
                       child: ElevatedButton(
                         onPressed: () {
-                          // Navigator.push(
-                          //   context,
-                          //   MaterialPageRoute(
-                          //     builder: (context) => PenaltyPage(),
-                          //   ),
-                          // );
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => PenaltyListing(),
+                            ),
+                          );
+                        },
+                        child: const Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Icon(Icons.attach_money),
+                            Text(
+                              'Penalty Record',
+                              style: TextStyle(fontSize: 32.0),
+                            ),
+                            Icon(Icons.attach_money),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 16.0,
+                    ),
+                    SizedBox(
+                      height: 60.0,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ReportListing(),
+                            ),
+                          );
                         },
                         child: const Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Icon(Icons.report),
                             Text(
-                              'Penalty Record',
+                              'Report Record',
                               style: TextStyle(fontSize: 32.0),
                             ),
                             Icon(Icons.report),
@@ -283,7 +313,7 @@ class _HomePageState extends State<HomePage> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => OrderListing(),
+                              builder: (context) => PaymentBeverageListing(),
                             ),
                           );
                         },

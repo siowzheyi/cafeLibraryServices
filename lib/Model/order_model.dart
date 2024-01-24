@@ -6,7 +6,7 @@ class OrderModel {
   final String cafeName;
   final String beverageName;
   final int quantity;
-  final int totalPrice;
+  final double totalPrice;
   final String createdAt;
 
   OrderModel({

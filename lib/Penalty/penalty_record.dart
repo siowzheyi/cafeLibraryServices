@@ -24,11 +24,21 @@ class PenaltyDetailPage extends StatelessWidget {
               children: [
                 Text('Penalty for: ${penalty.itemName}', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                 SizedBox(height: 10),
-                Text('Amount: ${penalty.penaltyAmount}'),
+                Text('Amount: RM${penalty.penaltyAmount}'),
                 SizedBox(height: 10),
                 Text('Paid status: ${penalty.penaltyPaidStatus}'),
                 SizedBox(height: 10),
                 Text('Penalty Time: ${penalty.createdAt}'),
+                SizedBox(height: 10),
+                if (penalty.penaltyPaidStatus != 'Paid' || penalty.penaltyPaidStatus != 'paid')
+                  Container(
+                    child: ElevatedButton(
+                      onPressed: () {
+
+                      },
+                      child: Text('Pay'),
+                    ),
+                  ),
               ],
             ),
           ),

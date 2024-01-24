@@ -45,8 +45,8 @@ class BookDetailsScreen extends StatelessWidget {
           children: [
             CachedNetworkImage(
               imageUrl: picture,
-              placeholder: (context, url) => CircularProgressIndicator(),
-              errorWidget: (context, url, error) => Icon(Icons.error),
+              placeholder: (context, url) => const CircularProgressIndicator(),
+              errorWidget: (context, url, error) => const Icon(Icons.error),
               width: double.infinity,
               height: 1000.0,
               fit: BoxFit.cover,

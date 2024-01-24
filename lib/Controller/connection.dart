@@ -1,9 +1,8 @@
 class API {
   // this hostConnect is depends on ip address and file name and location
 
-  //static const hostConnect = "http://192.168.0.120:8000/api";
-  static const hostConnect = "http://192.168.0.120/cafeLibraryServices/public/api";
-  //static const hostConnect = "https://cafelibraryservices.redpeople.io/api";
+  //static const hostConnect = "http://10.131.73.188/cafeLibraryServices/public/api";
+  static const hostConnect = "https://cafelibraryservices.redpeople.io/api";
 
   // POST
   static const hostConnectUser = "$hostConnect";

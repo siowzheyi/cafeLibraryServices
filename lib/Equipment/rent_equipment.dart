@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
+import '../Booking/booking_listing.dart';
 import '../Controller/connection.dart';
 import 'dart:convert';
 
@@ -30,7 +31,8 @@ class _ReserveEquipmentPageState extends State<ReserveEquipmentPage> {
   final TextEditingController startTimeDateController = TextEditingController();
   final TextEditingController endTimeDateController = TextEditingController();
 
-  Future<void> postRentEquipment(String type, int quantity, int equipmentId, String startBookedAt, String endBookedAt) async {
+  Future<void> postRentEquipment(String type, int quantity, int equipmentId,
+      String startBookedAt, String endBookedAt) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = prefs.getString('token') ?? '';
     String equipmentId = prefs.getString('equipmentId') ?? '';
@@ -57,7 +59,8 @@ class _ReserveEquipmentPageState extends State<ReserveEquipmentPage> {
       if (response.statusCode == 200) {
         print(await response.body);
       } else {
-        print('Error statusCode: ${response.statusCode}, Reason Phrase: ${response.reasonPhrase}');
+        print('Error statusCode: ${response.statusCode}, Reason Phrase: '
+            '${response.reasonPhrase}');
       }
     } catch (error) {
       print('Error: $error');
@@ -191,7 +194,8 @@ class _ReserveEquipmentPageState extends State<ReserveEquipmentPage> {
               actions: [
                 TextButton(
                   onPressed: () async {
-                    SharedPreferences prefs = await SharedPreferences.getInstance();
+                    SharedPreferences prefs = await SharedPreferences
+                        .getInstance();
                     String equipmentId = prefs.getString('equipmentId') ?? '';
                     int parsedId = int.tryParse(equipmentId) ?? 0;
                     String start = startTimeDateController.text;
@@ -203,6 +207,12 @@ class _ReserveEquipmentPageState extends State<ReserveEquipmentPage> {
                         start,
                         end);
                     Navigator.of(context).pop();
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => BookingListing(),
+                      ),
+                    );
                   },
                   child: const Text('OK'),
                 ),

@@ -1,104 +1,62 @@
-class EquipmentReportModel {
-  int equipmentId;
+class ReportModel {
+  int id;
+  String status;
+  int itemId;
+  String itemName;
+  String itemPicture;
+  String libraryName;
+  int libraryId;
   String name;
   String description;
   String picture;
+  String createdAt;
 
-  // constructor
-  EquipmentReportModel({
-    required this.equipmentId,
+  // Constructor
+  ReportModel({
+    required this.id,
+    required this.status,
+    required this.itemId,
+    required this.itemName,
+    required this.itemPicture,
+    required this.libraryName,
+    required this.libraryId,
     required this.name,
     required this.description,
     required this.picture,
+    required this.createdAt,
   });
 
-  // factory method to create a report from a map
-  factory EquipmentReportModel.fromJson(Map<String, dynamic> json) {
-    return EquipmentReportModel(
-        equipmentId: json['equipment_id'] ?? '',
-        name: json['name'] ?? '',
-        description: json['description'] ?? '',
-        picture: json['picture'] ?? '',
-    );
-  }
-
-  // convert the report instance to a map
-  Map<String, dynamic> toJson() {
-    return {
-      'equipment_id': equipmentId.toInt(),
-      'name': name,
-      'description': description,
-      'picture': picture,
-    };
-  }
-}
-
-class RoomReportModel {
-  int roomId;
-  String name;
-  String description;
-  String picture;
-
-  // constructor
-  RoomReportModel({
-    required this.roomId,
-    required this.name,
-    required this.description,
-    required this.picture,
-  });
-
-  // factory method to create a room from a map
-  factory RoomReportModel.fromJson(Map<String, dynamic> json) {
-    return RoomReportModel(
-      roomId: json['room_id'] ?? '',
+  // Named constructor to create an instance from JSON
+  factory ReportModel.fromJson(Map<String, dynamic> json) {
+    return ReportModel(
+      id: json['id'] ?? 0,
+      status: json['status'] ?? '',
+      itemId: json['item_id'] ?? 0,
+      itemName: json['item_name'] ?? '',
+      itemPicture: json['item_picture'] ?? '',
+      libraryName: json['library_name'] ?? '',
+      libraryId: json['library_id'] ?? 0,
       name: json['name'] ?? '',
       description: json['description'] ?? '',
       picture: json['picture'] ?? '',
+      createdAt: json['created_at'] ?? '',
     );
   }
 
-  // convert the room instance to a map
+  // Method to convert an instance to JSON
   Map<String, dynamic> toJson() {
     return {
-      'room_id': roomId,
+      'id': id,
+      'status': status,
+      'item_id': itemId,
+      'item_name': itemName,
+      'item_picture': itemPicture,
+      'library_name': libraryName,
+      'library_id': libraryId,
       'name': name,
       'description': description,
       'picture': picture,
-    };
-  }
-}
-
-class BookReportModel {
-  int bookId;
-  String name;
-  String description;
-  String picture;
-
-  // constructor
-  BookReportModel({
-    required this.bookId,
-    required this.name,
-    required this.description,
-    required this.picture,
-  });
-
-  // factory method to create a report from a map
-  factory BookReportModel.fromJson(Map<String, dynamic> json) {
-    return BookReportModel(
-      bookId: json['book_id'] ?? '',
-      name: json['name'] ?? '',
-      description: json['description'] ?? '',
-      picture: json['picture'] ?? '',
-    );
-  }
-
-  // convert the report instance to a map
-  Map<String, dynamic> toJson() {
-    return {
-      'book_id': bookId,
-      'name': name,
-      'description': description,
-      'picture': picture,
+      'created_at': createdAt,
     };
   }
 }

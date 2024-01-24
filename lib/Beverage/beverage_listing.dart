@@ -21,7 +21,7 @@ class BeverageListing extends StatelessWidget {
         primarySwatch: Colors.green,
       ),
       home: FutureBuilder<String>(
-        future: getLibraryIdFromSharedPreferences(),
+        future: getCafeIdFromSharedPreferences(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             if (snapshot.hasError) {
@@ -36,8 +36,7 @@ class BeverageListing extends StatelessWidget {
               return BeverageListScreen(cafeId: cafeId);
             }
           } else {
-            // While waiting for the Future to complete, show a loading indicator
-            return Scaffold(
+            return const Scaffold(
               body: Center(
                 child: CircularProgressIndicator(),
               ),
@@ -53,7 +52,8 @@ class BeverageListScreen extends StatefulWidget {
   final String cafeId;
   final Map<String, String>? headers;
 
-  const BeverageListScreen({Key? key, required this.cafeId, this.headers}) : super(key: key);
+  const BeverageListScreen({Key? key, required this.cafeId, this.headers})
+      : super(key: key);
 
   @override
   _BeverageListScreenState createState() => _BeverageListScreenState();
@@ -68,10 +68,11 @@ class FetchBeverage {
       final String? token = await getToken();
       beverages = [];
 
-      var url = Uri.parse('${API.beverage}?cafe_id=$cafeId${category != null ? '&category=$category' : ''}');
+      var url = Uri.parse('${API.beverage}?cafe_id=$cafeId${category != null
+          ? '&category=$category' : ''}');
       var header = {
         "Content-Type": "application/json",
-        "Authorization": "Bearer ${token}"
+        "Authorization": "Bearer $token"
       };
 
       var response = await http.get(
@@ -96,11 +97,19 @@ class FetchBeverage {
 
                 // Iterate through the 'beverages' list
                 for (var beverageData in beveragesList) {
-                  // Create a BeverageModel instance from each beverage data and add it to the list
                   beverages.add(BeverageModel.fromJson(beverageData));
                 }
               }
             }
+
+            // Extract IDs from the list of BeverageModel
+            List<int> beverageIds = beverages.map((beverage) => beverage.id)
+                .toList();
+
+            // Save beverage IDs in shared preferences
+            await saveBeverageIdsInSharedPreferences(beverageIds);
+
+            print('Beverage IDs: $beverageIds');
 
             return beverages;
           } else {
@@ -124,13 +133,24 @@ class FetchBeverage {
     }
   }
 
+  Future<void> saveBeverageIdsInSharedPreferences(List<int> beverageIds) async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.setStringList('beverageIds', beverageIds.map((id) => id
+          .toString()).toList());
+    } catch (error) {
+      print('Error saving beverage IDs in shared preferences: $error');
+    }
+  }
+
   Future<List<String>> getCategoryList({String? search}) async {
     try {
       final String cafeId = await getCafeIdFromSharedPreferences();
       final String? token = await getToken();
 
       // Include the search parameter only if it's provided
-      var url = Uri.parse('${API.beverage}?cafe_id=$cafeId${search != null ? '&search=$search' : ''}');
+      var url = Uri.parse('${API.beverage}?cafe_id=$cafeId${search != null
+          ? '&search=$search' : ''}');
       var header = {
         "Content-Type": "application/json",
         "Authorization": "Bearer $token"
@@ -179,16 +199,6 @@ class FetchBeverage {
       return [];
     }
   }
-
-  // Future<String> setBeverageId() async {
-  //   SharedPreferences prefs = await SharedPreferences.getInstance();
-  //   return prefs.setString('beverageId', );
-  // }
-  //
-  // Future<String> getBeverageId() async {
-  //   SharedPreferences prefs = await SharedPreferences.getInstance();
-  //   return prefs.getString('beverageId') ?? '';
-  // }
 }
 
 class _BeverageListScreenState extends State<BeverageListScreen> {
@@ -233,14 +243,14 @@ class _BeverageListScreenState extends State<BeverageListScreen> {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: Text('Beverage Listing'),
+          title: const Text('Beverage Listing'),
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
             onPressed: () {
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => HomePage(libraryId: ''),
+                  builder: (context) => const HomePage(libraryId: ''),
                 ),
               );
             },
@@ -263,7 +273,7 @@ class _BeverageListScreenState extends State<BeverageListScreen> {
               future: categoryList,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return CircularProgressIndicator();
+                  return const CircularProgressIndicator();
                 } else if (snapshot.hasError) {
                   return Center(
                     child: Text('Error: ${snapshot.error}'),
@@ -281,7 +291,7 @@ class _BeverageListScreenState extends State<BeverageListScreen> {
                             },
                             child: Text(category),
                           ),
-                          SizedBox(width: 16.0),
+                          const SizedBox(width: 16.0),
                         ],
                       ),
                     )
@@ -295,7 +305,7 @@ class _BeverageListScreenState extends State<BeverageListScreen> {
                 future: beverageList,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Center(child: CircularProgressIndicator());
+                    return const Center(child: CircularProgressIndicator());
                   } else if (snapshot.hasError) {
                     return Center(
                       child: Text('Error: ${snapshot.error}'),
@@ -335,25 +345,27 @@ class _BeverageListScreenState extends State<BeverageListScreen> {
                                     ),
                                     child: Center(
                                       child: Image.network(
-                                        '${beverage.picture}',
+                                        beverage.picture,
                                         width: double.infinity,
                                         height: 150.0,
                                         fit: BoxFit.cover,
-                                        errorBuilder: (context, error, stackTrace) {
+                                        errorBuilder: (context, error,
+                                            stackTrace) {
                                           // Handle image loading error
                                           return const Icon(Icons.error);
                                         },
                                       ),
                                     ),
                                   ),
-                                  SizedBox(width: 32),
+                                  const SizedBox(width: 32),
                                   Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment
+                                        .start,
                                     children: [
                                       Text(
-                                        '${beverage.name}',
-                                        style: TextStyle(
+                                        beverage.name,
+                                        style: const TextStyle(
                                           fontWeight: FontWeight.bold,
                                         ),
                                       ),
@@ -361,26 +373,26 @@ class _BeverageListScreenState extends State<BeverageListScreen> {
                                         'RM${beverage.price}',
                                       ),
                                       Text(
-                                        '${beverage.category}',
+                                        beverage.category,
                                       ),
                                     ],
                                   ),
-                                  Spacer(),
+                                  const Spacer(),
                                   Row(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
                                       IconButton(
-                                        icon: Icon(Icons.add),
+                                        icon: const Icon(Icons.add),
                                         onPressed: () {
                                           increaseQuantity(index);
                                         },
                                       ),
                                       Text(
                                         '${quantity[index]}',
-                                        style: TextStyle(fontSize: 18),
+                                        style: const TextStyle(fontSize: 18),
                                       ),
                                       IconButton(
-                                        icon: Icon(Icons.remove),
+                                        icon: const Icon(Icons.remove),
                                         onPressed: () {
                                           decreaseQuantity(index);
                                         },
@@ -402,7 +414,8 @@ class _BeverageListScreenState extends State<BeverageListScreen> {
         ),
         bottomNavigationBar: BottomAppBar(
           child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical:
+            8.0),
             child: ElevatedButton(
               onPressed: () {
                 List<BeverageModel> selectedItems = [];
@@ -428,7 +441,7 @@ class _BeverageListScreenState extends State<BeverageListScreen> {
                   ),
                 );
               },
-              child: Text('Proceed to Checkout'),
+              child: const Text('Proceed to Checkout'),
             ),
           ),
         ),

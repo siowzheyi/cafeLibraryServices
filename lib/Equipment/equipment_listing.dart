@@ -7,7 +7,6 @@ import '../Controller/connection.dart';
 import '../Model/equipment_model.dart';
 import '../Welcome/select_library.dart';
 
-
 void main(){
   runApp(EquipmentListing());
 }
@@ -35,8 +34,7 @@ class EquipmentListing extends StatelessWidget {
               return EquipmentListScreen(libraryId: libraryId);
             }
           } else {
-            // While waiting for the Future to complete, show a loading indicator
-            return Scaffold(
+            return const Scaffold(
               body: Center(
                 child: CircularProgressIndicator(),
               ),
@@ -52,7 +50,8 @@ class EquipmentListScreen extends StatefulWidget {
   final String libraryId;
   final Map<String, String>? headers;
 
-  const EquipmentListScreen({Key? key, required this.libraryId, this.headers}) : super(key: key);
+  const EquipmentListScreen({Key? key, required this.libraryId, this.headers})
+      : super(key: key);
 
   @override
   _EquipmentListScreenState createState() => _EquipmentListScreenState();
@@ -69,7 +68,7 @@ class _EquipmentListScreenState extends State<EquipmentListScreen> {
       var url = Uri.parse('${API.equipment}?library_id=$libraryId');
       var header = {
         "Content-Type": "application/json",
-        "Authorization": "Bearer ${token}"
+        "Authorization": "Bearer $token"
       };
       var response = await http.get(
           url,
@@ -125,14 +124,14 @@ class _EquipmentListScreenState extends State<EquipmentListScreen> {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: Text('Equipment Listing'),
+          title: const Text('Equipment Listing'),
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
             onPressed: () {
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => HomePage(libraryId: ''),
+                  builder: (context) => const HomePage(libraryId: ''),
                 ),
               );
             },
@@ -142,73 +141,72 @@ class _EquipmentListScreenState extends State<EquipmentListScreen> {
           future: equipmentList,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(child: CircularProgressIndicator());
+              return const Center(child: CircularProgressIndicator());
             } else if (snapshot.hasError) {
               return Center(
                 child: Text('Error: ${snapshot.error}'),
               );
             } else {
               List<EquipmentModel> results = snapshot.data!;
-              return Container(
-                child: ListView.builder(
-                  itemCount: results.length,
-                  itemBuilder: (context, index) {
-                    return Card(
-                      child: SizedBox(
-                        height: 100.0,
-                        child: ListTile(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => EquipmentDetailsScreen(id: results[index].id,
-                                  name: results[index].name,
-                                  picture: results[index].picture,
+              return ListView.builder(
+                itemCount: results.length,
+                itemBuilder: (context, index) {
+                  return Card(
+                    child: SizedBox(
+                      height: 100.0,
+                      child: ListTile(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => EquipmentDetailsScreen(
+                                id: results[index].id,
+                                name: results[index].name,
+                                picture: results[index].picture,
+                              ),
+                            ),
+                          );
+                        },
+                        title: Row(
+                          children: [
+                            Container(
+                              height: 60,
+                              width: 60,
+                              decoration: BoxDecoration(
+                                color: Colors.green,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Center(
+                                child: Image.network(
+                                  results[index].picture,
+                                  width: double.infinity,
+                                  height: 150.0,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    // Handle image loading error
+                                    return const Icon(Icons.error);
+                                  },
                                 ),
                               ),
-                            );
-                          },
-                          title: Row(
-                            children: [
-                              Container(
-                                height: 60,
-                                width: 60,
-                                decoration: BoxDecoration(
-                                  color: Colors.green,
-                                  borderRadius: BorderRadius.circular(10),
+                            ),
+                            const SizedBox(width: 32),
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  results[index].name,
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold),
                                 ),
-                                child: Center(
-                                  child: Image.network(
-                                    '${results[index].picture}',
-                                    width: double.infinity,
-                                    height: 150.0,
-                                    fit: BoxFit.cover,
-                                    errorBuilder: (context, error, stackTrace) {
-                                      // Handle image loading error
-                                      return const Icon(Icons.error);
-                                    },
-                                  ),
-                                ),
-                              ),
-                              SizedBox(width: 32),
-                              Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    '${results[index].name}',
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
+                              ],
+                            ),
+                          ],
                         ),
                       ),
-                    );
-                  },
-                ),
+                    ),
+                  );
+                },
               );
             }
           },

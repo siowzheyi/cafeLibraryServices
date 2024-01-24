@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
+import '../Booking/booking_listing.dart';
 import '../Controller/connection.dart';
 import 'dart:convert';
 
@@ -30,7 +31,8 @@ class _ReserveRoomPageState extends State<ReserveRoomPage> {
   final TextEditingController startTimeDateController = TextEditingController();
   final TextEditingController endTimeDateController = TextEditingController();
 
-  Future<void> postRentRoom(String type, int quantity, int roomId, String startBookedAt, String endBookedAt) async {
+  Future<void> postRentRoom(String type, int quantity, int roomId, String
+  startBookedAt, String endBookedAt) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = prefs.getString('token') ?? '';
     String roomId = prefs.getString('roomId') ?? '';
@@ -55,9 +57,10 @@ class _ReserveRoomPageState extends State<ReserveRoomPage> {
       );
 
       if (response.statusCode == 200) {
-        print(await response.body);
+        print(response.body);
       } else {
-        print('Error statusCode: ${response.statusCode}, Reason Phrase: ${response.reasonPhrase}');
+        print('Error statusCode: ${response.statusCode}, Reason Phrase: '
+            '${response.reasonPhrase}');
       }
     } catch (error) {
       print('Error: $error');
@@ -92,7 +95,8 @@ class _ReserveRoomPageState extends State<ReserveRoomPage> {
 
       if (pickedTime != null) {
         setState(() {
-          _startDate = "${pickedDate.year}-${pickedDate.month}-${pickedDate.day}";
+          _startDate = "${pickedDate.year}-${pickedDate.month}-${pickedDate
+              .day}";
           _startTime = "${pickedTime.hour}:${pickedTime.minute}";
           startTimeDateController.text = "$_startDate $_startTime";
         });
@@ -174,7 +178,8 @@ class _ReserveRoomPageState extends State<ReserveRoomPage> {
 
       // check if the duration is exactly for 1 hour
       if (difference.inHours == 1 && difference.inMinutes == 60) {
-        print('Room: $_selectedRoom, From: $_startDate, $_startTime, To: $_endDate, $_endTime');
+        print('Room: $_selectedRoom, From: $_startDate, $_startTime, To: '
+            '$_endDate, $_endTime');
         showDialog(
           context: context,
           builder: (BuildContext context) {
@@ -189,7 +194,8 @@ class _ReserveRoomPageState extends State<ReserveRoomPage> {
               actions: [
                 TextButton(
                   onPressed: () async {
-                    SharedPreferences prefs = await SharedPreferences.getInstance();
+                    SharedPreferences prefs = await SharedPreferences
+                        .getInstance();
                     String roomId = prefs.getString('roomId') ?? '';
                     int parsedId = int.tryParse(roomId) ?? 0;
                     String start = startTimeDateController.text;
@@ -201,6 +207,12 @@ class _ReserveRoomPageState extends State<ReserveRoomPage> {
                         start,
                         end);
                     Navigator.of(context).pop();
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => BookingListing(),
+                      ),
+                    );
                   },
                   child: const Text('OK'),
                 ),

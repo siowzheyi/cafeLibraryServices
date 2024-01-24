@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../Booking/booking_listing.dart';
 import '../Controller/connection.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -30,7 +31,8 @@ class _ReserveBookPageState extends State<ReserveBookPage> {
   final TextEditingController startDateController = TextEditingController();
   final TextEditingController endDateController = TextEditingController();
 
-  Future<void> postBorrowBook(String type, int quantity, int bookId, String startBookedAt, String endBookedAt) async {
+  Future<void> postBorrowBook(String type, int quantity, int bookId,
+      String startBookedAt, String endBookedAt) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = prefs.getString('token') ?? '';
     String bookId = prefs.getString('bookId') ?? '';
@@ -55,9 +57,10 @@ class _ReserveBookPageState extends State<ReserveBookPage> {
       );
 
       if (response.statusCode == 200) {
-        print(await response.body);
+        print(response.body);
       } else {
-        print('Error statusCode: ${response.statusCode}, Reason Phrase: ${response.reasonPhrase}');
+        print('Error statusCode: ${response.statusCode}, Reason Phrase: '
+            '${response.reasonPhrase}');
       }
     } catch (error) {
       print('Error: $error');
@@ -183,8 +186,27 @@ class _ReserveBookPageState extends State<ReserveBookPage> {
               content: const Text('You can borrow this book straight away.'),
               actions: [
                 TextButton(
-                  onPressed: () {
+                  onPressed: () async {
+                    SharedPreferences prefs = await SharedPreferences
+                        .getInstance();
+                    String bookId = prefs.getString('bookId') ?? '';
+                    int parsedId = int.tryParse(bookId) ?? 0;
+                    String qty = quantityController.text;
+                    String start = startDateController.text;
+                    String end = endDateController.text;
+                    await postBorrowBook(
+                        'book',
+                        int.tryParse(qty) ?? 0,
+                        parsedId,
+                        start,
+                        end);
                     Navigator.of(context).pop();
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => BookingListing(),
+                      ),
+                    );
                   },
                   child: const Text('OK'),
                 ),
@@ -208,18 +230,6 @@ class _ReserveBookPageState extends State<ReserveBookPage> {
               actions: [
                 TextButton(
                   onPressed: () async {
-                    SharedPreferences prefs = await SharedPreferences.getInstance();
-                    String bookId = prefs.getString('equipmentId') ?? '';
-                    int parsedId = int.tryParse(bookId) ?? 0;
-                    String qty = quantityController.text;
-                    String start = startDateController.text;
-                    String end = endDateController.text;
-                    await postBorrowBook(
-                        'book',
-                        int.tryParse(qty) ?? 0,
-                        parsedId,
-                        start,
-                        end);
                     Navigator.of(context).pop();
                   },
                   child: const Text('OK'),
@@ -327,7 +337,7 @@ class _ReserveBookPageState extends State<ReserveBookPage> {
               children: [
                 ElevatedButton(
                   onPressed: _submitForm,
-                  child: Text('Submit'),
+                  child: const Text('Submit'),
                 ),
               ],
             ),

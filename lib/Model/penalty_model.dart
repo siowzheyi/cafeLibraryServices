@@ -6,7 +6,7 @@ class PenaltyModel {
   final String itemPicture;
   final String libraryName;
   final int libraryId;
-  final double penaltyAmount;
+  final int penaltyAmount;
   final String penaltyPaidStatus;
   final int quantity;
   final String createdAt;

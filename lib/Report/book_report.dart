@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:cafe_library_services/Controller/connection.dart';
-import 'package:cafe_library_services/Report/book_report_listing.dart';
+import 'package:cafe_library_services/Report/report_listing.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
@@ -42,7 +42,8 @@ class _BookReportPageState extends State<BookReportPage> {
     }
   }
 
-  Future<void> postBookReport(String token, String bookId, String itemName, String issueDescription, File imageFile) async {
+  Future<void> postBookReport(String type, String bookId,
+      String itemName, String issueDescription, File imageFile) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = prefs.getString('token') ?? '';
     String bookId = prefs.getString('bookId') ?? '';
@@ -63,7 +64,8 @@ class _BookReportPageState extends State<BookReportPage> {
       });
 
       if (imageFile != null) {
-        request.files.add(await http.MultipartFile.fromPath('picture', imageFile.path));
+        request.files.add(await http.MultipartFile.fromPath('picture',
+            imageFile.path));
       }
 
       http.StreamedResponse response = await request.send();
@@ -78,11 +80,17 @@ class _BookReportPageState extends State<BookReportPage> {
     }
   }
 
+  void _removeImage() {
+    setState(() {
+      _image = null;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Report Book'),
+        title: const Text('Report Book'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
@@ -98,17 +106,17 @@ class _BookReportPageState extends State<BookReportPage> {
             children: [
               TextFormField(
                 controller: nameController,
-                decoration: InputDecoration(labelText: 'Book name'),
+                decoration: const InputDecoration(labelText: 'Book name'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter book name';
+                    return 'Please enter the book name';
                   }
                   return null;
                 },
               ),
               TextFormField(
                 controller: descriptionController,
-                decoration: InputDecoration(labelText: 'Description'),
+                decoration: const InputDecoration(labelText: 'Description'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter description';
@@ -116,17 +124,27 @@ class _BookReportPageState extends State<BookReportPage> {
                   return null;
                 },
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               _image == null
                   ? ElevatedButton(
                 onPressed: _getImage,
-                child: Text('Add Image'),
+                child: const Text('Add Image'),
               )
-                  : Image.file(_image!),
-              SizedBox(height: 20),
+                  : Column(
+                children: [
+                  Image.file(_image!),
+                  const SizedBox(height: 10),
+                  ElevatedButton(
+                    onPressed: _removeImage,
+                    child: const Text('Remove Picture'),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () async {
-                  SharedPreferences prefs = await SharedPreferences.getInstance();
+                  SharedPreferences prefs = await SharedPreferences
+                      .getInstance();
                   String bookId = prefs.getString('bookId') ?? '';
                   String itemName = nameController.text;
                   String issueDescription = descriptionController.text;
@@ -150,7 +168,8 @@ class _BookReportPageState extends State<BookReportPage> {
                                 // Navigate to the ReportListPage
                                 Navigator.pushReplacement(
                                   context,
-                                  MaterialPageRoute(builder: (context) => BookReportListPage()),
+                                  MaterialPageRoute(builder: (context)
+                                  => ReportListing()),
                                 );
                               },
                               child: Text('OK'),
@@ -162,11 +181,12 @@ class _BookReportPageState extends State<BookReportPage> {
                   } else {
                     // Handle the case where no image is selected
                     Fluttertoast.showToast(
-                      msg: 'Please select an image before submitting the report.'
+                      msg: 'Please select an image before submitting the '
+                          'report.'
                     );
                   }
                 },
-                child: Text('Submit Report'),
+                child: const Text('Submit Report'),
               ),
             ],
           ),

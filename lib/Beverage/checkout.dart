@@ -1,10 +1,10 @@
-import 'package:cafe_library_services/Beverage/beverage_listing.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../Controller/connection.dart';
 import '../Model/beverage_model.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import '../Payment/payment_receipt.dart';
 import '../Welcome/select_cafe.dart';
 
 class CheckoutScreen extends StatelessWidget {
@@ -19,7 +19,9 @@ class CheckoutScreen extends StatelessWidget {
     required this.totalPrice,
   }) : super(key: key);
 
-  Future<void> postOrderBeverage(List<BeverageModel> selectedItems, List<int> quantity, int tableId) async {
+  Future<void> postOrderBeverage(List<BeverageModel> selectedItems, List<int>
+  quantity, int tableId) async {
+    List<int> orderIds = [];
     try {
       final String? token = await getToken();
 
@@ -42,15 +44,54 @@ class CheckoutScreen extends StatelessWidget {
         );
 
         if (response.statusCode == 200) {
-          print('Order placed successfully for beverage ${selectedItems[i].id}');
+          var orderId = json.decode(response.body)['order_id'];
+          orderIds.add(orderId);
+          print('Order placed successfully for beverage ${selectedItems[i]
+              .id}');
         } else {
-          print('Error: ${response.statusCode}, Reason Phrase: ${response.reasonPhrase}');
+          print('Error: ${response.statusCode}, Reason Phrase: ${response
+              .reasonPhrase}');
         }
       }
     } catch (error) {
       print('Error: $error');
     }
   }
+
+  Future<void> payBeverage() async {
+    try {
+      final String? token = await getToken();
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+
+      int orderId = prefs.getInt('orderId') ?? 0;
+
+      var headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      };
+
+      var requestBody = {
+        'type': 'order',
+        'order_id': orderId,
+      };
+
+      var response = await http.post(
+        Uri.parse(API.payment),
+        headers: headers,
+        body: json.encode(requestBody),
+      );
+
+      if (response.statusCode == 200) {
+        print('Payment successful for item with order ID: $orderId');
+      } else {
+        print('Error: ${response.statusCode}, Reason Phrase: ${response
+            .reasonPhrase}');
+      }
+    } catch (error) {
+      print('Error: $error');
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +102,8 @@ class CheckoutScreen extends StatelessWidget {
       body: ListView.builder(
         itemCount: selectedItems.length,
         itemBuilder: (context, index) {
-          double itemTotal = double.parse(selectedItems[index].price) * quantity[index];
+          double itemTotal = double.parse(selectedItems[index].price)
+              * quantity[index];
           return SingleChildScrollView(
             child: SizedBox(
               height: 80.0,
@@ -103,7 +145,7 @@ class CheckoutScreen extends StatelessWidget {
     );
   }
 
-  void _handlePayment(BuildContext context) {
+  void _handlePayment(BuildContext context) async {
     // Show a loading screen or perform payment logic here
     showDialog(
       context: context,
@@ -121,8 +163,8 @@ class CheckoutScreen extends StatelessWidget {
       },
     );
 
-    // Simulate a delay for demonstration purposes
     Future.delayed(const Duration(seconds: 2), () async {
+      double selectedPayment = 0.0;
       // Close the loading screen
       Navigator.of(context).pop();
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -131,6 +173,10 @@ class CheckoutScreen extends StatelessWidget {
       // Check if tableId is not null before calling postOrderBeverage
       if (tableId != null) {
         await postOrderBeverage(selectedItems, quantity, tableId);
+        await payBeverage();
+        // Assign total price to selectedPayment
+        selectedPayment = totalPrice;
+
         showDialog(
           context: context,
           builder: (BuildContext context) {
@@ -145,13 +191,14 @@ class CheckoutScreen extends StatelessWidget {
               ),
               actions: [
                 TextButton(
-                  onPressed: () {
+                  onPressed: () async {
                     Navigator.of(context).pop();
-                    Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(
-                        builder: (context) => BeverageListing(),
-                      ),
-                    );
+                    // Navigator.push(
+                    //   context,
+                    //   MaterialPageRoute(
+                    //     builder: (context) => PaymentBeverageScreen(),
+                    //   ),
+                    // );
                   },
                   child: const Text('OK'),
                 ),

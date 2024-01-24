@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:cafe_library_services/Controller/connection.dart';
-import 'package:cafe_library_services/Report/room_report_listing.dart';
+import 'package:cafe_library_services/Report/report_listing.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
@@ -42,10 +42,11 @@ class _RoomReportPageState extends State<RoomReportPage> {
     }
   }
 
-  Future<void> postRoomReport(String token, String roomId, String itemName, String issueDescription, File imageFile) async {
+  Future<void> postRoomReport(String type, String roomId,
+      String itemName, String issueDescription, File imageFile) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = prefs.getString('token') ?? '';
-    String roomId = prefs.getString('roomId') ?? '';
+    String equipmentId = prefs.getString('roomId') ?? '';
     try {
       var headers = {
         "Content-Type": "application/json",
@@ -63,7 +64,8 @@ class _RoomReportPageState extends State<RoomReportPage> {
       });
 
       if (imageFile != null) {
-        request.files.add(await http.MultipartFile.fromPath('picture', imageFile.path));
+        request.files.add(await http.MultipartFile.fromPath('picture',
+            imageFile.path));
       }
 
       http.StreamedResponse response = await request.send();
@@ -78,11 +80,17 @@ class _RoomReportPageState extends State<RoomReportPage> {
     }
   }
 
+  void _removeImage() {
+    setState(() {
+      _image = null;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Report Room'),
+        title: const Text('Report Room'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
@@ -91,86 +99,98 @@ class _RoomReportPageState extends State<RoomReportPage> {
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: SingleChildScrollView(
-          scrollDirection: Axis.vertical,
-          child: Column(
-            children: [
-              TextFormField(
-                controller: nameController,
-                decoration: InputDecoration(labelText: 'Room name'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter room name';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: descriptionController,
-                decoration: InputDecoration(labelText: 'Description'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter description';
-                  }
-                  return null;
-                },
-              ),
-              SizedBox(height: 10),
-              _image == null
-                  ? ElevatedButton(
-                onPressed: _getImage,
-                  child: Text('Add Image'),
-              )
-                  : Image.file(_image!),
-              SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () async {
-                  SharedPreferences prefs = await SharedPreferences.getInstance();
-                  String roomId = prefs.getString('roomId') ?? '';
-                  String itemName = nameController.text;
-                  String issueDescription = descriptionController.text;
-                  if (_image != null) {
-                    await postRoomReport(
-                      'room',
-                      roomId,
-                      itemName,
-                      issueDescription,
-                      _image!, // Pass the selected image file
-                    );
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: Text('Report Submitted'),
-                          content: Text('Thank you for submitting the report!'),
-                          actions: [
-                            TextButton(
-                              onPressed: () {
-                                // Navigate to the ReportListPage
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(builder: (context) => RoomReportListPage()),
-                                );
-                              },
-                              child: Text('OK'),
-                            ),
-                          ],
-                        );
-                      },
-                    );
-                  } else {
-                    // Handle the case where no image is selected
-                    Fluttertoast.showToast(
-                        msg: 'Please select an image before submitting the report.'
-                    );
-                  }
-                },
-                child: Text('Submit Report'),
-              ),
-            ],
-          ),
-        ),
+          padding: const EdgeInsets.all(16.0),
+          child: SingleChildScrollView(
+            scrollDirection: Axis.vertical,
+            child: Column(
+              children: [
+                TextFormField(
+                  controller: nameController,
+                  decoration: const InputDecoration(labelText: 'Room name'),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter the room name';
+                    }
+                    return null;
+                  },
+                ),
+                TextFormField(
+                  controller: descriptionController,
+                  decoration: const InputDecoration(labelText: 'Description'),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter the description';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 10),
+                _image == null
+                    ? ElevatedButton(
+                  onPressed: _getImage,
+                  child: const Text('Add Image'),
+                )
+                    : Column(
+                  children: [
+                    Image.file(_image!),
+                    const SizedBox(height: 10),
+                    ElevatedButton(
+                      onPressed: _removeImage,
+                      child: const Text('Remove Picture'),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () async {
+                    SharedPreferences prefs = await SharedPreferences
+                        .getInstance();
+                    String roomId = prefs.getString('roomId') ?? '';
+                    String itemName = nameController.text;
+                    String issueDescription = descriptionController.text;
+                    if (_image != null) {
+                      await postRoomReport( // Updated method call
+                        'room', // Updated type
+                        roomId,
+                        itemName,
+                        issueDescription,
+                        _image!,
+                      );
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Text('Report Submitted'),
+                            content: Text('Thank you for submitting the '
+                                'report!'),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  // Navigate to the ReportListPage
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(builder: (context)
+                                    => ReportListing()),
+                                  );
+                                },
+                                child: Text('OK'),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    } else {
+                      Fluttertoast.showToast(
+                          msg: 'Please select an image before submitting '
+                              'the report.'
+                      );
+                    }
+                  },
+                  child: const Text('Submit Report'),
+                ),
+              ],
+            ),
+          )
       ),
     );
   }

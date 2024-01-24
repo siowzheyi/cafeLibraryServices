@@ -68,9 +68,9 @@ class FetchOrder {
     try {
       var header = {
         "Content-Type": "application/json",
-        "Authorization": "Bearer ${token}"
+        "Authorization": "Bearer $token"
       };
-      var response = await http.get(Uri.parse('${API.ordering}?cafe_id=$cafeId'),
+      var response = await http.get(Uri.parse('${API.ordering}'),
       headers: header);
 
       if (response.statusCode == 200) {

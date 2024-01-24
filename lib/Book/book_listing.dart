@@ -53,7 +53,8 @@ class BookListScreen extends StatefulWidget {
   final String libraryId;
   final Map<String, String>? headers;
 
-  const BookListScreen({Key? key, required this.libraryId, this.headers}) : super(key: key);
+  const BookListScreen({Key? key, required this.libraryId, this.headers})
+      : super(key: key);
 
   @override
   _BookListScreenState createState() => _BookListScreenState();

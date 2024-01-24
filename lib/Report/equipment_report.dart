@@ -5,7 +5,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'equipment_report_listing.dart';
+import 'report_listing.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -42,7 +42,8 @@ class _EquipmentReportPageState extends State<EquipmentReportPage> {
     }
   }
 
-  Future<void> postEquipmentReport(String type, String equipmentId, String itemName, String issueDescription, File imageFile) async {
+  Future<void> postEquipmentReport(String type, String equipmentId,
+      String itemName, String issueDescription, File imageFile) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = prefs.getString('token') ?? '';
     String equipmentId = prefs.getString('equipmentId') ?? '';
@@ -63,7 +64,8 @@ class _EquipmentReportPageState extends State<EquipmentReportPage> {
       });
 
       if (imageFile != null) {
-        request.files.add(await http.MultipartFile.fromPath('picture', imageFile.path));
+        request.files.add(await http.MultipartFile.fromPath('picture',
+            imageFile.path));
       }
 
       http.StreamedResponse response = await request.send();
@@ -88,7 +90,7 @@ class _EquipmentReportPageState extends State<EquipmentReportPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Report Equipment'),
+        title: const Text('Report Equipment'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
@@ -104,44 +106,45 @@ class _EquipmentReportPageState extends State<EquipmentReportPage> {
             children: [
               TextFormField(
                 controller: nameController,
-                decoration: InputDecoration(labelText: 'Equipment name'),
+                decoration: const InputDecoration(labelText: 'Equipment name'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter the equipment name';
                   }
-                  return null; // Return null if the input is valid
+                  return null;
                 },
               ),
               TextFormField(
                 controller: descriptionController,
-                decoration: InputDecoration(labelText: 'Description'),
+                decoration: const InputDecoration(labelText: 'Description'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter the description';
                   }
-                  return null; // Return null if the input is valid
+                  return null;
                 },
               ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             _image == null
                 ? ElevatedButton(
               onPressed: _getImage,
-              child: Text('Add Image'),
+              child: const Text('Add Image'),
             )
                 : Column(
               children: [
                 Image.file(_image!),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 ElevatedButton(
                   onPressed: _removeImage,
-                  child: Text('Remove Picture'),
+                  child: const Text('Remove Picture'),
                 ),
               ],
             ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () async {
-                  SharedPreferences prefs = await SharedPreferences.getInstance();
+                  SharedPreferences prefs = await SharedPreferences
+                      .getInstance();
                   String equipmentId = prefs.getString('equipmentId') ?? '';
                   String itemName = nameController.text;
                   String issueDescription = descriptionController.text;
@@ -165,7 +168,8 @@ class _EquipmentReportPageState extends State<EquipmentReportPage> {
                                 // Navigate to the ReportListPage
                                 Navigator.pushReplacement(
                                   context,
-                                  MaterialPageRoute(builder: (context) => EquipmentReportListPage()),
+                                  MaterialPageRoute(builder: (context)
+                                  => ReportListing()),
                                 );
                               },
                               child: Text('OK'),
@@ -176,11 +180,12 @@ class _EquipmentReportPageState extends State<EquipmentReportPage> {
                     );
                   } else {
                     Fluttertoast.showToast(
-                      msg: 'Please select an image before submitting the report.'
+                      msg: 'Please select an image before submitting '
+                          'the report.'
                     );
                   }
                 },
-                child: Text('Submit Report'),
+                child: const Text('Submit Report'),
               ),
             ],
           ),
