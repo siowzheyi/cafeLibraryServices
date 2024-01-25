@@ -13,9 +13,15 @@ Business rule
 Work allocation for Laravel
 
 Backend REST API - SIOW ZHE YI
+
 Database hosting server - SIOW ZHE YI
+
 Integration of user interface with REST API - SIOW ZHE YI
+
 html and styling of user interface for admin and library modules - NURUL SHAFIQHA BINTI REDZUAN
+
 dashboard graph for admin and library modules - NURUL SHAFIQHA BINTI REDZUAN
+
 html and styling of user interface for cafe module - RASZREEN SABREENA BINTI MOHAMMAD KHAFIZ
+
 dashboard graph for cafe module - RASZREEN SABREENA BINTI MOHAMMAD KHAFIZ
