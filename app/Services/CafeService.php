@@ -110,7 +110,7 @@ class CafeService
 
     public function update($request, $cafe)
     {
-        $request = $request->validated();
+        // $request = $request->validated();
 
         if (isset($request['type'])) {
             if ($request['type'] === 'status') {
@@ -120,7 +120,7 @@ class CafeService
             return;
         }
         $cafe->name = $request['name'];
-        $cafe->status = $request['status'];
+        // $cafe->status = $request['status'];
 
         $cafe->save();
 

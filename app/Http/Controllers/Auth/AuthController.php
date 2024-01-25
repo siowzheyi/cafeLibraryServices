@@ -9,6 +9,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Session;
 use App\Models\User;
+use App\Models\Library;
+use App\Models\Cafe;
+
 use Hash;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -56,7 +59,7 @@ class AuthController extends Controller
                 if($user->library_id != null || $user->cafe_id != null)
                     return redirect('dashboard');
                 else
-                    return redirect('dashboard.library-cafe');
+                    return redirect('library_cafe');
             }
             elseif($user->hasRole('admin'))
                 return redirect('dashboard');
@@ -130,5 +133,55 @@ class AuthController extends Controller
         Auth::logout();
   
         return Redirect('login');
+    }
+
+    public function libraryCafe()
+    {
+        $data = array();
+        // get list of library and return
+        $libraries = Library::where('status',1)->get();
+        foreach($libraries as $library)
+        {
+            $cafe = Cafe::where('library_id',$library->id)->first();
+            if($cafe == null)
+                array_push($data, $library);
+        }
+        
+        return view('auth.create_cafe_or_library',compact('data'));
+    }
+
+    public function createLibraryCafe(Request $request)
+    {
+        $type = $request->entityType;
+        if($type == "cafe")
+        {
+            $cafe = new Cafe();
+            $cafe->name = $request->name;
+            $cafe->library_id = $request->library;
+            $cafe->save();
+    
+            $user = auth()->user();
+    
+            $user->cafe_id = $cafe->id;
+            $user->save();
+            return view('dashboard.cafe');
+
+        }
+        else
+        {
+            $library = new Library();
+            $library->name = $request->name;
+            $library->address = $request->address;
+            $library->save();
+    
+            $user = auth()->user();
+    
+            $user->library_id = $library->id;
+            $user->save();
+            return view('dashboard.library');
+
+        }
+
+        
     }
 }

@@ -72,18 +72,23 @@
                             <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                             Order
                         </a>
+                        <a class="nav-link active" href="{{ route('daily_sales_report.index') }}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
+                            Report
+                        </a>
                         <div class="collapse show" id="collapseLayoutsCafe" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                             <nav class="sb-sidenav-menu-nested nav">
                                 {{-- <a class="nav-link" href="{{ route('User.index') }}">Staff Cafe</a> --}}
-                                <a class="nav-link collapsed " href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayoutsCafe" aria-expanded="false" aria-controls="collapseLayoutsCafe">
+                                {{-- <a class="nav-link active " href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayoutsCafe" aria-expanded="false" aria-controls="collapseLayoutsCafe">
                                     <div class="sb-nav-link-icon"><i class="fas fa-plus"></i></div>
                                     Report
                                     <div class="sb-sidenav-collapse-arrow"><i class=""></i></div>
-                                </a>
+                                </a> --}}
                                 <div class="collapse show" id="collapseLayoutsCafe" aria-labelledby="card-header" data-bs-parent="#sidenavAccordion">
                                     <nav class="sb-sidenav-menu-nested nav">
-                                        <a class="nav-link menu" href="{{ route('daily_sales_report.index') }}" >Daily Sales</a>
-                                        <a class="nav-link menu" href="{{ route('detail_sales_report.index') }}">Detail Sales</a>
+                                        <a class="nav-link menu" href="{{ route('daily_sales_report.index') }}" >Daily Sales Cafe</a>
+                                        <a class="nav-link menu" href="{{ route('detail_sales_report.index') }}">Detail Sales Cafe</a>
+
                                     </nav>
                                 </div> 
                             </nav>

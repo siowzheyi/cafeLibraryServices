@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller as Controller;
 use App\Http\Controllers\API\BaseController as BaseController;
 use App\Services\AnnouncementService;
 use Yajra\DataTables\DataTables;
+use App\Services\Service;
+
 use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\Rule;
 use View;
@@ -56,7 +58,7 @@ class AnnouncementController extends BaseController
         $result = $this->services->store($request, $input);
         
         if($result != null)
-            return view('library.equipment.index')->withSuccess("Data successfully created. ");
+            return view('library.announcement.index')->withSuccess("Data successfully created. ");
         else
             return redirect()->back()->withErrors("Data is not created.");
 

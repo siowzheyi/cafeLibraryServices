@@ -33,6 +33,16 @@ class LibraryController extends BaseController
         return redirect("login")->withSuccess('Opps! You do not have access');
     }
 
+    public function edit(Library $library)
+    {
+        $data = [
+            "id"    =>  $library->id,
+            "name"    =>  $library->name,
+            "address"    =>  $library->address,
+        ];
+        return view('library.edit',compact('data'));
+    }
+
     public function dashboardLibrary()
     {
         if(Auth::check()){
@@ -74,11 +84,21 @@ class LibraryController extends BaseController
     }
 
     // This api is for admin user to update certain library
-    public function update(LibraryRequest $request, Library $library)
+    public function update(Request $request, Library $library)
     {
-        $result = $this->services->update($request, $library);
+        $input = $request->all();
+        $validator = Validator::make($input, [
+            'name' => ['required'],
+            'address' => ['required'],
+            // 'picture' => ['nullable'],
+        ]);
+        if ($validator->fails()) {
+            Session::flash('message-error', $validator->errors());
+            return redirect()->back()->withErrors($validator->errors());
+        }
+        $result = $this->services->update($input, $library);
 
-        return $this->sendResponse("", "Library has been successfully updated. ");
+        return view('library.index');
        
     }
 

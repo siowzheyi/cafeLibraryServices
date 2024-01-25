@@ -1,12 +1,3 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
-
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
-
 Business rule
 
 1. A user must clear penalty before borrowing next item
@@ -18,3 +9,19 @@ Business rule
 7. Push notification is one signal for android only
 8. Once staff approved the renting/borrowing request, cannot reject anymore
 9. Beverage is categorized by category, book is categorized by genre, room is categorized by type
+
+Work allocation for Laravel
+
+Backend REST API - SIOW ZHE YI
+
+Database hosting server - SIOW ZHE YI
+
+Integration of user interface with REST API - SIOW ZHE YI
+
+html and styling of user interface for admin and library modules - NURUL SHAFIQHA BINTI REDZUAN
+
+dashboard graph for admin and library modules - NURUL SHAFIQHA BINTI REDZUAN
+
+html and styling of user interface for cafe module - RASZREEN SABREENA BINTI MOHAMMAD KHAFIZ
+
+dashboard graph for cafe module - RASZREEN SABREENA BINTI MOHAMMAD KHAFIZ

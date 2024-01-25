@@ -41,6 +41,10 @@ Route::get('dashboard', [AuthController::class, 'dashboard'])->name('dashboard')
 Route::get('cafe/dashboard', [CafeController::class, 'dashboard'])->name('cafe.dashboard');
 Route::get('cafe/dashboard/{cafe_id}', [CafeController::class, 'dashboardCafe'])->name('cafe.dashboard.cafe');
 
+// create cafe or library
+Route::get('library_cafe', [AuthController::class, 'libraryCafe'])->name('dashboard.library-cafe');
+Route::post('library_cafe', [AuthController::class, 'createLibraryCafe'])->name('library_cafe.store');
+
 Route::get('library/dashboard', [LibraryController::class, 'dashboard'])->name('library.dashboard');
 Route::get('library/dashboard/{library_id}', [LibraryController::class, 'dashboardLibrary'])->name('library.dashboard.library');
 
@@ -61,6 +65,12 @@ Route::get('library/getBookingDatatable', [BookingController::class, 'getBooking
 Route::get('cafe/getOrderDatatable', [OrderController::class, 'getOrderDatatable'])->name('order.getOrderDatatable');
 Route::get('library/getReportDatatable', [ReportController::class, 'getReportDatatable'])->name('report.getReportDatatable');
 Route::get('library/getPenaltyDatatable', [UserController::class, 'getPenaltyDatatable'])->name('penalty.getPenaltyDatatable');
+//web.php
+//chart cafe
+Route::get('cafe/getDailySales', [OrderController::class, 'getDailySales'])->name('order.getDailySales');
+Route::get('cafe/getMonthlySales', [OrderController::class, 'getMonthlySales'])->name('order.getMonthlySales');
+
+Route::get('library/getGenreBook', [BookController::class, 'getGenreBook'])->name('book.getGenreBook');
 
 Route::resource('user', UserController::class);
 

@@ -53,7 +53,7 @@ class BeverageService
         
        foreach ($records as $key => $record) {
             
-            $drink_related = Beverage::where('category',$record->category)->where('status',1);
+            $drink_related = Beverage::where('category',$record->category)->where('status',1)->where('beverages.cafe_id',$request['cafe_id']);
 
             if($searchValue != null)
             {

@@ -15,6 +15,8 @@ use Illuminate\Http\UploadedFile;
 use App\Models\Table;
 use App\Models\Library;
 use App\Models\Beverage;
+use App\Models\Payment;
+use App\Models\FeesCategory;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -187,12 +189,50 @@ class OrderService
         $order->quantity = $request['quantity'];
         $order->unit_price = $beverage->price;
         $order->total_price = $beverage->price * $request['quantity'];
-        $order->payment_status = "pending"; // haven't payment success
+        $order->payment_status = "success"; // haven't payment success
         $order->status = 0; // haven't settle order
         $order->save();
 
         $order->order_no = $order->generateOrderNo($beverage->cafe_id);
         $order->save();
+
+        // payment success
+        $payment = new Payment();
+        $fees_category = FeesCategory::where('name','order')->first();
+        $payment->fees_category_id = $fees_category->id;
+
+        $payment->order_id = $order->id;
+        $beverage = $order->beverage()->first();
+        $cafe = $beverage->cafe()->first();
+        $payment->cafe_id = $cafe->id;
+        $payment->quantity = $order->quantity;
+        $payment->unit_price = $order->unit_price;
+        $subtotal = $order->unit_price * $order->quantity;
+        $item_name = $beverage->name;
+        $description = "Order Payment";
+        
+        // update order payment status
+        $order->payment_status = "success";
+        $order->save();
+
+        $payment->subtotal = $subtotal;
+        $sst =  0.06 * $subtotal;
+        $service =  0.1 * $subtotal;
+        
+        $payment->sst_amount = $sst;
+        $payment->service_charge_amount = $service;
+        $payment->total_price = $subtotal + $sst + $service;
+
+        $user = auth()->user();
+        $payment->user_id = $user->id;
+        $payment->item_name = $item_name;
+        $payment->description = $description;
+
+        $payment->save();
+
+        $payment->receipt_no = $payment->generateReceiptNo($cafe->id, "cafe");
+
+        $payment->save();
 
         return $order;
     }

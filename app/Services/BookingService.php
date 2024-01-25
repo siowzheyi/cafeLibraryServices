@@ -341,6 +341,15 @@ class BookingService
             }
 
             $booking->save();
+            if($booking->book_id != null)
+            {
+                // add back remainder count
+                $book = Book::find($booking->book_id);
+                $remainder = $book->remainder_count;
+                $book->remainder_count =  $remainder+  $booking->quantity;
+                $book->save();
+                // dd($book);
+            }
 
             if($booking->end_at > $booking->end_booked_at)
             {
@@ -377,6 +386,7 @@ class BookingService
                 $result['message'] = "Please pay penalty";
                 $result['data'] = $booking;
             }
+            // dd($book);
             return $result;
         }
 

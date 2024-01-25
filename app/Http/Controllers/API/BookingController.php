@@ -51,6 +51,7 @@ class BookingController extends BaseController
     {
         $service = new Service();
         $user = $booking->user()->first();
+        // dd(1);
         if($booking->book_id != null)
         {
             $item_id = $booking->book_id;
@@ -63,6 +64,7 @@ class BookingController extends BaseController
             $item_id = $booking->equipment_id;
             $item = Equipment::find($item_id);
             $item_name = $item->name;
+            // dd($item_name);
             $item_picture = $item->picture ? $service->getImage('equipment',$item->id) : null;
 
         }

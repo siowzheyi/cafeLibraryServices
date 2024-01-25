@@ -245,7 +245,23 @@ class UserService
         if($library_id != null || $user->library_id != null)
         {
             if($user->library_id != null)
-            $library_id = $user->library_id;
+                $library_id = $user->library_id;
+        // dd($library_id);
+
+            // $records =  Booking::join('users','users.id','=','bookings.user_id')
+            // ->leftjoin('books', function ($join) use ($library_id) {
+            //     $join->on('books.id', '=', 'bookings.book_id')
+            //     ->where('books.library_id',$library_id);
+            // })
+            // ->leftjoin('equipments', function ($join) use ($library_id) {
+            //     $join->on('equipments.id', '=', 'bookings.equipment_id')
+            //     ->where('equipments.library_id',$library_id);
+            // })
+            // ->leftjoin('rooms', function ($join) use ($library_id) {
+            //     $join->on('rooms.id', '=', 'bookings.room_id')
+            //     ->where('rooms.library_id',$library_id);
+            // })
+            // ->where('bookings.penalty_status',1);
 
             $records =  Booking::join('users','users.id','=','bookings.user_id')
             ->leftjoin('books', function ($join) use ($library_id) {
@@ -260,12 +276,25 @@ class UserService
                 $join->on('rooms.id', '=', 'bookings.room_id')
                 ->where('rooms.library_id',$library_id);
             })
-            ->where('bookings.penalty_status',1);
+            ->where('bookings.penalty_status',1)
+            ->where(function ($query) {
+                $query->where(function ($query) {
+                    $query->whereNotNull('books.library_id');
+                })
+                ->orWhere(function ($query) {
+                    $query->whereNotNull('equipments.library_id');
+                })
+                ->orWhere(function ($query) {
+                    $query->whereNotNull('rooms.library_id');
+                });
+            });
+
+            
+            // dd($records->get());
         }
 
         if($user->hasRole('user'))
             $records = $records->where('bookings.user_id',$user->id);
-
 
         $service = new Service();
 
@@ -385,7 +414,7 @@ class UserService
             'payments.total_price',
             'payments.sst_amount',
             'payments.service_charge_amount',
-            'payments.item_name'
+            // 'payments.item_name'
             
         )
             ->orderBy('bookings.penalty_paid_status', 'asc')
@@ -417,6 +446,7 @@ class UserService
 
             }
             $library = $item->library->first();
+            $item_name = $item->name;
 
             if($record->penalty_paid_status == 1)
                 $penalty_paid_status = "Paid";
@@ -429,7 +459,7 @@ class UserService
                "user_name" => $record->user_name,
                "user_phone_no" => $record->user_phone_no,
                 "item_id" => $item_id,
-                "item_name" => $record->item_name,
+                "item_name" => $item_name,
                 "item_picture" => $item_picture,
                 "unit_price"    =>  $record->unit_price,
                 "quantity"  =>  $record->quantity,

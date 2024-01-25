@@ -13,6 +13,7 @@ use Illuminate\Validation\Rule;
 use App\Http\Requests\BookRequest;
 use App\Models\User;
 use App\Models\Book;
+use App\Models\Library;
 
 use Auth;
 use App;
@@ -253,6 +254,26 @@ class BookController extends BaseController
             $table->rawColumns(['availability','status','action']);
             return $table->make(true);
         }
+    }
+
+    //bookController
+    public function getGenreBook()
+    {
+        // Fetch genre-wise book count data from the database
+        $genreBookData = Book::selectRaw('genre, COUNT(*) as total_books')
+            ->groupBy('genre')
+            ->get();
+
+        if(auth()->user()->library_id != null)
+        {
+            $library = library::find(auth()->user()->library_id);
+            $genreBookData = Book::selectRaw('genre, COUNT(*) as total_books')
+                            ->where('books.library_id',$library->id)
+                            ->groupBy('genre')
+                            ->get();
+        }
+
+        return response()->json($genreBookData);
     }
 
 

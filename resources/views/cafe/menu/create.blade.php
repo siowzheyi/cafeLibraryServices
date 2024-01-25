@@ -72,18 +72,23 @@
                             <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                             Order
                         </a>
+                        <a class="nav-link active" href="{{ route('daily_sales_report.index') }}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
+                            Report
+                        </a>
                         <div class="collapse show" id="collapseLayoutsCafe" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                             <nav class="sb-sidenav-menu-nested nav">
                                 {{-- <a class="nav-link" href="{{ route('User.index') }}">Staff Cafe</a> --}}
-                                <a class="nav-link collapsed " href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayoutsCafe" aria-expanded="false" aria-controls="collapseLayoutsCafe">
+                                {{-- <a class="nav-link active " href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayoutsCafe" aria-expanded="false" aria-controls="collapseLayoutsCafe">
                                     <div class="sb-nav-link-icon"><i class="fas fa-plus"></i></div>
                                     Report
                                     <div class="sb-sidenav-collapse-arrow"><i class=""></i></div>
-                                </a>
+                                </a> --}}
                                 <div class="collapse show" id="collapseLayoutsCafe" aria-labelledby="card-header" data-bs-parent="#sidenavAccordion">
                                     <nav class="sb-sidenav-menu-nested nav">
-                                        <a class="nav-link menu" href="{{ route('daily_sales_report.index') }}" >Daily Sales</a>
-                                        <a class="nav-link menu" href="{{ route('detail_sales_report.index') }}">Detail Sales</a>
+                                        <a class="nav-link menu" href="{{ route('daily_sales_report.index') }}" >Daily Sales Cafe</a>
+                                        <a class="nav-link menu" href="{{ route('detail_sales_report.index') }}">Detail Sales Cafe</a>
+
                                     </nav>
                                 </div> 
                             </nav>
@@ -135,6 +140,7 @@
 
                                 </select>
                                 <input type="submit" class="btn btn-success mt-3 mb-2" value="Submit">
+                                <input type="text" id="cafe_id" name="cafe_id" hidden>
                             </form>
                         </div>
                     </div>
@@ -155,16 +161,18 @@
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-    <script src="{{ asset('js/scripts.js') }}"></script>
+    <script src="js/scripts.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
-    <script src="{{ asset('assets/demo/chart-area-demo.js') }}"></script>
-    <script src="{{ asset('assets/demo/chart-bar-demo.js') }}"></script>
-    <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js" crossorigin="anonymous"></script>
-    <script src="{{ asset('js/datatables-simple-demo.js') }}"></script>
+    <script src="assets/demo/chart-area-demo.js"></script>
+    <script src="assets/demo/chart-bar-demo.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.js"></script>
 </body>
 <script>
     $(document).ready(function(){
-        $('#category').val() 
+        var cafe_id = localStorage.getItem('cafe_id');
+         $('#cafe_id').val(cafe_id)
+        // console.log($('#cafe_id').val());
 
     });
 </script>
