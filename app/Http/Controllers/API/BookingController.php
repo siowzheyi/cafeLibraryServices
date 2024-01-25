@@ -161,7 +161,7 @@ class BookingController extends BaseController
         }
 
 
-        $result = $this->services->update($request, $booking);
+        $result = $this->services->update($request, $booking, "return");
 
         return $this->sendResponse($result['data'], $result['message']);   
     }
